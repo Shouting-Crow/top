@@ -32,7 +32,6 @@ public class SecurityConfig {
                 .logout(logout -> logout.disable())
                 .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class);
 
-
         return http.build();
     }
 

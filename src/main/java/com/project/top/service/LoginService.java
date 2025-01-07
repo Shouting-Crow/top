@@ -1,7 +1,8 @@
 package com.project.top.service;
 
 import com.project.top.dto.LoginDto;
+import com.project.top.dto.LoginResponseDto;
 
 public interface LoginService {
-    String login(LoginDto loginDto);
+    LoginResponseDto login(LoginDto loginDto);
 }
