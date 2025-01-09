@@ -1,5 +1,6 @@
 package com.project.top.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -27,12 +28,21 @@ public class Reply extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_reply_id")
+    @JsonIgnore
     private Reply parentReply;
 
     @OneToMany(mappedBy = "parentReply", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
     private List<Reply> childReplies = new ArrayList<>();
 
     @Column(nullable = false)
     private String content;
+
+    @Column(nullable = false)
+    private boolean edited = false;
+
+    public void changeEdited() {
+        this.edited = true;
+    }
 
 }
