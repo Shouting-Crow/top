@@ -64,4 +64,12 @@ public class UserServiceImpl implements UserService {
         }
         userRepository.deleteById(id);
     }
+
+    @Override
+    public Long getUserIdFromLoginId(String loginId) {
+        User user = userRepository.findByLoginId(loginId)
+                .orElseThrow(() -> new IllegalArgumentException("해당되는 사용자가 없습니다."));
+
+        return user.getId();
+    }
 }

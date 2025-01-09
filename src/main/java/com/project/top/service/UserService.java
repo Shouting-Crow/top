@@ -8,4 +8,5 @@ public interface UserService {
     public UserDto getUser(Long id);
     public void updateUser(Long id, UserDto userDto);
     public void deleteUser(Long id);
+    public Long getUserIdFromLoginId(String loginId);
 }
