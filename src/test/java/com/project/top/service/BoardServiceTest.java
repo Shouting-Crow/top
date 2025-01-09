@@ -3,6 +3,10 @@ package com.project.top.service;
 import com.project.top.domain.Board;
 import com.project.top.domain.Category;
 import com.project.top.dto.BoardCreateDto;
+import com.project.top.dto.BoardUpdateDto;
+import com.project.top.dto.LoginDto;
+import com.project.top.dto.LoginResponseDto;
+import com.project.top.repository.BoardRepository;
 import com.project.top.repository.CategoryRepository;
 import com.project.top.repository.ReplyRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -35,6 +39,12 @@ class BoardServiceTest {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Autowired
+    private BoardRepository boardRepository;
+
+    @Autowired
+    private LoginService loginService;
+
     @Test
     void boardCreateTest() {
 
@@ -55,8 +65,24 @@ class BoardServiceTest {
         Assertions.assertThat(board.getContent()).isEqualTo("새로운 게시글 내용");
         Assertions.assertThat(board.getAuthor().getId()).isEqualTo(7L);
         Assertions.assertThat(board.getViews()).isEqualTo(0);
+    }
 
+    @Test
+    void boardUpdateTest() {
 
+        BoardUpdateDto boardUpdateDto = new BoardUpdateDto();
+        boardUpdateDto.setTitle("수정된 게시글 제목");
+        boardUpdateDto.setContent("수정된 게시글 내용");
+
+        Board updatedBoard = boardService.updateBoard(1L, 7L, boardUpdateDto);
+
+        Assertions.assertThat(updatedBoard.getTitle()).isEqualTo("수정된 게시글 제목");
+        Assertions.assertThat(updatedBoard.getContent()).isEqualTo("수정된 게시글 내용");
+    }
+
+    @Test
+    void boardDeleteTest() {
+        boardService.deleteBoard(1L, 7L);
     }
 
 }

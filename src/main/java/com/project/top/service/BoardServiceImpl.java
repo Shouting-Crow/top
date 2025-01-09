@@ -4,6 +4,7 @@ import com.project.top.domain.Board;
 import com.project.top.domain.Category;
 import com.project.top.domain.User;
 import com.project.top.dto.BoardCreateDto;
+import com.project.top.dto.BoardUpdateDto;
 import com.project.top.repository.BoardRepository;
 import com.project.top.repository.CategoryRepository;
 import com.project.top.repository.ReplyRepository;
@@ -39,5 +40,34 @@ public class BoardServiceImpl implements BoardService{
         board.setReplyCount(0);
 
         return boardRepository.save(board);
+    }
+
+    @Transactional
+    @Override
+    public Board updateBoard(Long boardId, Long userId, BoardUpdateDto boardUpdateDto) {
+        Board board = boardRepository.findById(boardId)
+                .orElseThrow(() -> new IllegalArgumentException("찾을 수 없는 게시글 입니다."));
+
+        if (!board.getAuthor().getId().equals(userId)) {
+            throw new SecurityException("게시글을 수정할 권한이 없습니다.");
+        }
+
+        board.setTitle(boardUpdateDto.getTitle());
+        board.setContent(boardUpdateDto.getContent());
+
+        return board;
+    }
+
+    @Override
+    @Transactional
+    public void deleteBoard(Long boardId, Long userId) {
+        Board board = boardRepository.findById(boardId)
+                .orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다."));
+
+        if (!board.getAuthor().getId().equals(userId)) {
+            throw new SecurityException("게시글을 삭제할 권한이 없습니다.");
+        }
+
+        boardRepository.delete(board);
     }
 }
