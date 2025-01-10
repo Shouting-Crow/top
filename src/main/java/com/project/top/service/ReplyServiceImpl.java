@@ -4,14 +4,19 @@ import com.project.top.domain.Board;
 import com.project.top.domain.Reply;
 import com.project.top.domain.User;
 import com.project.top.dto.ReplyCreateDto;
+import com.project.top.dto.ReplyDto;
 import com.project.top.dto.ReplyUpdateDto;
 import com.project.top.repository.BoardRepository;
 import com.project.top.repository.ReplyRepository;
 import com.project.top.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -75,5 +80,12 @@ public class ReplyServiceImpl implements ReplyService{
         }
 
         replyRepository.delete(reply);
+    }
+
+    @Override
+    public Page<ReplyDto> getRepliesByBoardId(Long boardId, Pageable pageable) {
+        Page<Reply> replies = replyRepository.findByBoardIdOrderByCreatedAtAsc(boardId, pageable);
+
+        return replies.map(ReplyDto::replyDtoFromEntity);
     }
 }

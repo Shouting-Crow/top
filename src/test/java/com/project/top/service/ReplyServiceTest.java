@@ -22,16 +22,16 @@ class ReplyServiceTest {
     void createReplyTest() {
         //7, 8번 유저와 3번 게시물(7번 유저가 생성)로 테스트 이용
         ReplyCreateDto replyCreateDto = new ReplyCreateDto();
-        replyCreateDto.setBoardId(3L);
-        replyCreateDto.setAuthorId(7L);
+        replyCreateDto.setBoardId(1L);
+        replyCreateDto.setAuthorId(1L);
         replyCreateDto.setContent("테스트 댓글");
         replyCreateDto.setParentReplyId(null);
 
         Reply reply = replyService.createReply(replyCreateDto);
 
         ReplyCreateDto replyCreateDto2 = new ReplyCreateDto();
-        replyCreateDto2.setBoardId(3L);
-        replyCreateDto2.setAuthorId(8L);
+        replyCreateDto2.setBoardId(1L);
+        replyCreateDto2.setAuthorId(1L);
         replyCreateDto2.setContent("테스트 댓글의 댓글");
         replyCreateDto2.setParentReplyId(reply.getId());
 

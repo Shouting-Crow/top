@@ -4,6 +4,7 @@ import com.project.top.domain.Board;
 import com.project.top.domain.Category;
 import com.project.top.domain.User;
 import com.project.top.dto.BoardCreateDto;
+import com.project.top.dto.BoardDto;
 import com.project.top.dto.BoardUpdateDto;
 import com.project.top.repository.BoardRepository;
 import com.project.top.repository.CategoryRepository;
@@ -69,5 +70,13 @@ public class BoardServiceImpl implements BoardService{
         }
 
         boardRepository.delete(board);
+    }
+
+    @Override
+    public BoardDto getBoard(Long boardId) {
+        Board board = boardRepository.findById(boardId)
+                .orElseThrow(() -> new IllegalArgumentException("게시글이 존재하지 않습니다."));
+
+        return BoardDto.boardDtoFromEntity(board);
     }
 }

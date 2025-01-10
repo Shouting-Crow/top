@@ -48,22 +48,17 @@ class BoardServiceTest {
     @Test
     void boardCreateTest() {
 
-        Category category = new Category();
-        category.setName("일반글");
-        category.setDescription("일반적인 글 카테고리");
-        categoryRepository.save(category);
-
         BoardCreateDto boardCreateDto = new BoardCreateDto();
         boardCreateDto.setTitle("새로운 게시글 제목");
         boardCreateDto.setContent("새로운 게시글 내용");
-        boardCreateDto.setAuthorId(7L);
-        boardCreateDto.setCategoryId(category.getId());
+        boardCreateDto.setAuthorId(1L);
+        boardCreateDto.setCategoryId(2L);
 
         Board board = boardService.createBoard(boardCreateDto);
 
         Assertions.assertThat(board.getTitle()).isEqualTo("새로운 게시글 제목");
         Assertions.assertThat(board.getContent()).isEqualTo("새로운 게시글 내용");
-        Assertions.assertThat(board.getAuthor().getId()).isEqualTo(7L);
+        Assertions.assertThat(board.getAuthor().getId()).isEqualTo(1L);
         Assertions.assertThat(board.getViews()).isEqualTo(0);
     }
 
