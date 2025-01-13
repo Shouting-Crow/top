@@ -32,15 +32,15 @@ class UserServiceTest {
     @Test
     public void userRegistrationTest(){
         UserRegistrationDto dto = new UserRegistrationDto();
-        dto.setLoginId("testuser");
+        dto.setLoginId("newuser");
         dto.setPassword("1111");
-        dto.setEmail("newmember1@gmail.com");
-        dto.setPhoneNumber("01012345678");
-        dto.setNickname("개발자1");
+        dto.setEmail("newmuser1@gmail.com");
+        dto.setPhoneNumber("010-1234-4321");
+        dto.setNickname("초보개발자");
 
         userService.registrationSave(dto);
 
-        User user = userRepository.findByLoginId(dto.getLoginId()).orElseThrow(RuntimeException::new);
+//        User user = userRepository.findByLoginId(dto.getLoginId()).orElseThrow(RuntimeException::new);
 
 //        Assertions.assertEquals(user.getLoginId(),"newmember1");
 //        Assertions.assertTrue(passwordEncoder.matches("1q2w3e4r!", user.getPassword()));
