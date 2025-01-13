@@ -6,7 +6,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 
 @Getter
@@ -24,7 +24,7 @@ public class RecruitmentUpdateDto {
     private int totalMembers;
 
     @NotNull
-    private LocalDateTime dueDateTime;
+    private LocalDate dueDate;
 
     private List<String> tags;
 }

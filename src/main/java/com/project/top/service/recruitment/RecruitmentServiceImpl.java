@@ -34,7 +34,7 @@ public class RecruitmentServiceImpl implements RecruitmentService {
         recruitment.setDescription(recruitmentCreateDto.getDescription());
         recruitment.setTotalMembers(recruitmentCreateDto.getTotalMembers());
         recruitment.setCurrentMembers(1);
-        recruitment.setDueDateTime(recruitmentCreateDto.getDueDateTime());
+        recruitment.setDueDate(recruitmentCreateDto.getDueDate());
         recruitment.setTags(recruitmentCreateDto.getTags());
         recruitment.setCreatedDateTime(LocalDateTime.now());
         recruitment.setCreator(creator);
@@ -55,7 +55,7 @@ public class RecruitmentServiceImpl implements RecruitmentService {
         recruitment.setTitle(recruitmentUpdateDto.getTitle());
         recruitment.setDescription(recruitmentUpdateDto.getDescription());
         recruitment.setTotalMembers(recruitmentUpdateDto.getTotalMembers());
-        recruitment.setDueDateTime(recruitmentUpdateDto.getDueDateTime());
+        recruitment.setDueDate(recruitmentUpdateDto.getDueDate());
         recruitment.setTags(recruitmentUpdateDto.getTags());
 
         return recruitment;

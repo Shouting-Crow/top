@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -36,7 +37,7 @@ public class Recruitment {
     private LocalDateTime createdDateTime;
 
     @Column(nullable = false)
-    private LocalDateTime dueDateTime;
+    private LocalDate dueDate;
 
     @ElementCollection
     @CollectionTable(name = "recruitment_tags", joinColumns = @JoinColumn(name = "recruitment_id"))

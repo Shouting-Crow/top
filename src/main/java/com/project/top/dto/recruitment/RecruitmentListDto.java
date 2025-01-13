@@ -4,7 +4,7 @@ import com.project.top.domain.Recruitment;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 
 @Getter
@@ -12,7 +12,7 @@ import java.util.List;
 public class RecruitmentListDto {
     private Long id;
     private String title;
-    private LocalDateTime dueDateTime;
+    private LocalDate dueDate;
     private int currentMembers;
     private int totalMembers;
     private List<String> tags;
@@ -21,7 +21,7 @@ public class RecruitmentListDto {
         RecruitmentListDto dto = new RecruitmentListDto();
         dto.setId(recruitment.getId());
         dto.setTitle(recruitment.getTitle());
-        dto.setDueDateTime(recruitment.getDueDateTime());
+        dto.setDueDate(recruitment.getDueDate());
         dto.setCurrentMembers(recruitment.getCurrentMembers());
         dto.setTotalMembers(recruitment.getTotalMembers());
         dto.setTags(recruitment.getTags());
