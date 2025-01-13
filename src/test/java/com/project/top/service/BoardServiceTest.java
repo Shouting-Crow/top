@@ -1,14 +1,14 @@
 package com.project.top.service;
 
 import com.project.top.domain.Board;
-import com.project.top.domain.Category;
-import com.project.top.dto.BoardCreateDto;
-import com.project.top.dto.BoardUpdateDto;
-import com.project.top.dto.LoginDto;
-import com.project.top.dto.LoginResponseDto;
+import com.project.top.dto.board.BoardCreateDto;
+import com.project.top.dto.board.BoardUpdateDto;
 import com.project.top.repository.BoardRepository;
 import com.project.top.repository.CategoryRepository;
 import com.project.top.repository.ReplyRepository;
+import com.project.top.service.board.BoardService;
+import com.project.top.service.login.LoginService;
+import com.project.top.service.user.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -16,8 +16,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.annotation.Rollback;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @Slf4j

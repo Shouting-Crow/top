@@ -1,14 +1,13 @@
 package com.project.top.security;
 
 import com.project.top.filter.JwtAuthenticationFilter;
-import com.project.top.service.CustomUserDetailsService;
+import com.project.top.service.util.CustomUserDetailsService;
 import com.project.top.util.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;

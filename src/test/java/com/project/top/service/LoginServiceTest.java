@@ -1,9 +1,10 @@
 package com.project.top.service;
 
 import com.project.top.domain.User;
-import com.project.top.dto.LoginDto;
-import com.project.top.dto.LoginResponseDto;
+import com.project.top.dto.login.LoginDto;
+import com.project.top.dto.login.LoginResponseDto;
 import com.project.top.repository.UserRepository;
+import com.project.top.service.login.LoginService;
 import com.project.top.util.JwtTokenProvider;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;

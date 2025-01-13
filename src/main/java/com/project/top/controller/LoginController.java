@@ -1,8 +1,8 @@
 package com.project.top.controller;
 
-import com.project.top.dto.LoginDto;
-import com.project.top.dto.LoginResponseDto;
-import com.project.top.service.LoginService;
+import com.project.top.dto.login.LoginDto;
+import com.project.top.dto.login.LoginResponseDto;
+import com.project.top.service.login.LoginService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

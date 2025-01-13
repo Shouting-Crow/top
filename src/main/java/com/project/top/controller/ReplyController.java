@@ -1,10 +1,10 @@
 package com.project.top.controller;
 
 import com.project.top.domain.Reply;
-import com.project.top.dto.ReplyCreateDto;
-import com.project.top.dto.ReplyUpdateDto;
-import com.project.top.service.ReplyService;
-import com.project.top.service.UserService;
+import com.project.top.dto.reply.ReplyCreateDto;
+import com.project.top.dto.reply.ReplyUpdateDto;
+import com.project.top.service.reply.ReplyService;
+import com.project.top.service.user.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

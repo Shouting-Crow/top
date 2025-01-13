@@ -1,15 +1,14 @@
 package com.project.top.service;
 
 import com.project.top.domain.Reply;
-import com.project.top.dto.ReplyCreateDto;
-import com.project.top.dto.ReplyUpdateDto;
+import com.project.top.dto.reply.ReplyCreateDto;
+import com.project.top.dto.reply.ReplyUpdateDto;
+import com.project.top.service.reply.ReplyService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @Rollback(false)

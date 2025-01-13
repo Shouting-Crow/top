@@ -1,16 +1,15 @@
 package com.project.top.controller;
 
 import com.project.top.domain.UserInfo;
-import com.project.top.dto.*;
-import com.project.top.service.UserInfoService;
-import com.project.top.service.UserService;
+import com.project.top.dto.userInfo.*;
+import com.project.top.service.userInfo.UserInfoService;
+import com.project.top.service.user.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
 @RestController
 @RequestMapping("/api/user-info")

@@ -1,8 +1,8 @@
 package com.project.top.controller;
 
-import com.project.top.dto.UserDto;
-import com.project.top.dto.UserRegistrationDto;
-import com.project.top.service.UserService;
+import com.project.top.dto.user.UserDto;
+import com.project.top.dto.user.UserRegistrationDto;
+import com.project.top.service.user.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -50,7 +50,7 @@ public class UserController {
 
         try {
             userService.updateUser(userId, userDto);
-            return ResponseEntity.ok("회원 정보가 수정되었습니다.");
+            return ResponseEntity.ok("회원 정보가 수정되었습니다."); //수정된 정보를 랜더링 하기 위해 DTO 전달 필요
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }

@@ -1,22 +1,18 @@
 package com.project.top.service;
 
 import com.project.top.domain.User;
-import com.project.top.dto.UserDto;
-import com.project.top.dto.UserRegistrationDto;
+import com.project.top.dto.user.UserDto;
+import com.project.top.dto.user.UserRegistrationDto;
 import com.project.top.repository.UserRepository;
+import com.project.top.service.user.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @Transactional

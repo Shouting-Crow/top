@@ -1,14 +1,13 @@
 package com.project.top.controller;
 
 import com.project.top.domain.Board;
-import com.project.top.domain.Reply;
-import com.project.top.dto.BoardCreateDto;
-import com.project.top.dto.BoardDto;
-import com.project.top.dto.BoardUpdateDto;
-import com.project.top.dto.ReplyDto;
-import com.project.top.service.BoardService;
-import com.project.top.service.ReplyService;
-import com.project.top.service.UserService;
+import com.project.top.dto.board.BoardCreateDto;
+import com.project.top.dto.board.BoardDto;
+import com.project.top.dto.board.BoardUpdateDto;
+import com.project.top.dto.reply.ReplyDto;
+import com.project.top.service.board.BoardService;
+import com.project.top.service.reply.ReplyService;
+import com.project.top.service.user.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

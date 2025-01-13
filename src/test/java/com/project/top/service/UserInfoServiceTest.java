@@ -1,10 +1,12 @@
 package com.project.top.service;
 
 import com.project.top.domain.UserInfo;
-import com.project.top.dto.UserInfoCreateDto;
-import com.project.top.dto.UserInfoPublicViewDto;
-import com.project.top.dto.UserInfoSelfViewDto;
-import com.project.top.dto.UserInfoUpdateDto;
+import com.project.top.dto.userInfo.UserInfoCreateDto;
+import com.project.top.dto.userInfo.UserInfoPublicViewDto;
+import com.project.top.dto.userInfo.UserInfoSelfViewDto;
+import com.project.top.dto.userInfo.UserInfoUpdateDto;
+import com.project.top.service.user.UserService;
+import com.project.top.service.userInfo.UserInfoService;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -14,8 +16,6 @@ import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @Rollback(false)
