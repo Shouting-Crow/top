@@ -1,0 +1,97 @@
+package com.project.top.service.studyGroup;
+
+import com.project.top.domain.BasePost;
+import com.project.top.domain.StudyGroup;
+import com.project.top.domain.User;
+import com.project.top.dto.studyGroup.*;
+import com.project.top.repository.BasePostRepository;
+import com.project.top.repository.StudyGroupRepository;
+import com.project.top.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+@Service
+@RequiredArgsConstructor
+public class StudyGroupServiceImpl implements StudyGroupService{
+
+    private final StudyGroupRepository studyGroupRepository;
+    private final UserRepository userRepository;
+    private final BasePostRepository basePostRepository;
+
+
+    @Override
+    @Transactional
+    public StudyGroupDto createStudyGroup(Long creatorId, StudyGroupCreateDto studyGroupCreateDto) {
+        User creator = userRepository.findById(creatorId)
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+
+        StudyGroup studyGroup = new StudyGroup();
+        studyGroup.setTitle(studyGroupCreateDto.getTitle());
+        studyGroup.setDescription(studyGroupCreateDto.getDescription());
+        studyGroup.setCreator(creator);
+        studyGroup.setTopic(studyGroupCreateDto.getTopic());
+        studyGroup.setStartAndEndDate(studyGroupCreateDto.getStartDate(), studyGroupCreateDto.getEndDate());
+        studyGroup.setTotalMembers(studyGroupCreateDto.getTotalMembers());
+
+        StudyGroup savedStudyGroup = studyGroupRepository.save(studyGroup);
+
+        return StudyGroupDto.studyGroupDtoFromEntity(savedStudyGroup);
+    }
+
+    @Override
+    @Transactional
+    public StudyGroupDto updateStudyGroup(Long studyGroupId, Long userId, StudyGroupUpdateDto studyGroupUpdateDto) {
+        StudyGroup studyGroup = (StudyGroup) basePostRepository.findById(studyGroupId)
+                .orElseThrow(() -> new IllegalArgumentException("스터디 그룹 모집글을 찾을 수 없습니다."));
+
+        if (!studyGroup.getCreator().getId().equals(userId)) {
+            throw new SecurityException("모집글을 수정할 권한이 없습니다.");
+        }
+
+        studyGroup.setTitle(studyGroupUpdateDto.getTitle());
+        studyGroup.setDescription(studyGroupUpdateDto.getDescription());
+        studyGroup.setTopic(studyGroupUpdateDto.getTopic());
+        studyGroup.setStartAndEndDate(studyGroupUpdateDto.getStartDate(), studyGroupUpdateDto.getEndDate());
+        studyGroup.setTotalMembers(studyGroupUpdateDto.getTotalMembers());
+
+        return StudyGroupDto.studyGroupDtoFromEntity(studyGroup);
+    }
+
+    @Override
+    public void deleteStudyGroup(Long studyGroupId, Long userId) {
+        StudyGroup studyGroup = (StudyGroup) basePostRepository.findById(studyGroupId)
+                .orElseThrow(() -> new IllegalArgumentException("스터디 그룹 모집글을 찾을 수 없습니다."));
+
+        if (!studyGroup.getCreator().getId().equals(userId)) {
+            throw new SecurityException("모집글을 삭제할 권한이 없습니다.");
+        }
+
+        basePostRepository.delete(studyGroup);
+    }
+
+    @Override
+    public Page<StudyGroupListDto> getStudyGroupList(Pageable pageable) {
+        return studyGroupRepository.findAll(pageable)
+                .map(StudyGroupListDto::studyGroupListDtoFromEntity);
+    }
+
+    @Override
+    public StudyGroupDto getStudyGroup(Long studyGroupId) {
+        StudyGroup studyGroup = (StudyGroup) basePostRepository.findById(studyGroupId)
+                .orElseThrow(() -> new IllegalArgumentException("스터디 그룹을 찾을 수 없습니다."));
+
+        return StudyGroupDto.studyGroupDtoFromEntity(studyGroup);
+    }
+
+    @Override
+    public Page<StudyGroupMyListDto> getStudyGroupMyList(Long userId, Pageable pageable) {
+        return studyGroupRepository.findByCreatorId(userId, pageable)
+                .map(studyGroup -> {
+                    int applicationCount = studyGroup.getApplications().size();
+                    return StudyGroupMyListDto.studyGroupMyListFromEntity(studyGroup, applicationCount);
+                });
+    }
+}

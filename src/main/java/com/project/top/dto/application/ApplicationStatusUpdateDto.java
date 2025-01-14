@@ -1,5 +1,6 @@
 package com.project.top.dto.application;
 
+import com.project.top.domain.ApplicationStatus;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -8,5 +9,5 @@ import lombok.Setter;
 public class ApplicationStatusUpdateDto {
     private Long applicationId;
     private Long recruitmentId;
-    private String status;
+    private ApplicationStatus status;
 }

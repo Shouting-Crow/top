@@ -32,11 +32,11 @@ class UserServiceTest {
     @Test
     public void userRegistrationTest(){
         UserRegistrationDto dto = new UserRegistrationDto();
-        dto.setLoginId("newuser");
+        dto.setLoginId("newuser2");
         dto.setPassword("1111");
-        dto.setEmail("newmuser1@gmail.com");
-        dto.setPhoneNumber("010-1234-4321");
-        dto.setNickname("초보개발자");
+        dto.setEmail("newmuser2@gmail.com");
+        dto.setPhoneNumber("010-1111-1111");
+        dto.setNickname("공부의달인");
 
         userService.registrationSave(dto);
 

@@ -1,11 +1,13 @@
 package com.project.top.service.recruitment;
 
+import com.project.top.domain.BasePost;
 import com.project.top.domain.Recruitment;
 import com.project.top.domain.User;
 import com.project.top.dto.recruitment.RecruitmentCreateDto;
 import com.project.top.dto.recruitment.RecruitmentDto;
 import com.project.top.dto.recruitment.RecruitmentListDto;
 import com.project.top.dto.recruitment.RecruitmentUpdateDto;
+import com.project.top.repository.BasePostRepository;
 import com.project.top.repository.RecruitmentRepository;
 import com.project.top.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -20,8 +22,9 @@ import java.time.LocalDateTime;
 @RequiredArgsConstructor
 public class RecruitmentServiceImpl implements RecruitmentService {
 
-    private final RecruitmentRepository recruitmentRepository;
+    private final BasePostRepository basePostRepository;
     private final UserRepository userRepository;
+    private final RecruitmentRepository recruitmentRepository;
 
     @Override
     @Transactional
@@ -34,23 +37,25 @@ public class RecruitmentServiceImpl implements RecruitmentService {
         recruitment.setDescription(recruitmentCreateDto.getDescription());
         recruitment.setTotalMembers(recruitmentCreateDto.getTotalMembers());
         recruitment.setCurrentMembers(1);
+        recruitment.setCreatedDateTime(LocalDateTime.now());
         recruitment.setDueDate(recruitmentCreateDto.getDueDate());
         recruitment.setTags(recruitmentCreateDto.getTags());
-        recruitment.setCreatedDateTime(LocalDateTime.now());
         recruitment.setCreator(creator);
 
-        return recruitmentRepository.save(recruitment);
+        return (Recruitment) basePostRepository.save(recruitment);
     }
 
     @Override
     @Transactional
     public Recruitment updateRecruitment(Long recruitmentId, Long userId, RecruitmentUpdateDto recruitmentUpdateDto) {
-        Recruitment recruitment = recruitmentRepository.findById(recruitmentId)
+        BasePost basePost = basePostRepository.findById(recruitmentId)
                 .orElseThrow(() -> new IllegalArgumentException("모집 공고를 찾을 수 없습니다."));
 
-        if (!recruitment.getCreator().getId().equals(userId)) {
+        if (!basePost.getCreator().getId().equals(userId)) {
             throw new SecurityException("모집 공고를 수정할 권한이 없습니다.");
         }
+
+        Recruitment recruitment = (Recruitment) basePost;
 
         recruitment.setTitle(recruitmentUpdateDto.getTitle());
         recruitment.setDescription(recruitmentUpdateDto.getDescription());
@@ -64,27 +69,29 @@ public class RecruitmentServiceImpl implements RecruitmentService {
     @Override
     @Transactional
     public void deleteRecruitment(Long userId, Long recruitmentId) {
-        Recruitment recruitment = recruitmentRepository.findById(recruitmentId)
+        BasePost basePost = basePostRepository.findById(recruitmentId)
                 .orElseThrow(() -> new IllegalArgumentException("모집 공고를 찾을 수 없습니다."));
 
-        if (!recruitment.getCreator().getId().equals(userId)) {
+        if (!basePost.getCreator().getId().equals(userId)) {
             throw new SecurityException("모집 공고를 삭제할 권한이 없습니다.");
         }
 
-        recruitmentRepository.delete(recruitment);
+        basePostRepository.delete(basePost);
     }
 
     @Override
     public Page<RecruitmentListDto> getRecruitmentList(Pageable pageable) {
-        Page<Recruitment> recruitments = recruitmentRepository.findAll(pageable);
+        Page<Recruitment> recruitments = recruitmentRepository.findAllRecruitments(pageable);
 
         return recruitments.map(RecruitmentListDto::recruitmentsFromEntity);
     }
 
     @Override
     public RecruitmentDto getRecruitment(Long recruitmentId) {
-        Recruitment recruitment = recruitmentRepository.findById(recruitmentId)
+        BasePost basePost = basePostRepository.findById(recruitmentId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 모집 공고를 찾을 수 없습니다."));
+
+        Recruitment recruitment = (Recruitment) basePost;
 
         return RecruitmentDto.recruitmentFromEntity(recruitment);
     }

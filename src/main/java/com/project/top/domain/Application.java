@@ -21,11 +21,12 @@ public class Application {
     private User applicant;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "recruitment_id", nullable = false)
-    private Recruitment recruitment;
+    @JoinColumn(name = "post_id", nullable = false)
+    private BasePost basePost;
 
     @Column(nullable = false)
-    private String status;
+    @Enumerated(EnumType.STRING)
+    private ApplicationStatus status;
 
     @Column(nullable = false)
     private LocalDateTime applyDateTime;
