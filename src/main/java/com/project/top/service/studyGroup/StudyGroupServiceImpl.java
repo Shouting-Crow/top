@@ -13,6 +13,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class StudyGroupServiceImpl implements StudyGroupService{
@@ -87,11 +89,14 @@ public class StudyGroupServiceImpl implements StudyGroupService{
     }
 
     @Override
-    public Page<StudyGroupMyListDto> getStudyGroupMyList(Long userId, Pageable pageable) {
-        return studyGroupRepository.findByCreatorId(userId, pageable)
+    public List<StudyGroupMyListDto> getStudyGroupMyList(Long userId) {
+        return studyGroupRepository.findAllByCreatorId(userId)
+                .stream()
                 .map(studyGroup -> {
                     int applicationCount = studyGroup.getApplications().size();
                     return StudyGroupMyListDto.studyGroupMyListFromEntity(studyGroup, applicationCount);
-                });
+                })
+                .toList();
+
     }
 }

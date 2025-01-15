@@ -16,7 +16,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -94,5 +96,16 @@ public class RecruitmentServiceImpl implements RecruitmentService {
         Recruitment recruitment = (Recruitment) basePost;
 
         return RecruitmentDto.recruitmentFromEntity(recruitment);
+    }
+
+    @Override
+    public List<RecruitmentListDto> getRecruitmentMyList(Long creatorId) {
+        List<Recruitment> recruitments = recruitmentRepository.findByCreatorId(creatorId).stream()
+                .filter(recruitment -> !recruitment.getDueDate().isBefore(LocalDate.now()))
+                .toList();
+
+        return recruitments.stream()
+                .map(RecruitmentListDto::recruitmentsFromEntity)
+                .toList();
     }
 }

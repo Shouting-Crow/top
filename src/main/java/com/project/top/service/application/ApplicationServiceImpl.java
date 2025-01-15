@@ -69,8 +69,8 @@ public class ApplicationServiceImpl implements ApplicationService {
     }
 
     @Override
-    public List<ApplicationListDto> getApplicationList(Long userId, Long recruitmentId) {
-        BasePost basePost = basePostRepository.findById(recruitmentId)
+    public List<ApplicationListDto> getApplicationList(Long userId, Long basePostId) {
+        BasePost basePost = basePostRepository.findById(basePostId)
                 .orElseThrow(() -> new IllegalArgumentException("모집 공고를 찾을 수 없습니다."));
 
         if (!basePost.getCreator().getId().equals(userId)){

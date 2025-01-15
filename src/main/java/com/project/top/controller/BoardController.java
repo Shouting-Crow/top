@@ -32,10 +32,16 @@ public class BoardController {
     private final ReplyService replyService;
 
     @PostMapping
-    public ResponseEntity<?> createBoard(@RequestBody BoardCreateDto boardCreateDto) {
+    public ResponseEntity<?> createBoard(
+            @RequestBody BoardCreateDto boardCreateDto,
+            @AuthenticationPrincipal UserDetails userDetails) {
         try {
+            userService.getUserIdFromLoginId(userDetails.getUsername());
+
             Board board = boardService.createBoard(boardCreateDto);
             return ResponseEntity.status(HttpStatus.CREATED).body("게시글이 성공적으로 등록되었습니다.");
+        } catch (SecurityException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }

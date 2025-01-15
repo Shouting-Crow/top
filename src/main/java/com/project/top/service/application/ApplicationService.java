@@ -11,7 +11,7 @@ import java.util.List;
 public interface ApplicationService {
     public Application createApplication(Long userId, ApplicationCreateDto applicationCreateDto);
     public void updateApplicationStatus(Long creatorId, ApplicationStatusUpdateDto applicationStatusUpdateDto);
-    public List<ApplicationListDto> getApplicationList(Long userId, Long recruitmentId);
+    public List<ApplicationListDto> getApplicationList(Long userId, Long basePostId);
     public List<ApplicationMyListDto> getApplicationMyList(Long userId);
 
     //테스트를 위한 삭제 메서드(추후 삭제)
