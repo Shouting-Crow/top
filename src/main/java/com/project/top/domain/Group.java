@@ -11,7 +11,7 @@ import java.util.List;
 @Entity
 @Getter
 @Setter
-@Table(name = "groups")
+@Table(name = "user_groups")
 public class Group extends BaseEntity {
 
     @Id
