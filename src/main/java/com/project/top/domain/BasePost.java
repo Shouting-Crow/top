@@ -38,6 +38,12 @@ public abstract class BasePost {
     @Column(nullable = false)
     private int totalMembers;
 
+    @OneToOne(mappedBy = "basePost", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Group group;
+
+    @Column(nullable = false)
+    private boolean isInactive;
+
     public void incrementCurrentMembers() {
         if (currentMembers < totalMembers) {
             this.currentMembers++;
@@ -52,5 +58,9 @@ public abstract class BasePost {
         } else {
             throw new IllegalStateException("모집 등록자는 전체 맴버에 포함되어야 합니다.");
         }
+    }
+
+    public void inactivePost() {
+        this.isInactive = true;
     }
 }

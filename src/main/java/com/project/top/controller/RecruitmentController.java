@@ -100,9 +100,4 @@ public class RecruitmentController {
 
         return ResponseEntity.ok(recruitment);
     }
-
-
-
-
-
 }

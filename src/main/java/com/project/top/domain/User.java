@@ -52,6 +52,9 @@ public class User {
     @OneToMany(mappedBy = "creator", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<StudyGroup> studyGroups = new ArrayList<>();
 
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<GroupMember> groupMembers = new ArrayList<>();
+
     public User(String loginId, String password, String email, String phoneNumber, String nickname) {
         this.loginId = loginId;
         this.password = password;
