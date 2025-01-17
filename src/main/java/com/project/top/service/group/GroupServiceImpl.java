@@ -23,16 +23,14 @@ public class GroupServiceImpl implements GroupService{
     private final GroupMemberRepository groupMemberRepository;
     private final ApplicationRepository applicationRepository;
 
-    private final EntityManager em;
-
 
     @Override
     @Transactional
-    public GroupDto createGroup(Long basePostId, Long creatorId, GroupCreateDto groupCreateDto) {
+    public GroupDto createGroup(Long creatorId, GroupCreateDto groupCreateDto) {
         User creator = userRepository.findById(creatorId)
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
 
-        BasePost basePost = basePostRepository.findById(basePostId)
+        BasePost basePost = basePostRepository.findById(groupCreateDto.getBasePostId())
                 .orElseThrow(() -> new IllegalArgumentException("모집 공고를 찾을 수 없습니다."));
 
         if (!basePost.getCreator().getId().equals(creatorId)) {
@@ -57,7 +55,9 @@ public class GroupServiceImpl implements GroupService{
         admin.setRole(GroupRole.ADMIN);
         group.addMember(admin);
 
-        List<Application> approvedApplications = applicationRepository.findByBasePostIdAndStatus(basePostId, ApplicationStatus.APPROVED);
+        List<Application> approvedApplications = applicationRepository
+                .findByBasePostIdAndStatus(basePost.getId(), ApplicationStatus.APPROVED);
+
         for (Application application : approvedApplications) {
             if (application.getApplicant() == null) {
                 throw new IllegalStateException("지원자가 없는 상태입니다.");

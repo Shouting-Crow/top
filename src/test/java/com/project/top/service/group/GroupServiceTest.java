@@ -26,8 +26,9 @@ class GroupServiceTest {
         dto.setName("반응형 화면 제작 프로젝트 그룹");
         dto.setDescription("프론트엔드 개발의 목표를 둔 프로젝트 그룹");
         dto.setType(GroupType.PROJECT);
+        dto.setBasePostId(1L);
 
-        GroupDto groupDto = groupService.createGroup(1L, 1L, dto);
+        GroupDto groupDto = groupService.createGroup(1L, dto);
 
         Assertions.assertNotNull(groupDto);
         Assertions.assertEquals(groupDto.getName(), "반응형 화면 제작 프로젝트 그룹");

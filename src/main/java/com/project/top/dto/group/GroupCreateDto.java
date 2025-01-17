@@ -5,6 +5,7 @@ import lombok.Data;
 
 @Data
 public class GroupCreateDto {
+    private Long basePostId;
     private String name;
     private String description;
     private GroupType type;

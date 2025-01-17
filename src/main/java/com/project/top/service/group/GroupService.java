@@ -8,7 +8,7 @@ import com.project.top.dto.group.GroupUpdateDto;
 import java.util.List;
 
 public interface GroupService {
-    GroupDto createGroup(Long basePostId, Long creatorId, GroupCreateDto groupCreateDto);
+    GroupDto createGroup(Long creatorId, GroupCreateDto groupCreateDto);
     GroupDto updateGroup(Long groupId, Long creatorId, GroupUpdateDto groupUpdateDto);
     void deleteGroup(Long groupId, Long creatorId);
     GroupDto getGroup(Long groupId, Long userId);
