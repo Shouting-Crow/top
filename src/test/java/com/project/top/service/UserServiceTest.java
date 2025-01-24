@@ -32,7 +32,7 @@ class UserServiceTest {
     @Test
     public void userRegistrationTest(){
         UserRegistrationDto dto = new UserRegistrationDto();
-        dto.setLoginId("newuser2");
+        dto.setLoginId("newuser1");
         dto.setPassword("1111");
         dto.setEmail("newmuser2@gmail.com");
         dto.setPhoneNumber("010-1111-1111");

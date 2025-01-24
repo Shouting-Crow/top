@@ -39,6 +39,9 @@ public class Group extends BaseEntity {
     @Column(nullable = false)
     private GroupStatus status;
 
+    @OneToOne(mappedBy = "group", cascade = CascadeType.ALL, orphanRemoval = true)
+    private ChatRoom chatRoom;
+
     public void addMember(GroupMember member) {
         members.add(member);
         member.setGroup(this);
