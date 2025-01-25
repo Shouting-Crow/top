@@ -31,9 +31,9 @@ class UserInfoServiceTest {
     @Test
     void userInfoCreateTest() {
         UserInfoCreateDto userInfoCreateDto = new UserInfoCreateDto();
-        userInfoCreateDto.setContact("010-1111-1111");
-        userInfoCreateDto.setField("클라우드");
-        userInfoCreateDto.setTechStacks(List.of("AWS", "AZURE", "LINUX", "DOCKER", "K8S"));
+        userInfoCreateDto.setContact("010-2222-2222");
+        userInfoCreateDto.setField("백엔드 개발자");
+        userInfoCreateDto.setTechStacks(List.of("AWS", "Java", "Spring", "Spring Boot"));
 
         UserInfo userInfo = userInfoService.createUserInfo(2L, userInfoCreateDto);
 

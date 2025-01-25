@@ -62,7 +62,10 @@ public class User {
     private List<Message> receivedMessages = new ArrayList<>();
 
     @OneToMany(mappedBy = "sender", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<ChatMessage> chatMessages = new ArrayList<>();
+    private List<ChatMessage> sentChatMessages = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ChatMessageReadStatus> chatMessageReadStatuses = new ArrayList<>();
 
     public User(String loginId, String password, String email, String phoneNumber, String nickname) {
         this.loginId = loginId;

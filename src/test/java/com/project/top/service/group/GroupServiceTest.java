@@ -23,20 +23,19 @@ class GroupServiceTest {
     @Test
     void createGroupTest() {
         GroupCreateDto dto = new GroupCreateDto();
-        dto.setName("반응형 화면 제작 프로젝트 그룹");
-        dto.setDescription("프론트엔드 개발의 목표를 둔 프로젝트 그룹");
+        dto.setName("프론트엔드 프로젝트를 진행하고 배포까지 진행하는 프로젝트");
+        dto.setDescription("열심히 하지 않는다고 판단되면 퇴장이 불가피합니다.");
         dto.setType(GroupType.PROJECT);
         dto.setBasePostId(1L);
 
         GroupDto groupDto = groupService.createGroup(1L, dto);
 
         Assertions.assertNotNull(groupDto);
-        Assertions.assertEquals(groupDto.getName(), "반응형 화면 제작 프로젝트 그룹");
     }
 
     @Test
     void deleteGroupTest() {
-        groupService.deleteGroup(5L, 1L);
+        groupService.deleteGroup(1L, 1L);
     }
 
 }

@@ -32,7 +32,7 @@ class StudyGroupServiceTest {
         dto.setTitle("스프링 공부할 사람들을 모집합니다.");
         dto.setDescription("자바의 기초가 어느정도 잡힌 사람들을 위한 스프링 그룹 스터디.");
         dto.setTopic("Spring");
-        dto.setStartDate(LocalDate.of(2025, 1, 15));
+        dto.setStartDate(LocalDate.of(2025, 1, 25));
         dto.setEndDate(LocalDate.of(2025, 1, 31));
         dto.setTotalMembers(5);
 

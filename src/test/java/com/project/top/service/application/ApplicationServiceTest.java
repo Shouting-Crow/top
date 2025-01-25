@@ -27,9 +27,9 @@ class ApplicationServiceTest {
     @Test
     void createApplication() {
         ApplicationCreateDto dto = new ApplicationCreateDto();
-        dto.setRecruitmentId(1L);
+        dto.setRecruitmentId(2L);
 
-        Application application = applicationService.createApplication(2L, dto);
+        Application application = applicationService.createApplication(1L, dto);
 
         Assertions.assertNotNull(application);
 //        Assertions.assertEquals("PENDING", application.getStatus());

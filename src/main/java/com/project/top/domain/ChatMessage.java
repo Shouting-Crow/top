@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -29,6 +31,12 @@ public class ChatMessage {
 
     @Column(nullable = false)
     private LocalDateTime sentAt;
+
+    @Column(nullable = false)
+    private boolean isRead = false;
+
+    @OneToMany(mappedBy = "message", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ChatMessageReadStatus> chatMessageReadStatuses = new ArrayList<>();
 
     @PrePersist
     public void prePersist() {
