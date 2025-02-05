@@ -21,17 +21,22 @@ public class JwtTokenProvider {
 
         log.info("JWT 만료 시간 : {}", expiryDate);
 
-        return Jwts.builder()
+        String token = Jwts.builder()
                 .setSubject(username)
                 .setIssuedAt(now)
                 .setExpiration(expiryDate)
                 .signWith(SignatureAlgorithm.HS512, SECRET_KEY)
                 .compact();
+
+        log.info("생성된 JWT 토큰 : {}", token);
+
+        return token;
     }
 
     public String getUsernameFromToken(String token) {
-        Claims claims = Jwts.parser()
+        Claims claims = Jwts.parserBuilder()
                 .setSigningKey(SECRET_KEY)
+                .build()
                 .parseClaimsJws(token)
                 .getBody();
 
@@ -41,9 +46,13 @@ public class JwtTokenProvider {
 
     public boolean validateToken(String token) {
         try {
-            Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(token);
+            Jwts.parserBuilder()
+                    .setSigningKey(SECRET_KEY)
+                    .build()
+                    .parseClaimsJws(token);
             return true;
         } catch (Exception e) {
+            log.error("JWT 검증 실패: {}", e.getMessage());
             return false;
         }
     }

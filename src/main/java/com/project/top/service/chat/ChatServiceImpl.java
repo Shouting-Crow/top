@@ -9,6 +9,7 @@ import com.project.top.dto.chatRoom.ChatRoomListDto;
 import com.project.top.dto.chatRoom.ChatRoomUnreadCountDto;
 import com.project.top.repository.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,6 +28,7 @@ public class ChatServiceImpl implements ChatService {
     private final UserRepository userRepository;
     private final GroupRepository groupRepository;
     private final ChatMessageReadStatusRepository chatMessageReadStatusRepository;
+    private final SimpMessagingTemplate simpMessagingTemplate;
 
     @Override
     @Transactional
@@ -118,6 +120,9 @@ public class ChatServiceImpl implements ChatService {
             }
         });
         chatMessageReadStatusRepository.saveAll(readStatuses); //배치 저장 이용
+
+        simpMessagingTemplate.convertAndSend("/topic/chat/" + chatRoom.getId(),
+                ChatMessageDto.chatMessageDtoFromEntity(savedChatMessage));
 
         return ChatMessageDto.chatMessageDtoFromEntity(savedChatMessage);
     }
