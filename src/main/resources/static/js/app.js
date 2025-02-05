@@ -99,10 +99,10 @@ function connectWebSocket() {
         return;
     }
 
-    const socket = new SockJS(`http://localhost:8080/ws/chat`);
+    const socket = new SockJS(`http://localhost:8080/ws/chat?token=${token}`);
     stompClient = Stomp.over(socket);
 
-    stompClient.connect({ Authorization: `Bearer ${token}`}, function (frame) {
+    stompClient.connect({}, function (frame) {
         console.log("웹 소켓 연결 성공:", frame);
 
         // 특정 채팅방 구독
@@ -142,7 +142,7 @@ function sendMessage() {
 function displayMessage(chatMessage) {
     const messageContainer = document.getElementById("chat-messages");
     const messageElement = document.createElement("div");
-    messageElement.textContent = `[${chatMessage.senderId}] ${chatMessage.message}`;
+    messageElement.textContent = `[${chatMessage.senderName}] ${chatMessage.message}`;
     messageContainer.appendChild(messageElement);
     messageContainer.scrollTop = messageContainer.scrollHeight;
 }
@@ -167,5 +167,5 @@ function logout() {
 function getCurrentUserId() {
     if (!token) return null;
     const payload = JSON.parse(atob(token.split('.')[1]));
-    return payload.sub;
+    return Number(payload.sub);
 }

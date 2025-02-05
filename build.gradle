@@ -30,6 +30,9 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-websocket'
     implementation 'org.springframework.boot:spring-boot-starter'
+    implementation 'org.webjars:sockjs-client:1.5.1'
+    implementation 'org.webjars:stomp-websocket:2.3.3'
+    implementation 'com.fasterxml.jackson.core:jackson-databind'
 
     implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
 

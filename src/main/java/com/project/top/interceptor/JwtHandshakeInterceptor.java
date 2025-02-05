@@ -1,5 +1,6 @@
 package com.project.top.interceptor;
 
+import com.project.top.service.user.UserService;
 import com.project.top.util.JwtTokenProvider;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +21,7 @@ import java.util.Map;
 public class JwtHandshakeInterceptor implements HandshakeInterceptor {
     
     private final JwtTokenProvider tokenProvider;
+    private final UserService userService;
 
     @Override
     public boolean beforeHandshake(ServerHttpRequest request, ServerHttpResponse response,
@@ -29,19 +31,15 @@ public class JwtHandshakeInterceptor implements HandshakeInterceptor {
         if (request instanceof ServletServerHttpRequest servletRequest) {
             HttpServletRequest httpServletRequest = servletRequest.getServletRequest();
 
-
-            String authorization = httpServletRequest.getHeader("Authorization");
-            if (authorization != null && authorization.startsWith("Bearer ")) {
-                token = authorization.substring(7);
-            }
-
-            if (token == null) {
-                token = httpServletRequest.getParameter("token");
-            }
+            token = httpServletRequest.getParameter("token");
 
             if (token != null && tokenProvider.validateToken(token)) {
                 String username = tokenProvider.getUsernameFromToken(token);
-                attributes.put("username", username);
+
+                Long userId = userService.getUserIdFromLoginId(username);
+                log.info("User Id : {}", userId);
+
+                attributes.put("userId", userId);
                 return true;
             }
         }

@@ -47,11 +47,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
             securityContext.setAuthentication(authenticationToken);
             SecurityContextHolder.setContext(securityContext);
-
-//            authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-//            SecurityContextHolder.getContext().setAuthentication(authenticationToken);
-
-            log.info("SecurityContextHolder에 사용자 저장 완료");
         } else {
             log.warn("JWT 인증을 실패했거나 토큰이 없는 계정입니다. (403 반환)");
             response.setStatus(HttpServletResponse.SC_FORBIDDEN);
@@ -78,6 +73,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
             return bearerToken.substring(7);
         }
+
+        String tokenFromQueryParameter = request.getParameter("token");
+
+        if (tokenFromQueryParameter != null && !tokenFromQueryParameter.isEmpty()) {
+            log.info("쿼리 파라미터에서 토큰 추출 : {}", tokenFromQueryParameter);
+            return tokenFromQueryParameter;
+        }
+
         return null;
     }
 }

@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface ChatMessageRepository extends JpaRepository<ChatMessage, Long> {
     List<ChatMessage> findByChatRoomIdOrderBySentAtAsc(Long chatRoomId);
@@ -15,4 +16,10 @@ public interface ChatMessageRepository extends JpaRepository<ChatMessage, Long> 
     @Query("update ChatMessage m set m.isRead = true " +
             "where m.chatRoom.id = :chatRoomId and m.isRead = false")
     void changeMessagesAsRead(@Param("chatRoomId") Long chatRoomId);
+
+    @Query("select cm from ChatMessage cm " +
+            "join fetch cm.sender " +
+            "join fetch cm.chatRoom " +
+            "where cm.id = :id")
+    Optional<ChatMessage> findChatMessageWithSenderAndChatRoom(@Param("id") Long id);
 }

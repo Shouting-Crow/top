@@ -9,7 +9,6 @@ import com.project.top.dto.chatRoom.ChatRoomListDto;
 import com.project.top.dto.chatRoom.ChatRoomUnreadCountDto;
 import com.project.top.repository.*;
 import lombok.RequiredArgsConstructor;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,7 +27,6 @@ public class ChatServiceImpl implements ChatService {
     private final UserRepository userRepository;
     private final GroupRepository groupRepository;
     private final ChatMessageReadStatusRepository chatMessageReadStatusRepository;
-    private final SimpMessagingTemplate simpMessagingTemplate;
 
     @Override
     @Transactional
@@ -106,23 +104,19 @@ public class ChatServiceImpl implements ChatService {
         chatMessage.setMessage(chatMessageCreateDto.getMessage());
         chatMessage.setSentAt(LocalDateTime.now());
 
-        ChatMessage savedChatMessage = chatMessageRepository.save(chatMessage);
+        chatMessage = chatMessageRepository.save(chatMessage);
 
-        List<GroupMember> groupMembers = chatRoom.getGroup().getMembers();
-        List<ChatMessageReadStatus> readStatuses = new ArrayList<>();
+        // ✅ 저장된 ID 기반으로 최적화된 `fetch join` 쿼리 실행
+        ChatMessage savedChatMessage = chatMessageRepository.findChatMessageWithSenderAndChatRoom(chatMessage.getId())
+                .orElseThrow(() -> new IllegalArgumentException("메시지를 찾을 수 없습니다."));
 
-        groupMembers.forEach(groupMember -> {
-            if(groupMember.getMember() != null){
-                ChatMessageReadStatus readStatus = new ChatMessageReadStatus();
-                readStatus.setMessage(savedChatMessage);
-                readStatus.setUser(groupMember.getMember());
-                readStatuses.add(readStatus);
-            }
-        });
-        chatMessageReadStatusRepository.saveAll(readStatuses); //배치 저장 이용
+        // ✅ 읽음 상태 저장을 위해 그룹 멤버 ID 리스트 가져오기
+        List<Long> userIds = chatRoom.getGroup().getMembers().stream()
+                .map(groupMember -> groupMember.getMember().getId())
+                .toList();
 
-        simpMessagingTemplate.convertAndSend("/topic/chat/" + chatRoom.getId(),
-                ChatMessageDto.chatMessageDtoFromEntity(savedChatMessage));
+        // ✅ 읽음 상태 한 번의 배치 저장
+        chatMessageReadStatusRepository.saveAllReadStatus(false, savedChatMessage, userIds);
 
         return ChatMessageDto.chatMessageDtoFromEntity(savedChatMessage);
     }
