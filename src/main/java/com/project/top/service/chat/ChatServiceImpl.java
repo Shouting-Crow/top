@@ -92,7 +92,8 @@ public class ChatServiceImpl implements ChatService {
     @Override
     @Transactional
     public ChatMessageDto createChatMessage(ChatMessageCreateDto chatMessageCreateDto) {
-        ChatRoom chatRoom = chatRoomRepository.findById(chatMessageCreateDto.getChatRoomId())
+        //fetch join 사용
+        ChatRoom chatRoom = chatRoomRepository.findChatRoomWithGroupAndMembers(chatMessageCreateDto.getChatRoomId())
                 .orElseThrow(() -> new IllegalArgumentException("채팅방을 찾을 수 없습니다."));
 
         User sender = userRepository.findById(chatMessageCreateDto.getSenderId())
@@ -106,16 +107,16 @@ public class ChatServiceImpl implements ChatService {
 
         chatMessage = chatMessageRepository.save(chatMessage);
 
-        // ✅ 저장된 ID 기반으로 최적화된 `fetch join` 쿼리 실행
+        //저장된 ID 기반으로 최적화된 `fetch join` 쿼리 실행
         ChatMessage savedChatMessage = chatMessageRepository.findChatMessageWithSenderAndChatRoom(chatMessage.getId())
                 .orElseThrow(() -> new IllegalArgumentException("메시지를 찾을 수 없습니다."));
 
-        // ✅ 읽음 상태 저장을 위해 그룹 멤버 ID 리스트 가져오기
+        //읽음 상태 저장을 위해 그룹 멤버 ID 리스트 가져오기
         List<Long> userIds = chatRoom.getGroup().getMembers().stream()
                 .map(groupMember -> groupMember.getMember().getId())
                 .toList();
 
-        // ✅ 읽음 상태 한 번의 배치 저장
+        //읽음 상태 한 번의 배치 저장
         chatMessageReadStatusRepository.saveAllReadStatus(false, savedChatMessage, userIds);
 
         return ChatMessageDto.chatMessageDtoFromEntity(savedChatMessage);
