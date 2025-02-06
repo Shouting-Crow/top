@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -22,4 +23,11 @@ public interface ChatMessageRepository extends JpaRepository<ChatMessage, Long> 
             "join fetch cm.chatRoom " +
             "where cm.id = :id")
     Optional<ChatMessage> findChatMessageWithSenderAndChatRoom(@Param("id") Long id);
+
+    @Query("select cm from ChatMessage cm where cm.chatRoom.id = :chatRoomId " +
+            "and cm.sentAt >= :cutoffDate " +
+            "order by cm.sentAt desc limit :limit")
+    List<ChatMessage> findRecentMessages(@Param("chatRoomId") Long chatRoomId,
+                                         @Param("limit") int limit,
+                                         @Param("cutoffDate") LocalDateTime cutoffDate);
 }

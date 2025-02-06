@@ -9,6 +9,7 @@ import com.project.top.dto.chatRoom.ChatRoomListDto;
 import com.project.top.dto.chatRoom.ChatRoomUnreadCountDto;
 import com.project.top.repository.*;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,6 +21,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ChatServiceImpl implements ChatService {
 
     private final ChatRoomRepository chatRoomRepository;
@@ -123,7 +125,27 @@ public class ChatServiceImpl implements ChatService {
     }
 
     @Override
+    public List<ChatMessageDto> getRecentChatMessages(Long chatRoomId, int limit) {
+        LocalDateTime cutoffDate = LocalDateTime.now().minusDays(30);
+
+        log.info("채팅방 {}번의 메시지 기준 날짜: {}", chatRoomId, cutoffDate);
+
+        return chatMessageRepository.findRecentMessages(chatRoomId, limit, cutoffDate)
+                .stream()
+                .map(ChatMessageDto::chatMessageDtoFromEntity)
+                .toList();
+    }
+
+    @Override
     public int countUnreadMessages(Long userId) {
         return chatMessageReadStatusRepository.countByUserIdAndIsReadFalse(userId);
+    }
+
+    @Override
+    public boolean isUserInChatRoom(Long chatRoomId, Long userId) {
+        Integer result = chatRoomRepository.isUserInChatRoom(chatRoomId, userId);
+        log.info("채팅방 {}번에 대한 사용자 {}번의 참여 여부 : {}", chatRoomId, userId, result);
+
+        return result != null && result == 1;
     }
 }

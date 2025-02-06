@@ -13,5 +13,7 @@ public interface ChatService {
     List<ChatRoomListDto> getChatRooms(Long userId);
     ChatRoomDto getChatRoom(Long chatRoomId);
     ChatMessageDto createChatMessage(ChatMessageCreateDto chatMessageCreateDto);
+    List<ChatMessageDto> getRecentChatMessages(Long chatRoomId, int limit);
     int countUnreadMessages(Long userId);
+    boolean isUserInChatRoom(Long chatRoomId, Long userId);
 }

@@ -89,6 +89,8 @@ function enterChatRoom(id, name) {
     document.getElementById("chat-list-container").style.display = "none";
     document.getElementById("chat-container").style.display = "flex";
     document.getElementById("chat-room-title").textContent = name;
+
+    loadChatMessages();
     connectWebSocket();
 }
 
@@ -142,8 +144,52 @@ function sendMessage() {
 function displayMessage(chatMessage) {
     const messageContainer = document.getElementById("chat-messages");
     const messageElement = document.createElement("div");
+
     messageElement.textContent = `[${chatMessage.senderName}] ${chatMessage.message}`;
     messageContainer.appendChild(messageElement);
+
+    if (messageContainer.children.length > 100) {
+        messageContainer.removeChild(messageContainer.firstChild);
+    }
+
+    scrollToBottom();
+}
+
+//채팅방 입장 시 저장된 채팅 메시지 불러오기
+async function loadChatMessages() {
+    if (!chatRoomId) {
+        console.error("chatRoomId가 설정되지 않은 상태.");
+        return;
+    }
+
+    try {
+        const response = await fetch(`/api/chat/rooms/${chatRoomId}/messages`, {
+            method: "GET",
+            headers: {
+                "Authorization": `Bearer ${token}`,
+                "Content-Type": "application/json"
+            }
+        });
+
+        if (!response.ok) {
+            if (response.status === 403) {
+                throw new Error("접근 권한이 없습니다. 해당 채팅방의 맴버가 아닙니다.");
+            }
+            throw new Error(`서버 응답 오류 : ${response.status}`);
+        }
+
+        const messages = await response.json();
+        messages.reverse();
+        messages.forEach(displayMessage);
+        scrollToBottom();
+    } catch (error) {
+        console.error("이전 메시지를 불러오는 중 오류 발생 : ", error);
+    }
+}
+
+//채팅방 스크롤을 최하단으로 이동
+function scrollToBottom() {
+    const messageContainer = document.getElementById("chat-messages");
     messageContainer.scrollTop = messageContainer.scrollHeight;
 }
 
