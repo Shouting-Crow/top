@@ -13,5 +13,6 @@ public interface GroupService {
     void deleteGroup(Long groupId, Long creatorId);
     GroupDto getGroup(Long groupId, Long userId);
     List<GroupListDto> getUserGroups(Long userId);
+    void leaveGroup(Long groupId, Long memberId);
 
 }

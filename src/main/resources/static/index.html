@@ -14,7 +14,7 @@
             height: 100vh;
             margin: 0;
         }
-        #login-container, #chat-list-container, #chat-container {
+        #login-container, #chat-list-container, #chat-container, #group-list-container {
             display: none;
             flex-direction: column;
             align-items: center;
@@ -37,6 +37,32 @@
             overflow-y: auto;
             margin-bottom: 10px;
             padding: 10px;
+        }
+        #group-list {
+            list-style-type: none;
+            padding: 0;
+            width: 100%;
+        }
+        .group-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            margin: 5px 0;
+            background-color: #f9f9f9;
+        }
+        .leave-btn {
+            padding: 5px 10px;
+            background-color: #ff4d4d;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .leave-btn:hover {
+            background-color: #ff3333;
         }
         .chat-room-button {
             width: 100%;
@@ -79,6 +105,12 @@
     <input type="text" id="chat-input" placeholder="메시지를 입력하세요...">
     <button onclick="sendMessage()">전송</button>
     <button onclick="backToChatList()">뒤로가기</button>
+</div>
+
+<!--그룹 리스트 화면-->
+<div id="group-list-container">
+    <h2>내 그룹 목록</h2>
+    <ul id="group-list"></ul>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1.5.1/dist/sockjs.min.js"></script>

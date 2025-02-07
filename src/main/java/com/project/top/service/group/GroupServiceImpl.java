@@ -6,6 +6,7 @@ import com.project.top.dto.group.GroupDto;
 import com.project.top.dto.group.GroupListDto;
 import com.project.top.dto.group.GroupUpdateDto;
 import com.project.top.repository.*;
+import com.project.top.service.chat.ChatService;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -22,6 +23,7 @@ public class GroupServiceImpl implements GroupService{
     private final BasePostRepository basePostRepository;
     private final GroupMemberRepository groupMemberRepository;
     private final ApplicationRepository applicationRepository;
+    private final ChatService chatService;
 
 
     @Override
@@ -130,5 +132,33 @@ public class GroupServiceImpl implements GroupService{
         return groups.stream()
                 .map(member -> GroupListDto.groupListDtoFromEntity(member.getGroup()))
                 .toList();
+    }
+
+    @Override
+    @Transactional
+    public void leaveGroup(Long groupId, Long memberId) {
+        GroupMember member = groupMemberRepository.findByGroupIdAndMemberId(groupId, memberId)
+                .orElseThrow(() -> new IllegalStateException("해당 그룹에 속해있지 않습니다."));
+
+        if (member.getRole() == GroupRole.ADMIN) {
+            throw new IllegalStateException("그룹의 관리자는 탈퇴할 수 없습니다. 그룹 삭제를 이용해주세요.");
+        }
+
+        String memberNickname = member.getMember().getNickname();
+
+        groupMemberRepository.removeMemberFromGroup(groupId, memberId);
+
+        BasePost basePost = member.getGroup().getBasePost();
+        basePost.decrementCurrentMembers();
+
+        basePostRepository.save(basePost);
+
+        chatService.sendSystemMessageToChatRoom(groupId, memberNickname + "님이 그룹을 탈퇴했습니다.");
+
+        //빈 그룹을 자동 삭제
+        if (groupMemberRepository.countByGroupId(groupId) == 0) {
+            groupRepository.deleteById(groupId);
+            chatService.sendSystemMessageToChatRoom(groupId, "그룹이 삭제되었습니다.");
+        }
     }
 }

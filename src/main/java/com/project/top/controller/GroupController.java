@@ -7,6 +7,7 @@ import com.project.top.dto.group.GroupUpdateDto;
 import com.project.top.service.group.GroupService;
 import com.project.top.service.user.UserService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -18,6 +19,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/groups")
 @RequiredArgsConstructor
+@Slf4j
 public class GroupController {
 
     private final UserService userService;
@@ -95,10 +97,27 @@ public class GroupController {
             Long userId = userService.getUserIdFromLoginId(userDetails.getUsername());
             List<GroupListDto> userGroups = groupService.getUserGroups(userId);
 
+            log.info("그룹 리스트 조회 요청 유저 번호 : {}, 그룹 리스트 개수 : {}", userId, userGroups.size());
+
             return ResponseEntity.ok(userGroups);
         } catch (SecurityException e) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
         } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+
+    @DeleteMapping("/{groupId}/leave")
+    public ResponseEntity<?> leaveGroup(
+            @PathVariable("groupId") Long groupId,
+            @AuthenticationPrincipal UserDetails userDetails) {
+        try {
+            Long userId = userService.getUserIdFromLoginId(userDetails.getUsername());
+
+            groupService.leaveGroup(groupId, userId);
+
+            return ResponseEntity.ok("그룹을 성공적으로 탈퇴했습니다.");
+        } catch (IllegalStateException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }

@@ -10,6 +10,7 @@ import com.project.top.dto.chatRoom.ChatRoomUnreadCountDto;
 import com.project.top.repository.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,6 +30,7 @@ public class ChatServiceImpl implements ChatService {
     private final UserRepository userRepository;
     private final GroupRepository groupRepository;
     private final ChatMessageReadStatusRepository chatMessageReadStatusRepository;
+    private final SimpMessagingTemplate messagingTemplate;
 
     @Override
     @Transactional
@@ -147,5 +149,32 @@ public class ChatServiceImpl implements ChatService {
         log.info("채팅방 {}번에 대한 사용자 {}번의 참여 여부 : {}", chatRoomId, userId, result);
 
         return result != null && result == 1;
+    }
+
+    @Override
+    @Transactional
+    public void sendSystemMessageToChatRoom(Long groupId, String message) {
+        ChatRoom chatRoom = chatRoomRepository.findByGroupId(groupId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 그룹의 채팅방이 존재하지 않습니다."));
+
+        ChatMessage chatMessage = new ChatMessage();
+        chatMessage.setChatRoom(chatRoom);
+        chatMessage.setMessage(message);
+        chatMessage.setSentAt(LocalDateTime.now());
+
+        User systemUser = userRepository.findByNickname("[시스템]")
+                .orElseThrow(() -> new IllegalArgumentException("시스템 사용자가 존재하지 않습니다."));
+
+        chatMessage.setSender(systemUser);
+        chatMessageRepository.save(chatMessage);
+
+        ChatMessageDto chatMessageDto = new ChatMessageDto();
+        chatMessageDto.setSenderId(systemUser.getId());
+        chatMessageDto.setSenderName(systemUser.getNickname());
+        chatMessageDto.setMessage(message);
+        chatMessageDto.setSendAt(LocalDateTime.now());
+
+        chatMessageRepository.save(chatMessage);
+        messagingTemplate.convertAndSend("/topic/chat/" + chatRoom.getId(), chatMessageDto);
     }
 }

@@ -6,7 +6,9 @@ document.addEventListener("DOMContentLoaded", function () {
     if (token) {
         // 토큰이 존재하면 자동 로그인 처리
         document.getElementById("login-container").style.display = "none";
+        document.getElementById("group-list-container").style.display = "flex";
         document.getElementById("chat-list-container").style.display = "flex";
+        loadGroupList();
         loadChatRooms();
     }
 });
@@ -28,7 +30,10 @@ function login() {
                 localStorage.setItem("jwtToken", token); // JWT 토큰 저장
                 document.getElementById("login-container").style.display = "none";
                 document.getElementById("chat-list-container").style.display = "flex";
+                document.getElementById("group-list-container").style.display = "flex";
+
                 loadChatRooms();
+                loadGroupList();
             } else {
                 alert("로그인 실패");
             }
@@ -81,6 +86,75 @@ function loadChatRooms() {
             console.error("채팅방 목록 로드 실패:", error);
             alert(error.message);
         });
+}
+
+// 그룹 리스트 로드
+async function loadGroupList() {
+    console.log("그룹 리스트 요청 시작")
+
+    try {
+        const response = await fetch(`/api/groups/my-groups`, {
+            method: "GET",
+            headers: {
+                "Authorization": `Bearer ${token}`,
+                "Content-Type": "application/json"
+            }
+        });
+
+        console.log("✅ 그룹 리스트 응답 수신:", response);
+
+        if (!response.ok) throw new Error("그룹 리스트를 불러오는데 실패했습니다.");
+
+        const groups = await response.json();
+        console.log("✅ 받은 그룹 리스트:", groups); // 받은 데이터 출력
+
+        const groupList = document.getElementById("group-list");
+        groupList.innerHTML = "";
+
+        groups.forEach(group => {
+            const listItem = document.createElement("li");
+            listItem.classList.add("group-item");
+
+            const groupName = document.createElement("span");
+            groupName.textContent = `${group.name} (${group.type})`;
+
+            const leaveButton = document.createElement("button");
+            leaveButton.classList.add("leave-btn");
+            leaveButton.textContent = "탈퇴";
+            leaveButton.onclick = () => leaveGroup(group.id, group.name);
+
+            listItem.appendChild(groupName);
+            listItem.appendChild(leaveButton);
+            groupList.appendChild(listItem);
+        });
+    } catch (error) {
+        console.error("그룹 리스트 로드 오류 : ", error);
+        alert("그룹 리스트를 불러오는 데 문제가 발생했습니다.");
+    }
+}
+
+// 그룹 탈퇴 요청
+async function leaveGroup(groupId, groupName) {
+    if (!confirm(`정말로 '${groupName}' 그룹을 탈퇴하시겠습니까?`)) return;
+
+    try {
+        const response = await fetch(`/api/groups/${groupId}/leave`, {
+            method: "DELETE",
+            headers: { Authorization: `Bearer ${token}` }
+        });
+
+        if (!response.ok) {
+            const errorMessage = await response.text();
+            throw new Error(errorMessage);
+        }
+
+        alert("그룹을 성공적으로 탈퇴했습니다.");
+        loadGroupList();
+        loadChatRooms();
+    } catch (error) {
+        console.error("그룹 탈퇴 오류: ", error);
+        alert("그룹 탈퇴 중 문제가 발생했습니다.");
+    }
 }
 
 // 채팅방 입장
@@ -145,7 +219,9 @@ function displayMessage(chatMessage) {
     const messageContainer = document.getElementById("chat-messages");
     const messageElement = document.createElement("div");
 
-    messageElement.textContent = `[${chatMessage.senderName}] ${chatMessage.message}`;
+    let senderName = chatMessage.senderName === "[시스템]" ? "시스템" : chatMessage.senderName;
+
+    messageElement.textContent = `[${senderName}] ${chatMessage.message}`;
     messageContainer.appendChild(messageElement);
 
     if (messageContainer.children.length > 100) {
