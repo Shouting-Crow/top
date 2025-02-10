@@ -62,7 +62,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 requestURI.startsWith("/static/") ||
                 requestURI.startsWith("/index.html") ||
                 requestURI.startsWith("/js/") ||
-                requestURI.startsWith("/favicon.ico");
+                requestURI.startsWith("/favicon.ico") ||
+                requestURI.startsWith("/group-members.html");
     }
 
     private String getJwtFromRequest(HttpServletRequest request) {

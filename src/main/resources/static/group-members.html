@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>그룹원 목록</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+    #group-members-container {
+      width: 100%;
+      max-width: 400px;
+      padding: 20px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    ul {
+      list-style-type: none;
+      padding: 0;
+    }
+    .member-item {
+      padding: 10px;
+      border-bottom: 1px solid #ddd;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .admin-badge {
+      background-color: #ffcc00;
+      padding: 5px;
+      border-radius: 5px;
+      font-weight: bold;
+    }
+    /* 초대 모달 스타일 */
+    #invite-modal {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    }
+    #invite-modal input {
+      width: 100%;
+      padding: 8px;
+      margin-bottom: 10px;
+    }
+    #invite-modal button {
+      width: 48%;
+      padding: 8px;
+      margin: 2px;
+      cursor: pointer;
+    }
+    .invite-btn {
+      margin-top: 10px;
+      padding: 10px;
+      width: 100%;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      cursor: pointer;
+      text-align: center;
+      border-radius: 5px;
+    }
+    .invite-btn:hover {
+      background-color: #0056b3;
+    }
+  </style>
+</head>
+<body>
+
+<div id="group-members-container">
+  <h2>그룹원 목록</h2>
+  <ul id="group-members-list"></ul>
+  <button onclick="showInviteModal()" class="invite-btn">그룹원 초대</button>
+  <button onclick="goBack()">뒤로가기</button>
+</div>
+
+<!-- 초대 모달 창 -->
+<div id="invite-modal">
+  <h3>그룹원 초대</h3>
+  <input type="text" id="invite-nickname" placeholder="닉네임 입력">
+  <button onclick="inviteMember()">초대</button>
+  <button onclick="closeInviteModal()">닫기</button>
+</div>
+
+<script src="/js/group-members.js"></script>
+
+</body>
+</html>

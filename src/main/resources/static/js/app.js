@@ -118,12 +118,19 @@ async function loadGroupList() {
             const groupName = document.createElement("span");
             groupName.textContent = `${group.name} (${group.type})`;
 
+            const viewMembersButton = document.createElement("button");
+            viewMembersButton.textContent = "그룹원 보기";
+            viewMembersButton.onclick = () => {
+                window.location.href = `group-members.html?groupId=${group.id}`;
+            };
+
             const leaveButton = document.createElement("button");
             leaveButton.classList.add("leave-btn");
             leaveButton.textContent = "탈퇴";
             leaveButton.onclick = () => leaveGroup(group.id, group.name);
 
             listItem.appendChild(groupName);
+            listItem.appendChild(viewMembersButton);
             listItem.appendChild(leaveButton);
             groupList.appendChild(listItem);
         });

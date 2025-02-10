@@ -40,7 +40,7 @@ public class SecurityConfig {
                                 .requestMatchers(
                                         "/api/auth/login", "/api/users/register",
                                         "/", "/favicon.ico",
-                                        "/static/**", "/index.html", "/js/**", "/favicon.ico",
+                                        "/static/**", "/index.html", "/js/**", "/favicon.ico", "/group-members.html",
                                         "/ws/**",
                                         "/topic/**", "/app/**").permitAll()
                                 .requestMatchers("/api/chat/rooms").authenticated()

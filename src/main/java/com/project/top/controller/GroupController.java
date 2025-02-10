@@ -1,9 +1,7 @@
 package com.project.top.controller;
 
-import com.project.top.dto.group.GroupCreateDto;
-import com.project.top.dto.group.GroupDto;
-import com.project.top.dto.group.GroupListDto;
-import com.project.top.dto.group.GroupUpdateDto;
+import com.project.top.domain.GroupRole;
+import com.project.top.dto.group.*;
 import com.project.top.service.group.GroupService;
 import com.project.top.service.user.UserService;
 import lombok.RequiredArgsConstructor;
@@ -118,6 +116,34 @@ public class GroupController {
 
             return ResponseEntity.ok("그룹을 성공적으로 탈퇴했습니다.");
         } catch (IllegalStateException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+
+    @PostMapping("/{groupId}/invite")
+    public ResponseEntity<?> inviteMember(@PathVariable("groupId") Long groupId,
+                                          @RequestBody GroupInviteDto groupInviteDto,
+                                          @AuthenticationPrincipal UserDetails userDetails) {
+        try {
+            Long userId = userService.getUserIdFromLoginId(userDetails.getUsername());
+
+            GroupDto group = groupService.getGroup(groupId, userId);
+
+            boolean isAdmin = group.getMembers().stream()
+                    .anyMatch(member -> member.getUserId().equals(userId) &&
+                            member.getRole() == GroupRole.ADMIN);
+
+            if (!isAdmin) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body("그룹의 관리자만이 초대할 수 있습니다.");
+            }
+
+            Long invitedMemberId = groupService.inviteMember(groupId, groupInviteDto.getNickname());
+            log.info("초대된 사용자 번호 : {}", invitedMemberId);
+
+            return ResponseEntity.ok("초대가 완료되었습니다.");
+        } catch (SecurityException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
+        } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
