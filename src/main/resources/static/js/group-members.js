@@ -58,6 +58,7 @@ function displayGroupMembers(members) {
         listItem.innerHTML = `
             <span>${member.nickname}</span>
             ${member.role === "ADMIN" ? "<span class='admin-badge'>관리자</span>" : ""}
+            ${member.role !== "ADMIN" ? `<button class="kick-btn" onclick="removeMember(${member.userId})">추방</button>` : ""}
         `;
 
         membersList.appendChild(listItem);
@@ -115,6 +116,41 @@ async function inviteMember() {
 
     } catch (error) {
         console.error("초대 실패:", error);
+        alert(error.message);
+    }
+}
+
+// 그룹원 추방 요청
+async function removeMember(memberId) {
+    if (!confirm("정말로 이 사용자를 추방하시겠습니까?")) return;
+
+    try {
+        const response = await fetch(`/api/groups/${groupId}/remove/${memberId}`, {
+            method: "DELETE",
+            headers: {
+                "Authorization": `Bearer ${token}`,
+                "Content-Type": "application/json"
+            }
+        });
+
+        if (!response.ok) {
+            if (response.status === 403) {
+                throw new Error("그룹 관리자만 멤버를 추방할 수 있습니다.");
+            }
+            throw new Error("멤버 추방 실패: " + await response.text());
+        }
+
+        alert("사용자가 그룹에서 추방되었습니다.");
+
+        const memberElement = document.querySelector(`li[data-user-id="${memberId}"]`);
+        if (memberElement) {
+            memberElement.remove();
+        }
+
+        window.location.href = "index.html";
+
+    } catch (error) {
+        console.error("멤버 추방 실패:", error);
         alert(error.message);
     }
 }

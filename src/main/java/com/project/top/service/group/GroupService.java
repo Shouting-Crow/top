@@ -15,5 +15,6 @@ public interface GroupService {
     List<GroupListDto> getUserGroups(Long userId);
     void leaveGroup(Long groupId, Long memberId);
     Long inviteMember(Long groupId, String nickname);
+    void removeMember(Long groupId, Long memberId);
 
 }

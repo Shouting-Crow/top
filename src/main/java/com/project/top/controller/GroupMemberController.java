@@ -42,7 +42,5 @@ public class GroupMemberController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
-
-
     }
 }

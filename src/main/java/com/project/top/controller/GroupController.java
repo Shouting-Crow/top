@@ -147,6 +147,34 @@ public class GroupController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
+
+    @DeleteMapping("/{groupId}/remove/{memberId}")
+    public ResponseEntity<?> removeMember(@PathVariable("groupId") Long groupId,
+                                          @PathVariable("memberId") Long memberId,
+                                          @AuthenticationPrincipal UserDetails userDetails) {
+        try {
+            Long userId = userService.getUserIdFromLoginId(userDetails.getUsername());
+
+            GroupDto group = groupService.getGroup(groupId, userId);
+
+            boolean isAdmin = group.getMembers().stream()
+                    .anyMatch(member -> member.getUserId().equals(userId) &&
+                            member.getRole() == GroupRole.ADMIN);
+
+            if (!isAdmin) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body("그룹의 관리자만이 추방할 수 있습니다.");
+            }
+
+            groupService.removeMember(groupId, memberId);
+            log.info("추방된 맴버 ID : {}", memberId);
+
+            return ResponseEntity.ok("사용자가 그룹에서 추방되었습니다.");
+        } catch (SecurityException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
 }
 
 

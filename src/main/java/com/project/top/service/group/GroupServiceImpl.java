@@ -186,8 +186,32 @@ public class GroupServiceImpl implements GroupService{
         group.getMembers().add(member);
         groupMemberRepository.save(member);
 
+        BasePost basePost = member.getGroup().getBasePost();
+        basePost.incrementCurrentMembers();
+        basePostRepository.save(basePost);
+
         chatService.sendSystemMessageToChatRoom(groupId, user.getNickname() + "님이 그룹에 초대되었습니다.");
 
         return member.getId();
+    }
+
+    @Override
+    @Transactional
+    public void removeMember(Long groupId, Long memberId) {
+        Group group = groupRepository.findById(groupId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 그룹이 존재하지 않습니다."));
+
+        GroupMember member = groupMemberRepository.findByGroupIdAndMemberId(groupId, memberId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 그룹에 존재하지 않는 맴버입니다."));
+
+        group.getMembers().remove(member);
+        groupMemberRepository.delete(member);
+
+        BasePost basePost = member.getGroup().getBasePost();
+        basePost.decrementCurrentMembers();
+        basePostRepository.save(basePost);
+
+        chatService.sendSystemMessageToChatRoom(groupId, member.getMember().getNickname() + "님이 그룹에서 추방되었습니다.");
+
     }
 }
