@@ -17,4 +17,5 @@ public interface RecruitmentService {
     Page<RecruitmentListDto> getRecruitmentList(Pageable pageable);
     RecruitmentDto getRecruitment(Long recruitmentId);
     List<RecruitmentListDto> getRecruitmentMyList(Long creatorId);
+    void closeRecruitment(Long recruitmentId, Long creatorId);
 }

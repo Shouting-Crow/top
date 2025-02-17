@@ -3,6 +3,7 @@ package com.project.top.service.user;
 import com.project.top.domain.User;
 import com.project.top.dto.user.UserDto;
 import com.project.top.dto.user.UserRegistrationDto;
+import com.project.top.dto.user.UserUpdateDto;
 import com.project.top.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -42,14 +43,15 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public void updateUser(Long id, UserDto userDto) {
+    public void updateUser(Long id, UserUpdateDto userUpdateDto) {
         User user = userRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("등록된 사용자가 아닙니다."));
-        user.setNickname(userDto.getNickname());
-        user.setEmail(userDto.getEmail());
-        user.setPhoneNumber(userDto.getPhoneNumber());
+        user.setLoginId(userUpdateDto.getLoginId());
+        user.setNickname(userUpdateDto.getNickname());
+        user.setEmail(userUpdateDto.getEmail());
+        user.setPhoneNumber(userUpdateDto.getPhoneNumber());
 
-        if (userDto.getPassword() != null && !userDto.getPassword().isEmpty()) {
-            user.setPassword(passwordEncoder.encode(userDto.getPassword()));
+        if (userUpdateDto.getPassword() != null && !userUpdateDto.getPassword().isEmpty()) {
+            user.setPassword(passwordEncoder.encode(userUpdateDto.getPassword()));
         }
 
     }

@@ -4,6 +4,7 @@ import com.project.top.domain.UserInfo;
 import com.project.top.dto.userInfo.*;
 import com.project.top.service.userInfo.UserInfoService;
 import com.project.top.service.user.UserService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,7 +22,7 @@ public class UserInfoController {
 
     @PostMapping
     public ResponseEntity<?> createUserInfo(
-            @RequestBody UserInfoCreateDto userInfoCreateDto,
+            @Valid @RequestBody UserInfoCreateDto userInfoCreateDto,
             @AuthenticationPrincipal UserDetails userDetails) {
         try {
             Long userId = userService.getUserIdFromLoginId(userDetails.getUsername());
@@ -38,7 +39,7 @@ public class UserInfoController {
 
     @PutMapping
     public ResponseEntity<?> updateUserInfo(
-            @RequestBody UserInfoUpdateDto userInfoUpdateDto,
+            @Valid @RequestBody UserInfoUpdateDto userInfoUpdateDto,
             @AuthenticationPrincipal UserDetails userDetails) {
         try {
             Long userId = userService.getUserIdFromLoginId(userDetails.getUsername());
@@ -68,8 +69,17 @@ public class UserInfoController {
     }
 
     @GetMapping("/{userId}")
-    public ResponseEntity<?> getUserInfoPublicView(@PathVariable(name = "userId") Long userId) {
+    public ResponseEntity<?> getUserInfoPublicView(@PathVariable(name = "userId") Long userId,
+                                                   @AuthenticationPrincipal UserDetails userDetails) {
         try {
+            Long creatorId = userService.getUserIdFromLoginId(userDetails.getUsername());
+
+            boolean isAppliedUser = userInfoService.isApplicationForBasePost(creatorId, userId);
+
+            if (!isAppliedUser) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body("해당 사용자의 정보를 볼 권한이 없습니다.");
+            }
+
             UserInfoPublicViewDto userInfoPublicViewDto = userInfoService.getUserInfoPublicView(userId);
 
             return ResponseEntity.ok(userInfoPublicViewDto);

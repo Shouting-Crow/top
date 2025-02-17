@@ -1,8 +1,12 @@
 package com.project.top.controller;
 
+import com.project.top.domain.Recruitment;
+import com.project.top.domain.StudyGroup;
 import com.project.top.dto.studyGroup.*;
+import com.project.top.repository.StudyGroupRepository;
 import com.project.top.service.studyGroup.StudyGroupService;
 import com.project.top.service.user.UserService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -21,10 +25,11 @@ public class StudyGroupController {
 
     private final StudyGroupService studyGroupService;
     private final UserService userService;
+    private final StudyGroupRepository studyGroupRepository;
 
     @PostMapping
     public ResponseEntity<?> createStudyGroup(
-            @RequestBody StudyGroupCreateDto studyGroupCreateDto,
+            @Valid @RequestBody StudyGroupCreateDto studyGroupCreateDto,
             @AuthenticationPrincipal UserDetails userDetails) {
         try {
             Long creatorId = userService.getUserIdFromLoginId(userDetails.getUsername());
@@ -41,10 +46,18 @@ public class StudyGroupController {
     @PutMapping("/{studyGroupId}")
     public ResponseEntity<?> updateStudyGroup(
             @PathVariable(name = "studyGroupId") Long studyGroupId,
-            @RequestBody StudyGroupUpdateDto studyGroupUpdateDto,
+            @Valid @RequestBody StudyGroupUpdateDto studyGroupUpdateDto,
             @AuthenticationPrincipal UserDetails userDetails) {
         try {
             Long userId = userService.getUserIdFromLoginId(userDetails.getUsername());
+
+            StudyGroup studyGroup = studyGroupRepository.findById(studyGroupId)
+                    .orElseThrow(() -> new IllegalArgumentException("해당 스터디 그룹 공고를 찾을 수 없습니다."));
+
+            if (studyGroup.isInactive()) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body("이미 종료된 공고는 수정할 수 없습니다.");
+            }
+
             StudyGroupDto studyGroupDto = studyGroupService.updateStudyGroup(studyGroupId, userId, studyGroupUpdateDto);
 
             return ResponseEntity.ok(studyGroupDto);
@@ -92,10 +105,33 @@ public class StudyGroupController {
     }
 
     @GetMapping("/{studyGroupId}")
-    public ResponseEntity<StudyGroupDto> getStudyGroup(@PathVariable(name = "studyGroupId") Long studyGroupId) {
+    public ResponseEntity<?> getStudyGroup(@PathVariable(name = "studyGroupId") Long studyGroupId) {
+        StudyGroup studyGroup = studyGroupRepository.findById(studyGroupId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 스터디 그룹 공고를 찾을 수 없습니다."));
+
+        if (studyGroup.isInactive()) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("이미 종료된 공고는 수정할 수 없습니다.");
+        }
+
         StudyGroupDto studyGroupDto = studyGroupService.getStudyGroup(studyGroupId);
 
         return ResponseEntity.ok(studyGroupDto);
+    }
+
+    @PatchMapping("/{studyGroupId}/close")
+    public ResponseEntity<?> closeStudyGroup(@PathVariable(name = "studyGroupId") Long studyGroupId,
+                                             @AuthenticationPrincipal UserDetails userDetails) {
+        try {
+            Long creatorId = userService.getUserIdFromLoginId(userDetails.getUsername());
+
+            studyGroupService.closeStudyGroup(studyGroupId, creatorId);
+
+            return ResponseEntity.ok("스터디 그룹 공고가 마감되었습니다.");
+        } catch (SecurityException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
     }
 
 }

@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,6 +45,19 @@ public abstract class BasePost {
 
     @Column(nullable = false)
     private boolean isInactive;
+
+    @Column(nullable = false)
+    private LocalDateTime createdDateTime;
+
+    @Column(nullable = false)
+    private LocalDate dueDate;
+
+    public void setDueDate(LocalDate dueDate) {
+        if (dueDate.isBefore(createdDateTime.toLocalDate())){
+            throw new IllegalArgumentException("마감일은 생성일 이후로 설정해야 합니다.");
+        }
+        this.dueDate = dueDate;
+    }
 
     public void incrementCurrentMembers() {
         if (currentMembers < totalMembers) {

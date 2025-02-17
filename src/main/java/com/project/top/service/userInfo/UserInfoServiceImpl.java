@@ -6,6 +6,7 @@ import com.project.top.dto.userInfo.UserInfoCreateDto;
 import com.project.top.dto.userInfo.UserInfoPublicViewDto;
 import com.project.top.dto.userInfo.UserInfoSelfViewDto;
 import com.project.top.dto.userInfo.UserInfoUpdateDto;
+import com.project.top.repository.ApplicationRepository;
 import com.project.top.repository.UserInfoRepository;
 import com.project.top.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +19,7 @@ public class UserInfoServiceImpl implements UserInfoService {
 
     private final UserRepository userRepository;
     private final UserInfoRepository userInfoRepository;
+    private final ApplicationRepository applicationRepository;
 
     @Override
     @Transactional
@@ -61,5 +63,10 @@ public class UserInfoServiceImpl implements UserInfoService {
                 .orElseThrow(() -> new IllegalArgumentException("사용자 정보를 찾을 수 없습니다."));
 
         return new UserInfoPublicViewDto(userInfo);
+    }
+
+    @Override
+    public boolean isApplicationForBasePost(Long creatorId, Long applicantId) {
+        return applicationRepository.existsByApplicantIdAndBasePost_CreatorId(applicantId, creatorId);
     }
 }

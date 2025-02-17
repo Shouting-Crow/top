@@ -7,8 +7,10 @@ import com.project.top.dto.userInfo.UserInfoSelfViewDto;
 import com.project.top.dto.userInfo.UserInfoUpdateDto;
 
 public interface UserInfoService {
-    public UserInfo createUserInfo(Long userId, UserInfoCreateDto userInfoCreateDto);
-    public UserInfo updateUserInfo(Long userId, UserInfoUpdateDto userInfoUpdateDto);
-    public UserInfoSelfViewDto getUserInfoSelfView(Long userId);
-    public UserInfoPublicViewDto getUserInfoPublicView(Long userId);
+    UserInfo createUserInfo(Long userId, UserInfoCreateDto userInfoCreateDto);
+    UserInfo updateUserInfo(Long userId, UserInfoUpdateDto userInfoUpdateDto);
+    UserInfoSelfViewDto getUserInfoSelfView(Long userId);
+    UserInfoPublicViewDto getUserInfoPublicView(Long userId);
+    boolean isApplicationForBasePost(Long creatorId, Long applicantId);
+
 }

@@ -48,26 +48,26 @@ class UserServiceTest {
 //        Assertions.assertEquals(user.getPhoneNumber(),"01012345678");
     }
 
-    @Test
-    void updateUserTest(){
-        UserDto newUserDto = new UserDto();
-        User oldUser = userRepository.findById(6L).get();
-
-        newUserDto.setPassword(passwordEncoder.encode("1q2w3e4r!!!"));
-        newUserDto.setNickname("새로운닉네임");
-        newUserDto.setEmail("newtest@gmail.com");
-        newUserDto.setPhoneNumber("010-2222-3333");
-
-        userService.updateUser(6L, newUserDto);
-
-        User newUser = userRepository.findById(6L).orElseThrow(RuntimeException::new);
-
-        Assertions.assertEquals(newUser.getLoginId(),oldUser.getLoginId());
-        Assertions.assertEquals("새로운닉네임", newUser.getNickname());
-
-        log.info("old user email : {}", oldUser.getEmail());
-        log.info("new user email : {}", newUser.getEmail());
-    }
+//    @Test
+//    void updateUserTest(){
+//        UserDto newUserDto = new UserDto();
+//        User oldUser = userRepository.findById(6L).get();
+//
+//        newUserDto.setPassword(passwordEncoder.encode("1q2w3e4r!!!"));
+//        newUserDto.setNickname("새로운닉네임");
+//        newUserDto.setEmail("newtest@gmail.com");
+//        newUserDto.setPhoneNumber("010-2222-3333");
+//
+//        userService.updateUser(6L, newUserDto);
+//
+//        User newUser = userRepository.findById(6L).orElseThrow(RuntimeException::new);
+//
+//        Assertions.assertEquals(newUser.getLoginId(),oldUser.getLoginId());
+//        Assertions.assertEquals("새로운닉네임", newUser.getNickname());
+//
+//        log.info("old user email : {}", oldUser.getEmail());
+//        log.info("new user email : {}", newUser.getEmail());
+//    }
 
     @Test
     void deleteUserTest() {

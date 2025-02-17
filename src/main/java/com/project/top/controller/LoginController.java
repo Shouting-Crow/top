@@ -3,6 +3,7 @@ package com.project.top.controller;
 import com.project.top.dto.login.LoginDto;
 import com.project.top.dto.login.LoginResponseDto;
 import com.project.top.service.login.LoginService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +20,7 @@ public class LoginController {
     private final LoginService loginService;
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginDto loginDto){
+    public ResponseEntity<?> login(@Valid @RequestBody LoginDto loginDto){
         try {
             LoginResponseDto loginResponseDto = loginService.login(loginDto);
 

@@ -13,6 +13,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -36,6 +37,8 @@ public class StudyGroupServiceImpl implements StudyGroupService{
         studyGroup.setCreator(creator);
         studyGroup.setTopic(studyGroupCreateDto.getTopic());
         studyGroup.setStartAndEndDate(studyGroupCreateDto.getStartDate(), studyGroupCreateDto.getEndDate());
+        studyGroup.setCreatedDateTime(LocalDateTime.now());
+        studyGroup.setDueDate(studyGroupCreateDto.getDueDate());
         studyGroup.setTotalMembers(studyGroupCreateDto.getTotalMembers());
 
         StudyGroup savedStudyGroup = studyGroupRepository.save(studyGroup);
@@ -58,6 +61,7 @@ public class StudyGroupServiceImpl implements StudyGroupService{
         studyGroup.setTopic(studyGroupUpdateDto.getTopic());
         studyGroup.setStartAndEndDate(studyGroupUpdateDto.getStartDate(), studyGroupUpdateDto.getEndDate());
         studyGroup.setTotalMembers(studyGroupUpdateDto.getTotalMembers());
+        studyGroup.setDueDate(studyGroupUpdateDto.getDueDate());
 
         return StudyGroupDto.studyGroupDtoFromEntity(studyGroup);
     }
@@ -98,5 +102,18 @@ public class StudyGroupServiceImpl implements StudyGroupService{
                 })
                 .toList();
 
+    }
+
+    @Override
+    @Transactional
+    public void closeStudyGroup(Long studyGroupId, Long creatorId) {
+        StudyGroup studyGroup = studyGroupRepository.findById(studyGroupId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 스터디 그룹 공고를 찾을 수 없습니다."));
+
+        if (!studyGroup.getCreator().getId().equals(creatorId)) {
+            throw new SecurityException("스터디 그룹 공고를 마감할 권한이 없습니다.");
+        }
+
+        studyGroup.setInactive(true);
     }
 }

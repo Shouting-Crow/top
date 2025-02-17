@@ -108,4 +108,17 @@ public class RecruitmentServiceImpl implements RecruitmentService {
                 .map(RecruitmentListDto::recruitmentsFromEntity)
                 .toList();
     }
+
+    @Override
+    @Transactional
+    public void closeRecruitment(Long recruitmentId, Long creatorId) {
+        Recruitment recruitment = recruitmentRepository.findById(recruitmentId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 모집 공고를 찾을 수 없습니다."));
+
+        if (!recruitment.getCreator().getId().equals(creatorId)) {
+            throw new SecurityException("모집 공고를 마감할 권한이 없습니다.");
+        }
+
+        recruitment.setInactive(true);
+    }
 }

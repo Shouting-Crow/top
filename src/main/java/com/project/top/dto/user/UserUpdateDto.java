@@ -6,7 +6,7 @@ import jakarta.validation.constraints.Pattern;
 import lombok.Data;
 
 @Data
-public class UserRegistrationDto {
+public class UserUpdateDto {
     @NotBlank(message = "아이디 입력은 필수 입니다.")
     private String loginId;
 

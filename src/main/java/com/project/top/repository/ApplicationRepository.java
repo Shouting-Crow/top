@@ -10,4 +10,5 @@ public interface ApplicationRepository extends JpaRepository<Application, Long> 
     List<Application> findByBasePost(BasePost basePost);
     List<Application> findByApplicant(User applicant);
     List<Application> findByBasePostIdAndStatus(Long basePostId, ApplicationStatus status);
+    boolean existsByApplicantIdAndBasePost_CreatorId(Long applicantId, Long creatorId);
 }

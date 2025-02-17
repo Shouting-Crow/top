@@ -2,7 +2,9 @@ package com.project.top.controller;
 
 import com.project.top.dto.user.UserDto;
 import com.project.top.dto.user.UserRegistrationDto;
+import com.project.top.dto.user.UserUpdateDto;
 import com.project.top.service.user.UserService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,7 +20,7 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping("/register")
-    public ResponseEntity<String> registerUser(@RequestBody UserRegistrationDto dto) {
+    public ResponseEntity<String> registerUser(@Valid @RequestBody UserRegistrationDto dto) {
         try {
             userService.registrationSave(dto);
             return ResponseEntity.status(HttpStatus.CREATED).body("회원가입이 완료되었습니다.");
@@ -28,7 +30,11 @@ public class UserController {
     }
 
     @GetMapping("/{userId}")
-    public ResponseEntity<UserDto> getUserById(@PathVariable("userId") Long userId) {
+    public ResponseEntity<?> getUserById(@PathVariable("userId") Long userId,
+                                               @AuthenticationPrincipal UserDetails userDetails) {
+        if (!userService.getUserIdFromLoginId(userDetails.getUsername()).equals(userId)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("회원 조회는 자신의 정보만 조회할 수 있습니다.");
+        }
         UserDto userDto = userService.getUser(userId);
 
         if (userDto != null) {
@@ -41,15 +47,15 @@ public class UserController {
     @PutMapping("/{userId}")
     public ResponseEntity<String> updateUser(
             @PathVariable("userId") Long userId,
-            @RequestBody UserDto userDto,
+            @Valid @RequestBody UserUpdateDto userUpdateDto,
             @AuthenticationPrincipal UserDetails userDetails) {
 
-        if (!userDetails.getUsername().equals(userDto.getLoginId())){
+        if (!userService.getUserIdFromLoginId(userDetails.getUsername()).equals(userId)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("정보에 접근할 권한이 없습니다.");
         }
 
         try {
-            userService.updateUser(userId, userDto);
+            userService.updateUser(userId, userUpdateDto);
             return ResponseEntity.ok("회원 정보가 수정되었습니다."); //수정된 정보를 랜더링 하기 위해 DTO 전달 필요
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
