@@ -5,12 +5,15 @@ import com.project.top.domain.Category;
 import com.project.top.domain.User;
 import com.project.top.dto.board.BoardCreateDto;
 import com.project.top.dto.board.BoardDto;
+import com.project.top.dto.board.BoardListDto;
 import com.project.top.dto.board.BoardUpdateDto;
 import com.project.top.repository.BoardRepository;
 import com.project.top.repository.CategoryRepository;
 import com.project.top.repository.ReplyRepository;
 import com.project.top.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -77,6 +80,15 @@ public class BoardServiceImpl implements BoardService{
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new IllegalArgumentException("게시글이 존재하지 않습니다."));
 
+        board.incrementViews();
+        boardRepository.save(board);
+
         return BoardDto.boardDtoFromEntity(board);
+    }
+
+    @Override
+    public Page<BoardListDto> getBoardList(Pageable pageable) {
+        return boardRepository.findAll(pageable)
+                .map(BoardListDto::fromEntity);
     }
 }

@@ -48,7 +48,12 @@ public class ReplyServiceImpl implements ReplyService{
         reply.setContent(replyCreateDto.getContent());
         reply.setParentReply(parentReply);
 
-        return replyRepository.save(reply);
+        Reply savedReply = replyRepository.save(reply);
+
+        board.incrementReplyCount();
+        boardRepository.save(board);
+
+        return savedReply;
     }
 
     @Override
@@ -73,11 +78,18 @@ public class ReplyServiceImpl implements ReplyService{
         Reply reply = replyRepository.findById(replyId)
                 .orElseThrow(() -> new IllegalArgumentException("댓글이 존재하지 않습니다."));
 
-        if (!reply.getAuthor().getId().equals(userId)) {
+        Board board = reply.getBoard();
+
+        Long boardAuthorId = reply.getBoard().getAuthor().getId();
+
+        if (!reply.getAuthor().getId().equals(userId) && !boardAuthorId.equals(userId)) {
             throw new SecurityException("댓글을 삭제할 권한이 없습니다.");
         }
 
         replyRepository.delete(reply);
+
+        board.decrementReplyCount();
+        boardRepository.save(board);
     }
 
     @Override

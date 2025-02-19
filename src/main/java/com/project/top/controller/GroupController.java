@@ -1,9 +1,12 @@
 package com.project.top.controller;
 
+import com.project.top.domain.BasePost;
 import com.project.top.domain.GroupRole;
 import com.project.top.dto.group.*;
+import com.project.top.service.basePost.BasePostService;
 import com.project.top.service.group.GroupService;
 import com.project.top.service.user.UserService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -22,13 +25,21 @@ public class GroupController {
 
     private final UserService userService;
     private final GroupService groupService;
+    private final BasePostService basePostService;
 
     @PostMapping
     public ResponseEntity<?> createGroup(
-            @RequestBody GroupCreateDto groupCreateDto,
+            @Valid @RequestBody GroupCreateDto groupCreateDto,
             @AuthenticationPrincipal UserDetails userDetails) {
         try {
             Long creatorId = userService.getUserIdFromLoginId(userDetails.getUsername());
+
+            BasePost basePost = basePostService.getBasePostById(groupCreateDto.getBasePostId());
+
+            if (!basePost.isInactive()) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("마감되지 않은 공고는 그룹을 생성할 수 없습니다.");
+            }
+
             GroupDto groupDto = groupService.createGroup(creatorId, groupCreateDto);
 
             return ResponseEntity.status(HttpStatus.CREATED).body(groupDto);
@@ -43,7 +54,7 @@ public class GroupController {
     @PutMapping("/{groupId}")
     public ResponseEntity<?> updateGroup(
             @PathVariable(name = "groupId") Long groupId,
-            @RequestBody GroupUpdateDto groupUpdateDto,
+            @Valid @RequestBody GroupUpdateDto groupUpdateDto,
             @AuthenticationPrincipal UserDetails userDetails) {
         try {
             Long userId = userService.getUserIdFromLoginId(userDetails.getUsername());

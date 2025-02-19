@@ -48,6 +48,8 @@ public class SecurityConfig {
                                 .requestMatchers(HttpMethod.GET, "/api/recruitments").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/api/recruitments/*").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/api/study-group").permitAll()
+                                .requestMatchers(HttpMethod.GET, "/api/boards").permitAll()
+                                .requestMatchers(HttpMethod.GET, "/api/boards/*").permitAll()
                                 .anyRequest().authenticated()
                         )
                 .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider, customUserDetailsService), UsernamePasswordAuthenticationFilter.class)

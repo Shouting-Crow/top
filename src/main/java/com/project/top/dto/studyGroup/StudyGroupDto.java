@@ -16,6 +16,7 @@ public class StudyGroupDto {
     private String topic;
     private LocalDate startDate;
     private LocalDate endDate;
+    private LocalDate dueDate;
 
     public static StudyGroupDto studyGroupDtoFromEntity(StudyGroup studyGroup) {
         StudyGroupDto studyGroupDto = new StudyGroupDto();
@@ -24,6 +25,7 @@ public class StudyGroupDto {
         studyGroupDto.setDescription(studyGroup.getDescription());
         studyGroupDto.setStartDate(studyGroup.getStartDate());
         studyGroupDto.setEndDate(studyGroup.getEndDate());
+        studyGroupDto.setDueDate(studyGroup.getDueDate());
         studyGroupDto.setTopic(studyGroup.getTopic());
         studyGroupDto.setCurrentMembers(studyGroup.getCurrentMembers());
         studyGroupDto.setTotalMembers(studyGroup.getTotalMembers());

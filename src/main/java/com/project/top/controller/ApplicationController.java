@@ -1,8 +1,10 @@
 package com.project.top.controller;
 
 import com.project.top.domain.Application;
+import com.project.top.domain.BasePost;
 import com.project.top.dto.application.*;
 import com.project.top.service.application.ApplicationService;
+import com.project.top.service.basePost.BasePostService;
 import com.project.top.service.user.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -20,12 +22,19 @@ public class ApplicationController {
 
     private final ApplicationService applicationService;
     private final UserService userService;
+    private final BasePostService basePostService;
 
     @PostMapping
     public ResponseEntity<?> createApplication(
             @RequestBody ApplicationCreateDto applicationCreateDto,
             @AuthenticationPrincipal UserDetails userDetails) {
         try {
+            BasePost basePost = basePostService.getBasePostById(applicationCreateDto.getRecruitmentId());
+
+            if (basePost.isInactive()) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("마감된 공고에는 지원이 불가능합니다.");
+            }
+
             Long applicantId = userService.getUserIdFromLoginId(userDetails.getUsername());
             Application application = applicationService.createApplication(applicantId, applicationCreateDto);
 

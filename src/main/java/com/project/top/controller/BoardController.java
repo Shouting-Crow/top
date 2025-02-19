@@ -3,11 +3,13 @@ package com.project.top.controller;
 import com.project.top.domain.Board;
 import com.project.top.dto.board.BoardCreateDto;
 import com.project.top.dto.board.BoardDto;
+import com.project.top.dto.board.BoardListDto;
 import com.project.top.dto.board.BoardUpdateDto;
 import com.project.top.dto.reply.ReplyDto;
 import com.project.top.service.board.BoardService;
 import com.project.top.service.reply.ReplyService;
 import com.project.top.service.user.UserService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -33,12 +35,12 @@ public class BoardController {
 
     @PostMapping
     public ResponseEntity<?> createBoard(
-            @RequestBody BoardCreateDto boardCreateDto,
+            @Valid @RequestBody BoardCreateDto boardCreateDto,
             @AuthenticationPrincipal UserDetails userDetails) {
         try {
             userService.getUserIdFromLoginId(userDetails.getUsername());
 
-            Board board = boardService.createBoard(boardCreateDto);
+            boardService.createBoard(boardCreateDto);
             return ResponseEntity.status(HttpStatus.CREATED).body("게시글이 성공적으로 등록되었습니다.");
         } catch (SecurityException e) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
@@ -50,7 +52,7 @@ public class BoardController {
     @PutMapping("/{boardId}")
     public ResponseEntity<?> updateBoard(
             @PathVariable(name = "boardId") Long boardId,
-            @RequestBody BoardUpdateDto boardUpdateDto,
+            @Valid @RequestBody BoardUpdateDto boardUpdateDto,
             @AuthenticationPrincipal UserDetails userDetails) {
         try {
             Long userId = userService.getUserIdFromLoginId(userDetails.getUsername());
@@ -97,6 +99,14 @@ public class BoardController {
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
+    }
+
+    @GetMapping
+    public ResponseEntity<?> getBoardList(
+            @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
+        Page<BoardListDto> boardList = boardService.getBoardList(pageable);
+
+        return ResponseEntity.ok(boardList);
     }
 
 }

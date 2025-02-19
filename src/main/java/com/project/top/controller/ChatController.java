@@ -8,6 +8,7 @@ import com.project.top.dto.chatRoom.ChatRoomListDto;
 import com.project.top.service.chat.ChatService;
 import com.project.top.service.group.GroupService;
 import com.project.top.service.user.UserService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -31,7 +32,7 @@ public class ChatController {
     private final GroupService groupService;
 
     @PostMapping("/room")
-    public ResponseEntity<?> createChatRoom(@RequestBody ChatRoomCreateDto chatRoomCreateDto,
+    public ResponseEntity<?> createChatRoom(@Valid @RequestBody ChatRoomCreateDto chatRoomCreateDto,
                                             @AuthenticationPrincipal UserDetails userDetails) {
         try {
             Long userId = userService.getUserIdFromLoginId(userDetails.getUsername());
@@ -39,6 +40,8 @@ public class ChatController {
             if (!userId.equals(chatRoomCreateDto.getCreatorId())) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
             }
+
+
 
             ChatRoomDto chatRoomDto = chatService.createChatRoom(chatRoomCreateDto);
             return ResponseEntity.status(HttpStatus.CREATED).body(chatRoomDto);
