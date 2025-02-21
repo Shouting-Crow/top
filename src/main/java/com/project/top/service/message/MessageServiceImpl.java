@@ -9,6 +9,8 @@ import com.project.top.repository.MessageRepository;
 import com.project.top.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.web.client.HttpMessageConvertersRestClientCustomizer;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -57,13 +59,13 @@ public class MessageServiceImpl implements MessageService{
     }
 
     @Override
-    public List<MessageListDto> getMessageList(Long userId) {
+    public Page<MessageListDto> getMessageList(Long userId, Pageable pageable) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
 
-        List<Message> receivedMessages = messageRepository.findByReceiverOrderBySentAtDesc(user);
+        Page<Message> receivedMessages = messageRepository.findByReceiverOrderBySentAtDesc(user, pageable);
 
-        return getMessageListDto(receivedMessages);
+        return receivedMessages.map(MessageListDto::convertMessageListDtoFromEntity);
     }
 
     @Override
@@ -115,5 +117,26 @@ public class MessageServiceImpl implements MessageService{
                     return dto;
                 })
                 .toList();
+    }
+
+    @Override
+    @Transactional
+    public MessageDto sendSystemMessage(Long receiverId, String content) {
+        User systemUser = userRepository.findById(1L)
+                .orElseThrow(() -> new IllegalArgumentException("시스템 사용자를 찾을 수 없습니다."));
+
+        User receiver = userRepository.findById(receiverId)
+                .orElseThrow(() -> new IllegalArgumentException("수신자를 찾을 수 없습니다."));
+
+        Message message = new Message();
+        message.setSender(systemUser);
+        message.setReceiver(receiver);
+        message.setContent(content);
+        message.setRead(false);
+        message.setSentAt(LocalDateTime.now());
+
+        Message savedSystemMessage = messageRepository.save(message);
+
+        return MessageDto.messageDtoFromEntity(savedSystemMessage);
     }
 }

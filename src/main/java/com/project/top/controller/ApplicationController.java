@@ -5,6 +5,7 @@ import com.project.top.domain.BasePost;
 import com.project.top.dto.application.*;
 import com.project.top.service.application.ApplicationService;
 import com.project.top.service.basePost.BasePostService;
+import com.project.top.service.message.MessageService;
 import com.project.top.service.user.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -23,6 +24,7 @@ public class ApplicationController {
     private final ApplicationService applicationService;
     private final UserService userService;
     private final BasePostService basePostService;
+    private final MessageService messageService;
 
     @PostMapping
     public ResponseEntity<?> createApplication(

@@ -51,9 +51,9 @@ public class Board extends BaseEntity {
         this.replyCount++;
     }
 
-    public void decrementReplyCount() {
+    public void decrementReplyCount(int deletedCount) {
         if (this.replyCount > 0) {
-            this.replyCount--;
+            this.replyCount = Math.max(0, this.replyCount - deletedCount);
         }
     }
 

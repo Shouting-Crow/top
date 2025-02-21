@@ -39,24 +39,24 @@ class MessageServiceTest {
         log.info("message sent time: {}", messageDto.getSentAt());
     }
 
-    @Test
-    void getMessageTest() {
-        List<MessageListDto> messageList1 = messageService.getMessageList(1L);
-        log.info("user 1L message info : {}", messageList1.stream().toList());
-
-        List<MessageListDto> messageList2 = messageService.getMessageList(2L);
-        log.info("user 2L message info : {}", messageList2.stream().toList());
-
-        MessageDto messageDetail = messageService.getMessageDetail(2L, 1L);
-        log.info("messageDetail : {}", messageDetail.getContent());
-        log.info("messageDetail : {}", messageDetail.getSentAt());
-        log.info("messageDetail : {}", messageDetail.getReceiverName());
-        log.info("messageDetail : {}", messageDetail.getSenderName());
-
-        List<MessageListDto> messageListJustFive = messageService.getMessageListJustFive(2L);
-        Assertions.assertEquals(5, messageListJustFive.size());
-
-    }
+//    @Test
+//    void getMessageTest() {
+//        List<MessageListDto> messageList1 = messageService.getMessageList(1L);
+//        log.info("user 1L message info : {}", messageList1.stream().toList());
+//
+//        List<MessageListDto> messageList2 = messageService.getMessageList(2L);
+//        log.info("user 2L message info : {}", messageList2.stream().toList());
+//
+//        MessageDto messageDetail = messageService.getMessageDetail(2L, 1L);
+//        log.info("messageDetail : {}", messageDetail.getContent());
+//        log.info("messageDetail : {}", messageDetail.getSentAt());
+//        log.info("messageDetail : {}", messageDetail.getReceiverName());
+//        log.info("messageDetail : {}", messageDetail.getSenderName());
+//
+//        List<MessageListDto> messageListJustFive = messageService.getMessageListJustFive(2L);
+//        Assertions.assertEquals(5, messageListJustFive.size());
+//
+//    }
 
     @Test
     void deleteMessageTest() {

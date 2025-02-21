@@ -8,6 +8,7 @@ import com.project.top.dto.application.ApplicationStatusUpdateDto;
 import com.project.top.repository.ApplicationRepository;
 import com.project.top.repository.BasePostRepository;
 import com.project.top.repository.UserRepository;
+import com.project.top.service.message.MessageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,6 +23,7 @@ public class ApplicationServiceImpl implements ApplicationService {
     private final ApplicationRepository applicationRepository;
     private final UserRepository userRepository;
     private final BasePostRepository basePostRepository;
+    private final MessageService messageService;
 
     @Override
     @Transactional
@@ -43,6 +45,11 @@ public class ApplicationServiceImpl implements ApplicationService {
         application.setStatus(ApplicationStatus.PENDING);
         application.setApplyDateTime(LocalDateTime.now());
 
+        messageService.sendSystemMessage(applicantId,  "▷" + basePost.getTitle() + "◁" + " 공고에 지원하셨습니다." +
+                " 승인될 때까지 기다려주세요.");
+        messageService.sendSystemMessage(basePost.getCreator().getId(), applicant.getNickname() + "님이 '"
+                + basePost.getTitle() + "' 공고에 지원하였습니다. 승인 및 거부를 눌러주세요.");
+
         return applicationRepository.save(application);
     }
 
@@ -60,7 +67,13 @@ public class ApplicationServiceImpl implements ApplicationService {
 
         ApplicationStatus newStatus = applicationStatusUpdateDto.getStatus();
 
+        String statusMessage = (newStatus == ApplicationStatus.APPROVED) ? "▷" + basePost.getTitle()
+                + "◁ 공고에 승인되었습니다! 그룹과 채팅방이 만들어질 때까지 기다려주세요." : "▷" + basePost.getTitle()
+                + "◁ 공고에 거절되었습니다.";
+
         application.setStatus(newStatus);
+
+        messageService.sendSystemMessage(application.getApplicant().getId(), statusMessage);
 
         if (newStatus.equals(ApplicationStatus.APPROVED)){
             basePost.incrementCurrentMembers();

@@ -6,6 +6,10 @@ import com.project.top.dto.message.MessageListDto;
 import com.project.top.service.message.MessageService;
 import com.project.top.service.user.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -70,10 +74,11 @@ public class MessageController {
 
     @GetMapping
     public ResponseEntity<?> getMessageList(
-            @AuthenticationPrincipal UserDetails userDetails) {
+            @AuthenticationPrincipal UserDetails userDetails,
+            @PageableDefault(size = 10, sort = "sentAt", direction = Sort.Direction.DESC) Pageable pageable) {
         try {
             Long userId = userService.getUserIdFromLoginId(userDetails.getUsername());
-            List<MessageListDto> messageList = messageService.getMessageList(userId);
+            Page<MessageListDto> messageList = messageService.getMessageList(userId, pageable);
 
             return ResponseEntity.ok(messageList);
         } catch (SecurityException e) {

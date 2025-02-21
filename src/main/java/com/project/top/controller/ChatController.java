@@ -41,8 +41,6 @@ public class ChatController {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
             }
 
-
-
             ChatRoomDto chatRoomDto = chatService.createChatRoom(chatRoomCreateDto);
             return ResponseEntity.status(HttpStatus.CREATED).body(chatRoomDto);
         } catch (SecurityException e) {

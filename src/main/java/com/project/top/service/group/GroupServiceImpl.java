@@ -7,6 +7,7 @@ import com.project.top.dto.group.GroupListDto;
 import com.project.top.dto.group.GroupUpdateDto;
 import com.project.top.repository.*;
 import com.project.top.service.chat.ChatService;
+import com.project.top.service.message.MessageService;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -24,6 +25,7 @@ public class GroupServiceImpl implements GroupService{
     private final GroupMemberRepository groupMemberRepository;
     private final ApplicationRepository applicationRepository;
     private final ChatService chatService;
+    private final MessageService messageService;
 
 
     @Override
@@ -69,6 +71,11 @@ public class GroupServiceImpl implements GroupService{
             member.setRole(GroupRole.MEMBER);
             member.setMember(application.getApplicant());
             group.addMember(member);
+        }
+
+        for (GroupMember groupMember : group.getMembers()) {
+            messageService.sendSystemMessage(groupMember.getMember().getId(),
+                    "'" + group.getName() + "' 그룹이 생성되었습니다. 그룹원과 함께 활동하세요.");
         }
 
         group = groupRepository.save(group);
@@ -191,6 +198,7 @@ public class GroupServiceImpl implements GroupService{
         basePostRepository.save(basePost);
 
         chatService.sendSystemMessageToChatRoom(groupId, user.getNickname() + "님이 그룹에 초대되었습니다.");
+        messageService.sendSystemMessage(user.getId(), "'" + group.getName() + "' 그룹에 초대되었습니다.");
 
         return member.getId();
     }
@@ -212,6 +220,7 @@ public class GroupServiceImpl implements GroupService{
         basePostRepository.save(basePost);
 
         chatService.sendSystemMessageToChatRoom(groupId, member.getMember().getNickname() + "님이 그룹에서 추방되었습니다.");
+        messageService.sendSystemMessage(member.getMember().getId(), "'" + group.getName() + "' 그룹에서 추방되었습니다.");
 
     }
 }

@@ -8,6 +8,7 @@ import com.project.top.dto.chatRoom.ChatRoomDto;
 import com.project.top.dto.chatRoom.ChatRoomListDto;
 import com.project.top.dto.chatRoom.ChatRoomUnreadCountDto;
 import com.project.top.repository.*;
+import com.project.top.service.message.MessageService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -31,6 +32,7 @@ public class ChatServiceImpl implements ChatService {
     private final GroupRepository groupRepository;
     private final ChatMessageReadStatusRepository chatMessageReadStatusRepository;
     private final SimpMessagingTemplate messagingTemplate;
+    private final MessageService messageService;
 
     @Override
     @Transactional
@@ -51,6 +53,11 @@ public class ChatServiceImpl implements ChatService {
         chatRoom.setGroup(group);
 
         ChatRoom savedChatRoom = chatRoomRepository.save(chatRoom);
+
+        for (GroupMember groupMember : group.getMembers()) {
+            messageService.sendSystemMessage(groupMember.getMember().getId(),
+                    "'" + group.getName() + "' 그룹의 새로운 '" + chatRoom.getName() + "' 채팅방이 생성되었습니다.");
+        }
 
         return ChatRoomDto.chatRoomDtoFromEntity(savedChatRoom);
     }

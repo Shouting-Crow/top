@@ -9,6 +9,7 @@ import com.project.top.dto.reply.ReplyUpdateDto;
 import com.project.top.repository.BoardRepository;
 import com.project.top.repository.ReplyRepository;
 import com.project.top.repository.UserRepository;
+import com.project.top.service.message.MessageService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -24,6 +25,7 @@ public class ReplyServiceImpl implements ReplyService{
     private final ReplyRepository replyRepository;
     private final UserRepository userRepository;
     private final BoardRepository boardRepository;
+    private final MessageService messageService;
 
     @Override
     @Transactional
@@ -52,6 +54,11 @@ public class ReplyServiceImpl implements ReplyService{
 
         board.incrementReplyCount();
         boardRepository.save(board);
+
+        if (!board.getAuthor().getId().equals(replyCreateDto.getAuthorId())) {
+            messageService.sendSystemMessage(board.getAuthor().getId(),
+                    "'" + board.getTitle() + "' 게시글에 새로운 댓글이 달렸습니다.");
+        }
 
         return savedReply;
     }
@@ -86,9 +93,15 @@ public class ReplyServiceImpl implements ReplyService{
             throw new SecurityException("댓글을 삭제할 권한이 없습니다.");
         }
 
+        int deleteCount = 1;
+
+        if (reply.getParentReply() == null) {
+            deleteCount += replyRepository.countByParentReplyId(reply.getId());
+        }
+
         replyRepository.delete(reply);
 
-        board.decrementReplyCount();
+        board.decrementReplyCount(deleteCount);
         boardRepository.save(board);
     }
 
