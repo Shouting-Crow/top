@@ -10,4 +10,5 @@ public interface UserService {
     public void updateUser(Long id, UserUpdateDto userUpdateDto);
     public void deleteUser(Long id);
     public Long getUserIdFromLoginId(String loginId);
+    public UserDto getUserByLoginId(String loginId);
 }

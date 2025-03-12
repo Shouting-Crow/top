@@ -72,4 +72,13 @@ public class UserServiceImpl implements UserService {
 
         return user.getId();
     }
+
+    @Override
+    public UserDto getUserByLoginId(String loginId) {
+        User user = userRepository.findByLoginId(loginId)
+                .orElseThrow(() -> new IllegalArgumentException("해당되는 사용자가 없습니다."));
+
+        return new UserDto(user.getId(), user.getLoginId(),
+                null, user.getEmail(), user.getPhoneNumber(), user.getNickname());
+    }
 }
