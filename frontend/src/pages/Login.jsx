@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import {Link, useNavigate} from 'react-router-dom';
+import logoImage from "../assets/top_logo_ex.jpg";
 
 const Login = () => {
     const [loginId, setLoginId] = useState("");
@@ -33,37 +34,61 @@ const Login = () => {
     };
 
     return (
-        <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
-            <h2 className="text-2xl font-bold mb-4">로그인</h2>
-            {error && <p className="text-red-500">{error}</p>}
-            <form onSubmit={handleLogin} className="bg-white p-6 rounded-lg shadow-md w-80">
-                <div className="mb-4">
-                    <label className="block text-gray-700">아이디</label>
-                    <input
-                        type="text"
-                        value={loginId}
-                        onChange={(e) => setLoginId(e.target.value)}
-                        className="w-full p-2 border rounded"
-                        required
-                    />
+        <div className="w-full min-h-screen flex items-center justify-center bg-gray-100">
+            <div className="w-[400px] max-w-md bg-white p-8 rounded-lg shadow-lg">
+                {/* 상단 로고 */}
+                <div className="flex flex-col items-center mb-4">
+                    <Link to="/" className="flex items-center">
+                        <img src={logoImage} alt="Logo" className="h-12 w-auto" />
+                    </Link>
                 </div>
-                <div className="mb-4">
-                    <label className="block text-gray-700">비밀번호</label>
-                    <input
-                        type="password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        className="w-full p-2 border rounded"
-                        required
-                    />
-                </div>
-                <button
-                    type="submit"
-                    className="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600"
-                >
-                    로그인
-                </button>
-            </form>
+
+                {/* 로그인 폼 */}
+                <h2 className="text-2xl font-bold text-center mb-6 text-gray-800">로그인</h2>
+                {error && <p className="text-red-500 text-center">{error}</p>}
+
+                <form onSubmit={handleLogin} className="space-y-4">
+                    <div>
+                        <label className="block text-gray-700">아이디</label>
+                        <input
+                            type="text"
+                            value={loginId}
+                            onChange={(e) => setLoginId(e.target.value)}
+                            className="w-80 px-4 py-2 border rounded-lg focus:outline-none focus:ring focus:border-blue-400"
+                            placeholder="아이디를 입력하세요"
+                            required
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-gray-700">비밀번호</label>
+                        <input
+                            type="password"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            className="w-80 px-4 py-2 border rounded-lg focus:outline-none focus:ring focus:border-blue-400"
+                            placeholder="비밀번호를 입력하세요"
+                            required
+                        />
+                    </div>
+
+                    {/* 로그인 버튼 */}
+                    <button
+                        type="submit"
+                        className="w-80 bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition"
+                    >
+                        로그인
+                    </button>
+
+                    {/* 뒤로가기 버튼 */}
+                    <button
+                        type="button"
+                        onClick={() => navigate(-1)}
+                        className="w-80 mt-3 bg-gray-300 text-gray-800 py-2 rounded-lg hover:bg-gray-400 transition"
+                    >
+                        뒤로가기
+                    </button>
+                </form>
+            </div>
         </div>
     );
 };
