@@ -48,8 +48,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             securityContext.setAuthentication(authenticationToken);
             SecurityContextHolder.setContext(securityContext);
         } else {
-            log.warn("JWT 인증을 실패했거나 토큰이 없는 계정입니다. (403 반환)");
-            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+            log.warn("JWT 인증을 실패했거나 토큰이 없는 계정입니다.");
+//            response.setStatus(HttpServletResponse.SC_FORBIDDEN); 공개 API는 접근 가능하도록 하기위해 403 반환 일단 정지
+            SecurityContextHolder.clearContext();
         }
         filterChain.doFilter(request, response);
     }
@@ -63,7 +64,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 requestURI.startsWith("/index.html") ||
                 requestURI.startsWith("/js/") ||
                 requestURI.startsWith("/favicon.ico") ||
-                requestURI.startsWith("/group-members.html");
+                requestURI.startsWith("/group-members.html") ||
+                requestURI.startsWith("/api/recruitments");
     }
 
     private String getJwtFromRequest(HttpServletRequest request) {

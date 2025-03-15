@@ -12,6 +12,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -86,8 +87,10 @@ public class RecruitmentController {
         }
     }
 
+    @CrossOrigin
     @GetMapping
-    public ResponseEntity<Page<RecruitmentListDto>> getRecruitmentList(Pageable pageable) {
+    public ResponseEntity<Page<RecruitmentListDto>> getRecruitmentList(
+            @PageableDefault(size = 12, page = 0) Pageable pageable) {
         Page<RecruitmentListDto> recruitmentList = recruitmentService.getRecruitmentList(pageable);
 
         return ResponseEntity.ok(recruitmentList);

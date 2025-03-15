@@ -10,7 +10,9 @@ import java.util.List;
 
 public interface RecruitmentRepository extends JpaRepository<Recruitment, Long> {
 
-    @Query("SELECT r FROM Recruitment r WHERE TYPE(r) = Recruitment")
+    @Query(value = "select * from base_post where type = 'RECRUITMENT'",
+            countQuery = "select count(*) from base_post where type = 'RECRUITMENT'",
+            nativeQuery = true)
     Page<Recruitment> findAllRecruitments(Pageable pageable);
 
     List<Recruitment> findByCreatorId(Long creatorId);

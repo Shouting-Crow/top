@@ -11,6 +11,7 @@ import com.project.top.repository.BasePostRepository;
 import com.project.top.repository.RecruitmentRepository;
 import com.project.top.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -22,6 +23,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class RecruitmentServiceImpl implements RecruitmentService {
 
     private final BasePostRepository basePostRepository;
@@ -84,6 +86,8 @@ public class RecruitmentServiceImpl implements RecruitmentService {
     @Override
     public Page<RecruitmentListDto> getRecruitmentList(Pageable pageable) {
         Page<Recruitment> recruitments = recruitmentRepository.findAllRecruitments(pageable);
+
+        log.info("inactive 정보 : {}", recruitments.getContent().get(0).isInactive());
 
         return recruitments.map(RecruitmentListDto::recruitmentsFromEntity);
     }

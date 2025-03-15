@@ -40,7 +40,7 @@ const Header = () => {
         fetchUserInfo();
     }, []);
 
-    // ✅ 안 읽은 메시지 개수 가져오기
+    //안 읽은 메시지 개수 가져오기
     useEffect(() => {
         const fetchUnreadMessages = async () => {
             const token = localStorage.getItem("jwtToken");
@@ -63,7 +63,7 @@ const Header = () => {
         fetchUnreadMessages();
     }, []);
 
-    // ✅ 로그아웃 함수
+    // 로그아웃 함수
     const handleLogout = () => {
         localStorage.removeItem("jwtToken");
         setUser(null);
@@ -135,7 +135,7 @@ const Header = () => {
 
                         {menuOpen && (
                             <div className="absolute right-0 mt-2 w-40 !bg-gray-700 text-white shadow-lg rounded-md">
-                                <button onClick={() => handleMenuClick("/profile")}
+                                <button onClick={() => handleMenuClick("/myinfo")}
                                         className="block w-full text-left px-4 py-2 bg-gray-700 text-white hover:bg-gray-600">
                                     내 정보
                                 </button>
