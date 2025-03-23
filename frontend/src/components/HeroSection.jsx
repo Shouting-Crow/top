@@ -40,7 +40,7 @@ function HeroSection() {
                             </button>
                             <button
                                 className="flex-1 px-4 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition"
-                                onClick={() => navigate("/study-group")}
+                                onClick={() => navigate("/study-groups")}
                             >
                                 스터디 그룹 모집
                             </button>

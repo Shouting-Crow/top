@@ -28,6 +28,6 @@ public class LoginServiceImpl implements LoginService {
 
         String token = jwtTokenProvider.generateToken(user.getLoginId());
 
-        return new LoginResponseDto(user.getLoginId(), token, user.getRole());
+        return new LoginResponseDto(user.getLoginId(), token, user.getRole(), user.getNickname());
     }
 }

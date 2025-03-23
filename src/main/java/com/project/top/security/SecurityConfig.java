@@ -47,7 +47,14 @@ public class SecurityConfig {
                                 .requestMatchers("/api/chat/rooms").authenticated()
                                 .requestMatchers(HttpMethod.GET, "/api/recruitments").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/api/recruitments/*").permitAll()
-                                .requestMatchers(HttpMethod.GET, "/api/study-group").permitAll()
+                                .requestMatchers(HttpMethod.POST, "/api/recruitments").authenticated()
+                                .requestMatchers(HttpMethod.PATCH, "/api/recruitments/**").authenticated()
+
+                                .requestMatchers(HttpMethod.GET, "/api/study-groups").permitAll()
+                                .requestMatchers(HttpMethod.GET, "/api/study-groups/*").permitAll()
+                                .requestMatchers(HttpMethod.POST, "/api/study-groups").authenticated()
+                                .requestMatchers(HttpMethod.PATCH, "/api/study-groups/**").authenticated()
+
                                 .requestMatchers(HttpMethod.GET, "/api/boards").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/api/boards/*").permitAll()
                                 .anyRequest().authenticated()
@@ -68,7 +75,7 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOriginPatterns(List.of("*"));
-        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
         configuration.setAllowCredentials(true);
         configuration.setAllowedHeaders(List.of("Authorization", "Cache-Control", "Content-Type"));
 

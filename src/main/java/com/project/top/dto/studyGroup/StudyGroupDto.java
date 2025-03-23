@@ -4,6 +4,7 @@ import com.project.top.domain.StudyGroup;
 import lombok.Data;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Data
 public class StudyGroupDto {
@@ -17,6 +18,8 @@ public class StudyGroupDto {
     private LocalDate startDate;
     private LocalDate endDate;
     private LocalDate dueDate;
+    private LocalDateTime createdDateTime;
+    private String creatorContact;
 
     public static StudyGroupDto studyGroupDtoFromEntity(StudyGroup studyGroup) {
         StudyGroupDto studyGroupDto = new StudyGroupDto();
@@ -30,6 +33,8 @@ public class StudyGroupDto {
         studyGroupDto.setCurrentMembers(studyGroup.getCurrentMembers());
         studyGroupDto.setTotalMembers(studyGroup.getTotalMembers());
         studyGroupDto.setCreatorNickname(studyGroup.getCreator().getNickname());
+        studyGroupDto.setCreatedDateTime(studyGroup.getCreatedDateTime());
+        studyGroupDto.setCreatorContact(studyGroup.getCreator().getPhoneNumber());
 
         return studyGroupDto;
     }

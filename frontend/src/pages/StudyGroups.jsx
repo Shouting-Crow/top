@@ -1,18 +1,18 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-const Recruitments = () => {
-    const [recruitments, setRecruitments] = useState([]);
+const StudyGroups = () => {
+    const [studyGroups, setStudyGroups] = useState([]);
     const [page, setPage] = useState(1);
     const navigate = useNavigate();
 
     useEffect(() => {
-        fetchRecruitment(page);
+        fetchStudyGroup(page);
     }, [page]);
 
-    const fetchRecruitment = async () => {
+    const fetchStudyGroup = async () => {
         try {
-            const response = await fetch("/api/recruitments", {
+            const response = await fetch("/api/study-groups", {
                 method: "GET",
                 headers: {
                     "Content-Type": "application/json"
@@ -20,11 +20,11 @@ const Recruitments = () => {
             });
 
             if (!response.ok) {
-                throw new Error(`API 호출 실패, 상태 코드: ${response.status}`);
+                throw new Error(`스터디 그룹 모집 공고 불러오기 실패 : ${response.status}`);
             }
 
             const data = await response.json();
-            setRecruitments(data.content);
+            setStudyGroups(data.content);
         } catch (error) {
             console.error("데이터를 불러오지 못했습니다.", error);
         }
@@ -39,13 +39,13 @@ const Recruitments = () => {
                 navigate("/login");
             }
         } else {
-            navigate("/recruitment/register");
+            navigate("/study-group/register");
         }
     };
 
-    const handleRecruitmentClick = (recruitmentId, isInactive) => {
+    const handleStudyGroupClick = (studyGroupId, isInactive) => {
         if (!isInactive) {
-            navigate(`/recruitment/${recruitmentId}`);
+            navigate(`/study-group/${studyGroupId}`);
         }
     };
 
@@ -76,46 +76,50 @@ const Recruitments = () => {
 
             {/* 모집 공고 리스트 */}
             <div className="grid lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-1 gap-6 max-w-7xl w-full">
-                {recruitments.map((recruitment) => (
+                {studyGroups.map((studyGroup) => (
                     <div
-                        key={recruitment.id}
+                        key={studyGroup.id}
                         className={`relative p-6 rounded-lg shadow-lg transition-all w-full ${
-                            recruitment.inactive
+                            studyGroup.inactive
                                 ? "bg-gray-400 cursor-not-allowed opacity-80"
                                 : "bg-white hover:-translate-y-2 hover:shadow-xl cursor-pointer"
                         }`}
-                        onClick={() => handleRecruitmentClick(recruitment.id, recruitment.inactive)}
+                        onClick={() => handleStudyGroupClick(studyGroup.id, studyGroup.inactive)}
                     >
                         <h3 className="text-2xl font-bold mb-4 text-gray-900 break-words">
-                            {recruitment.title}
+                            {studyGroup.title}
                         </h3>
+
+                        <p className="text-md font-semibold text-blue-600 mb-4">
+                            {studyGroup.topic}
+                        </p>
 
                         <div className="text-md bg-gray-200 p-3 rounded-md space-y-2">
                             <p className="text-gray-700">
-                                <span className="font-semibold">등록자:</span> {recruitment.creatorNickname}
+                                <span className="font-semibold">등록자:</span> {studyGroup.creatorNickname}
                             </p>
                             <p className="text-gray-700">
-                                <span className="font-semibold">등록일:</span> {new Date(recruitment.createdAt).toISOString().split("T")[0]}
+                                <span className="font-semibold">등록일:</span> {new Date(studyGroup.createdAt).toISOString().split("T")[0]}
                             </p>
                             <p className="text-gray-700">
-                                <span className="font-semibold">마감일:</span> {recruitment.dueDate}
+                                <span className="font-semibold">마감일:</span> {studyGroup.dueDate}
                             </p>
                         </div>
 
                         <div className="mt-4 flex justify-between items-center">
                             <span className="text-lg font-semibold text-gray-800">
-                                {recruitment.currentMembers} / {recruitment.totalMembers} 모집
+                                {studyGroup.currentMembers} / {studyGroup.totalMembers} 모집
                             </span>
                             <span
                                 className={`text-lg font-bold px-4 py-2 rounded-md ${
-                                    recruitment.inactive
+                                    studyGroup.inactive
                                         ? "bg-gray-700 text-white"
                                         : "bg-red-500 text-white"
                                 }`}
                             >
-                                {recruitment.inactive
+                                {studyGroup.inactive
                                     ? "종료"
-                                    : `D-${Math.max(0, Math.ceil((new Date(recruitment.dueDate) - new Date()) / (1000 * 60 * 60 * 24)))}`}
+                                    : `D-${Math.max(0, Math.ceil((new Date(studyGroup.dueDate) - new Date()) / (1000 * 60 * 60 * 24)))}`}
                             </span>
                         </div>
                     </div>
@@ -142,4 +146,4 @@ const Recruitments = () => {
     );
 };
 
-export default Recruitments;
+export default StudyGroups;

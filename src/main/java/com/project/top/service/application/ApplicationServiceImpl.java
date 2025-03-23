@@ -34,6 +34,10 @@ public class ApplicationServiceImpl implements ApplicationService {
         BasePost basePost = basePostRepository.findById(applicationCreateDto.getRecruitmentId())
                 .orElseThrow(() -> new IllegalArgumentException("모집 공고를 찾을 수 없습니다."));
 
+        if (basePost.getCreator().getId().equals(applicantId)) {
+            throw new IllegalArgumentException("자신이 작성한 공고에는 지원할 수 없습니다.");
+        }
+
         boolean appliedCheck = applicationRepository.existsByApplicantAndBasePost(applicant, basePost);
         if (appliedCheck){
             throw new IllegalArgumentException("이미 이 공고에 지원했습니다.");

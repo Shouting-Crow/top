@@ -25,6 +25,7 @@ const Login = () => {
 
             const data = await response.json();
             localStorage.setItem("jwtToken", data.token);
+            localStorage.setItem("nickname", data.nickname);
 
             alert("로그인 성공!");
             navigate("/");

@@ -87,8 +87,6 @@ public class RecruitmentServiceImpl implements RecruitmentService {
     public Page<RecruitmentListDto> getRecruitmentList(Pageable pageable) {
         Page<Recruitment> recruitments = recruitmentRepository.findAllRecruitments(pageable);
 
-        log.info("inactive 정보 : {}", recruitments.getContent().get(0).isInactive());
-
         return recruitments.map(RecruitmentListDto::recruitmentsFromEntity);
     }
 

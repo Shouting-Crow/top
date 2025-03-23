@@ -110,8 +110,8 @@ public class MessageServiceImpl implements MessageService{
                     dto.setMessageId(message.getId());
                     dto.setSenderId(message.getSender().getId());
                     dto.setSenderName(message.getSender().getNickname());
-                    dto.setContent(message.getContent().length() > 10 ?
-                            message.getContent().substring(0, 10) + "..." : message.getContent());
+                    dto.setContent(message.getContent().length() > 20 ?
+                            message.getContent().substring(0, 20) + "..." : message.getContent());
                     dto.setRead(message.isRead());
                     dto.setSentAt(message.getSentAt());
                     return dto;

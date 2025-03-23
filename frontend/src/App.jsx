@@ -11,16 +11,40 @@ import ApplicationRegister from "./pages/ApplicationInfoRegister.jsx";
 import ApplicationInfoRegister from "./pages/ApplicationInfoRegister.jsx";
 import ApplicationInfoEdit from "./pages/ApplicationInfoEdit.jsx";
 import Recruitments from "./pages/Recruitments.jsx";
+import RecruitmentRegister from "./pages/RecruitmentRegister.jsx";
+import Recruitment from "./pages/Recruitment.jsx";
+import RecruitmentEdit from "./pages/RecruitmentEdit.jsx";
+import StudyGroups from "./pages/StudyGroups.jsx";
+import StudyGroupRegister from "./pages/StudyGroupRegister.jsx";
+import StudyGroup from "./pages/StudyGroup.jsx";
+import StudyGroupEdit from "./pages/StudyGroupEdit.jsx";
 
 const Layout = ({ children }) => {
     const location = useLocation();
 
-    const showHeaderPages = ["/", "/myinfo", "/myinfo/edit", "/application-info",
-        "/application-info/register", "/application-info/edit", "/recruitments"];
+    const showHeaderPages = [
+        "/",
+        "/myinfo",
+        "/myinfo/edit",
+
+        "/application-info",
+        "/application-info/register",
+        "/application-info/edit",
+
+        "/recruitments",
+        "/recruitment/register",
+
+        "/study-groups",
+        "/study-group/register"
+    ];
+
+    const shouldShowHeader = showHeaderPages.includes(location.pathname) ||
+        location.pathname.startsWith("/recruitment/") ||
+        location.pathname.startsWith("/study-group/");
 
     return (
         <div>
-            {showHeaderPages.includes(location.pathname) && <Header />}
+            {shouldShowHeader && <Header />}
             {children}
         </div>
     );
@@ -32,14 +56,26 @@ function App() {
             <Layout>
                 <Routes>
                     <Route path="/" element={<Home />}/>
+
                     <Route path="/login" element={<Login />}/>
                     <Route path="/register" element={<Register />}/>
+
                     <Route path="/myinfo" element={<MyInfo />}/>
                     <Route path="/myinfo/edit" element={<MyInfoEdit />}/>
+
                     <Route path="/application-info" element={<MyApplicationInfo />}/>
                     <Route path="/application-info/register" element={<ApplicationInfoRegister />}/>
                     <Route path="/application-info/edit" element={<ApplicationInfoEdit />}/>
+
                     <Route path="/recruitments" element={<Recruitments />}/>
+                    <Route path="/recruitment/register" element={<RecruitmentRegister />}/>
+                    <Route path="/recruitment/:recruitmentId" element={<Recruitment />}/>
+                    <Route path="/recruitment/edit/:recruitmentId" element={<RecruitmentEdit />}/>
+
+                    <Route path="/study-groups" element={<StudyGroups />}/>
+                    <Route path="/study-group/register" element={<StudyGroupRegister />}/>
+                    <Route path="/study-group/:studyGroupId" element={<StudyGroup />}/>
+                    <Route path="/study-group/edit/:studyGroupId" element={<StudyGroupEdit />}/>
                 </Routes>
             </Layout>
         </Router>
