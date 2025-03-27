@@ -13,6 +13,7 @@ public interface ApplicationService {
     public void updateApplicationStatus(Long creatorId, ApplicationStatusUpdateDto applicationStatusUpdateDto);
     public List<ApplicationListDto> getApplicationList(Long userId, Long basePostId);
     public List<ApplicationMyListDto> getApplicationMyList(Long userId);
+    public String getBasePostTitle(Long basePostId);
 
     //테스트를 위한 삭제 메서드(추후 삭제)
     public void deleteApplication(Long applicationId);

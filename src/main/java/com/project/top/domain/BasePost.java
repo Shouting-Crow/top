@@ -34,6 +34,7 @@ public abstract class BasePost {
     @OneToMany(mappedBy = "basePost", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Application> applications = new ArrayList<>();
 
+
     @Column(nullable = false)
     private int currentMembers = 1;
 

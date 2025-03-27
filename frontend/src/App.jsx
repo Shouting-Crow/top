@@ -18,6 +18,9 @@ import StudyGroups from "./pages/StudyGroups.jsx";
 import StudyGroupRegister from "./pages/StudyGroupRegister.jsx";
 import StudyGroup from "./pages/StudyGroup.jsx";
 import StudyGroupEdit from "./pages/StudyGroupEdit.jsx";
+import MyApplicationList from "./pages/MyApplicationList.jsx";
+import MyBasePostList from "./pages/MyBasePostList.jsx";
+import ApplicantList from "./pages/ApplicantList.jsx";
 
 const Layout = ({ children }) => {
     const location = useLocation();
@@ -35,12 +38,17 @@ const Layout = ({ children }) => {
         "/recruitment/register",
 
         "/study-groups",
-        "/study-group/register"
+        "/study-group/register",
+
+        "/my-applications",
+
+        "/my-posts"
     ];
 
     const shouldShowHeader = showHeaderPages.includes(location.pathname) ||
         location.pathname.startsWith("/recruitment/") ||
-        location.pathname.startsWith("/study-group/");
+        location.pathname.startsWith("/study-group/") ||
+        location.pathname.startsWith("/applicants/");
 
     return (
         <div>
@@ -76,6 +84,12 @@ function App() {
                     <Route path="/study-group/register" element={<StudyGroupRegister />}/>
                     <Route path="/study-group/:studyGroupId" element={<StudyGroup />}/>
                     <Route path="/study-group/edit/:studyGroupId" element={<StudyGroupEdit />}/>
+
+                    <Route path="/my-applications" element={<MyApplicationList />}/>
+
+                    <Route path="/my-posts" element={<MyBasePostList/>}/>
+
+                    <Route path="/applicants/:basePostId" element={<ApplicantList/>}/>
                 </Routes>
             </Layout>
         </Router>

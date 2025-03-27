@@ -57,6 +57,8 @@ public class SecurityConfig {
 
                                 .requestMatchers(HttpMethod.GET, "/api/boards").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/api/boards/*").permitAll()
+
+                                .requestMatchers(HttpMethod.GET, "/api/base-posts/my-posts").authenticated()
                                 .anyRequest().authenticated()
                         )
                 .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider, customUserDetailsService), UsernamePasswordAuthenticationFilter.class)

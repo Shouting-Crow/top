@@ -8,6 +8,6 @@ import lombok.Setter;
 @Setter
 public class ApplicationStatusUpdateDto {
     private Long applicationId;
-    private Long recruitmentId;
-    private ApplicationStatus status;
+    private Long basePostId;
+    private String status;
 }

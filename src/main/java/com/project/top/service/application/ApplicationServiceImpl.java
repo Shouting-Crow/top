@@ -63,13 +63,23 @@ public class ApplicationServiceImpl implements ApplicationService {
         Application application = applicationRepository.findById(applicationStatusUpdateDto.getApplicationId())
                 .orElseThrow(() -> new IllegalArgumentException("지원 정보를 찾을 수 없습니다."));
 
+        if (!application.getStatus().equals(ApplicationStatus.PENDING)) {
+            throw new IllegalStateException("검토중 상태의 지원서만 상태 변경이 가능합니다.");
+        }
+
+        ApplicationStatus newStatus;
+
+        try {
+            newStatus = ApplicationStatus.valueOf(applicationStatusUpdateDto.getStatus());
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("지원 상태 값이 올바르게 전달되지 않았습니다.");
+        }
+
         BasePost basePost = application.getBasePost();
 
         if (!basePost.getCreator().getId().equals(creatorId)){
             throw new SecurityException("지원 승인/거절할 권한이 없습니다.");
         }
-
-        ApplicationStatus newStatus = applicationStatusUpdateDto.getStatus();
 
         String statusMessage = (newStatus == ApplicationStatus.APPROVED) ? "▷" + basePost.getTitle()
                 + "◁ 공고에 승인되었습니다! 그룹과 채팅방이 만들어질 때까지 기다려주세요." : "▷" + basePost.getTitle()
@@ -111,6 +121,13 @@ public class ApplicationServiceImpl implements ApplicationService {
         return applications.stream()
                 .map(ApplicationMyListDto::applicationMyListFromEntity)
                 .toList();
+    }
+
+    @Override
+    public String getBasePostTitle(Long basePostId) {
+        return basePostRepository.findById(basePostId)
+                .orElseThrow(() -> new IllegalArgumentException("공고를 찾을 수 없습니다."))
+                .getTitle();
     }
 
     @Override

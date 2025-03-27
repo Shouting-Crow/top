@@ -379,6 +379,10 @@ const Header = () => {
                                         className="block w-full text-left px-4 py-2 bg-gray-700 text-white hover:bg-gray-600">
                                     내 공고
                                 </button>
+                                <button onClick={() => handleMenuClick("/my-applications")}
+                                        className="block w-full text-left px-4 py-2 bg-gray-700 text-white hover:bg-gray-600">
+                                    내 지원 현황
+                                </button>
                                 <button onClick={() => handleMenuClick("/my-groups")}
                                         className="block w-full text-left px-4 py-2 bg-gray-700 text-white hover:bg-gray-600">
                                     내 그룹

@@ -17,6 +17,7 @@ public class ApplicationListDto {
     private List<String> techStacks;
     private String field;
     private String contact;
+    private Long userId;
 
     public static ApplicationListDto applicationListFromEntity(Application application) {
         UserInfo userInfo = application.getApplicant().getUserInfo();
@@ -28,6 +29,7 @@ public class ApplicationListDto {
         dto.setTechStacks(userInfo.getTechStacks());
         dto.setField(userInfo.getField());
         dto.setContact(userInfo.getContact());
+        dto.setUserId(userInfo.getUser().getId());
 
         return dto;
     }

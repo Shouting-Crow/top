@@ -72,7 +72,10 @@ public class ApplicationController {
             Long userId = userService.getUserIdFromLoginId(userDetails.getUsername());
             List<ApplicationListDto> applicationList = applicationService.getApplicationList(userId, basePostId);
 
-            return ResponseEntity.ok(applicationList);
+            String title = applicationService.getBasePostTitle(basePostId);
+            ApplicationListResponseDto response = new ApplicationListResponseDto(title, applicationList);
+
+            return ResponseEntity.ok(response);
         } catch (SecurityException e) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
         } catch (IllegalArgumentException e) {
