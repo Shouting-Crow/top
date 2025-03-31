@@ -8,7 +8,6 @@ import lombok.Data;
 
 @Data
 public class GroupCreateDto {
-    @NotNull(message = "모집 공고 ID는 필수 입력 값입니다.")
     private Long basePostId;
 
     @NotBlank(message = "그룹 이름은 필수 입력 값입니다.")
@@ -19,6 +18,5 @@ public class GroupCreateDto {
     @Size(max = 255, message = "그룹 설명은 최대 255자까지 입력 가능합니다.")
     private String description;
 
-    @NotNull(message = "그룹 타입을 선택해주세요.")
-    private GroupType type;
+    private String type;
 }

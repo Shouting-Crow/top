@@ -9,6 +9,7 @@ public class GroupMemberDto {
     private Long userId;
     private String nickname;
     private GroupRole role;
+    private boolean isNew = false;
 
     public static GroupMemberDto groupMemberDtoFromEntity(GroupMember groupMember) {
         GroupMemberDto dto = new GroupMemberDto();

@@ -4,6 +4,10 @@ import { useNavigate } from "react-router-dom";
 const MyBasePostList = () => {
     const [posts, setPosts] = useState([]);
     const navigate = useNavigate();
+    const [showModal, setShowModal] = useState(false);
+    const [selectedPost, setSelectedPost] = useState(null);
+    const [groupName, setGroupName] = useState("");
+    const [groupDescription, setGroupDescription] = useState("");
 
     useEffect(() => {
         const fetchMyPosts = async () => {
@@ -94,6 +98,86 @@ const MyBasePostList = () => {
     };
 
     return (
+        <>
+            {showModal && selectedPost && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+                    <div className="bg-white p-6 rounded-lg shadow-lg w-[400px] relative">
+                        <button
+                            onClick={() => setShowModal(false)}
+                            className="absolute top-2 right-2 text-xl font-bold text-gray-500 hover:text-gray-800"
+                        >
+                            ×
+                        </button>
+                        <h3 className="text-xl font-semibold mb-4">그룹 생성</h3>
+
+                        <div className="space-y-3">
+                            <div>
+                                <label className="font-semibold">그룹 이름</label>
+                                <input
+                                    type="text"
+                                    value={groupName}
+                                    onChange={(e) => setGroupName(e.target.value)}
+                                    className="w-full border rounded px-3 py-2 mt-1"
+                                />
+                            </div>
+
+                            <div>
+                                <label className="font-semibold">그룹 설명</label>
+                                <textarea
+                                    rows="3"
+                                    value={groupDescription}
+                                    onChange={(e) => setGroupDescription(e.target.value)}
+                                    className="w-full border rounded px-3 py-2 mt-1"
+                                />
+                            </div>
+
+                            <button
+                                onClick={async () => {
+                                    const token = localStorage.getItem("jwtToken");
+                                    const groupType = selectedPost.postType === "RECRUITMENT" ? "PROJECT" : "STUDY_GROUP";
+
+                                    const payload = {
+                                        basePostId: selectedPost.basePostId,
+                                        name: groupName,
+                                        description: groupDescription,
+                                        type: groupType
+                                    };
+
+                                    try {
+                                        const response = await fetch("/api/groups", {
+                                            method: "POST",
+                                            headers: {
+                                                "Content-Type": "application/json",
+                                                Authorization: `Bearer ${token}`
+                                            },
+                                            body: JSON.stringify(payload)
+                                        });
+
+                                        if (response.ok) {
+                                            const data = await response.json();
+                                            const goToGroup = window.confirm("그룹이 생성되었습니다. 그룹 페이지로 이동하시겠습니까?");
+                                            if (goToGroup) {
+                                                navigate(`/groups/${data.id}`);
+                                            }
+                                            setShowModal(false);
+                                        } else {
+                                            const errMsg = await response.text();
+                                            alert("그룹 생성 실패: " + errMsg);
+                                        }
+                                    } catch (error) {
+                                        console.error("그룹 생성 오류:", error);
+                                        alert("서버 오류가 발생했습니다.");
+                                    }
+                                }}
+                                className="w-full mt-4 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                            >
+                                생성
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
         <div className="relative flex flex-col items-center min-h-screen bg-gray-100 p-6 pt-20">
             <div className="w-full h-12"></div>
             <h2 className="text-2xl font-bold mb-6">내 공고 리스트</h2>
@@ -102,11 +186,12 @@ const MyBasePostList = () => {
                 {posts.map((post) => (
                     <div key={post.basePostId} className="relative group overflow-hidden rounded-lg shadow-lg transition-all w-full">
                         <div
-                            className={`p-6 transition-all w-full h-full ${
-                                post.inactive
-                                    ? "bg-gray-400 cursor-not-allowed opacity-80"
-                                    : "bg-white group-hover:opacity-30 cursor-pointer"
-                            }`}
+                            className={`p-6 transition-all w-full h-full 
+                            ${post.inactive
+                                    ? "bg-gray-400 cursor-not-allowed"
+                                    : "bg-white cursor-pointer"
+                            }
+                            group-hover:opacity-30`}
                         >
                             <h3 className="text-2xl font-bold mb-4 text-gray-900 break-words">
                                 {post.title}
@@ -187,10 +272,30 @@ const MyBasePostList = () => {
                                 </div>
                             </>
                         )}
+
+                        {/*마감된 공고의 그룹 생성 버튼*/}
+                        {post.inactive && (
+                            <div className="absolute inset-0 flex justify-center items-center
+                                   transform scale-90 opacity-0 group-hover:scale-100 group-hover:opacity-100
+                                   transition-all duration-300"
+                            >
+                                <button
+                                    onClick={() => {
+                                        setSelectedPost(post);
+                                        setShowModal(true);
+                                    }}
+                                    className="bg-blue-600 text-white px-4 py-2 rounded shadow hover:bg-blue-700"
+                                >
+                                    그룹 생성
+                                </button>
+                            </div>
+                        )}
+
                     </div>
                 ))}
             </div>
         </div>
+        </>
     );
 };
 

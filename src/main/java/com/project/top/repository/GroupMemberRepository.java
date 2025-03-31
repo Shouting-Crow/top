@@ -12,7 +12,7 @@ import java.util.Optional;
 
 public interface GroupMemberRepository extends JpaRepository<GroupMember, Long> {
     List<GroupMember> findByMember(User member);
-    Optional<GroupMember> findByGroupIdAndMemberId(Long groupId, Long memberId);
+    Optional<GroupMember> findByGroupIdAndMember_Id(Long groupId, Long memberId);
 
     @Modifying
     @Query("delete from GroupMember gm where gm.group.id = :groupId " +

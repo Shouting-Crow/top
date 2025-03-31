@@ -48,7 +48,7 @@ public class GroupServiceImpl implements GroupService{
         Group group = new Group();
         group.setName(groupCreateDto.getName());
         group.setDescription(groupCreateDto.getDescription());
-        group.setType(groupCreateDto.getType());
+        group.setType(GroupType.valueOf(groupCreateDto.getType()));
         group.setBasePost(basePost);
         group.setStatus(GroupStatus.ACTIVE);
 
@@ -144,7 +144,7 @@ public class GroupServiceImpl implements GroupService{
     @Override
     @Transactional
     public void leaveGroup(Long groupId, Long memberId) {
-        GroupMember member = groupMemberRepository.findByGroupIdAndMemberId(groupId, memberId)
+        GroupMember member = groupMemberRepository.findByGroupIdAndMember_Id(groupId, memberId)
                 .orElseThrow(() -> new IllegalStateException("해당 그룹에 속해있지 않습니다."));
 
         if (member.getRole() == GroupRole.ADMIN) {
@@ -197,7 +197,7 @@ public class GroupServiceImpl implements GroupService{
         basePost.incrementCurrentMembers();
         basePostRepository.save(basePost);
 
-        chatService.sendSystemMessageToChatRoom(groupId, user.getNickname() + "님이 그룹에 초대되었습니다.");
+//        chatService.sendSystemMessageToChatRoom(groupId, user.getNickname() + "님이 그룹에 초대되었습니다.");
         messageService.sendSystemMessage(user.getId(), "'" + group.getName() + "' 그룹에 초대되었습니다.");
 
         return member.getId();
@@ -209,7 +209,7 @@ public class GroupServiceImpl implements GroupService{
         Group group = groupRepository.findById(groupId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 그룹이 존재하지 않습니다."));
 
-        GroupMember member = groupMemberRepository.findByGroupIdAndMemberId(groupId, memberId)
+        GroupMember member = groupMemberRepository.findByGroupIdAndMember_Id(groupId, memberId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 그룹에 존재하지 않는 맴버입니다."));
 
         group.getMembers().remove(member);
@@ -219,8 +219,8 @@ public class GroupServiceImpl implements GroupService{
         basePost.decrementCurrentMembers();
         basePostRepository.save(basePost);
 
-        chatService.sendSystemMessageToChatRoom(groupId, member.getMember().getNickname() + "님이 그룹에서 추방되었습니다.");
         messageService.sendSystemMessage(member.getMember().getId(), "'" + group.getName() + "' 그룹에서 추방되었습니다.");
+//        chatService.sendSystemMessageToChatRoom(groupId, member.getMember().getNickname() + "님이 그룹에서 추방되었습니다.");
 
     }
 }
