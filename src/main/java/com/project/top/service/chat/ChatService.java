@@ -16,5 +16,7 @@ public interface ChatService {
     List<ChatMessageDto> getRecentChatMessages(Long chatRoomId, int limit);
     int countUnreadMessages(Long userId);
     boolean isUserInChatRoom(Long chatRoomId, Long userId);
+    boolean chatRoomExist(Long groupId);
+    Long chatRoomIdByGroupId(Long groupId);
     void sendSystemMessageToChatRoom(Long groupId, String message);
 }

@@ -7,9 +7,11 @@ const GroupMembers = () => {
     const [members, setMembers] = useState([]);
     const [showInviteModal, setShowInviteModal] = useState(false);
     const [inviteNickname, setInviteNickname ] = useState("");
+    const [isAdmin, setIsAdmin ] = useState(false);
 
     useEffect(() => {
         const token = localStorage.getItem("jwtToken");
+
         if (!token) {
             alert("로그인이 필요합니다.");
             navigate("/login");
@@ -25,6 +27,10 @@ const GroupMembers = () => {
                 if (response.ok) {
                     const data = await response.json();
                     setMembers(data);
+
+                    const loginIdFromToken = parseJwt(token).sub;
+                    const adminCheck = data.some(member => member.loginId === loginIdFromToken && member.role === "ADMIN");
+                    setIsAdmin(adminCheck);
                 } else {
                     throw new Error("멤버 목록을 불러올 수 없습니다.");
                 }
@@ -107,6 +113,14 @@ const GroupMembers = () => {
         }
     };
 
+    function parseJwt(token) {
+        try {
+            return JSON.parse(atob(token.split('.')[1]));
+        } catch (error) {
+            return {};
+        }
+    }
+
     return (
         <div className="min-h-screen bg-gray-100 flex flex-col items-center pt-20 px-4">
             <h2 className="text-2xl font-bold mb-6">그룹 멤버</h2>
@@ -117,42 +131,41 @@ const GroupMembers = () => {
                         key={member.userId}
                         className="bg-white shadow p-4 rounded flex justify-between items-center"
                     >
-                        <span className="font-semibold">
-                            {member.nickname}
-                            {member.isNew && (
-                                <span className="ml-2 text-xs bg-yellow-300 text-black px-2 py-1 rounded">
-                                    NEW
-                                </span>
-                            )}
-                        </span>
-                        <div className="flex items-center space-x-3">
-                            {member.role === "ADMIN" ? (
-                                <span className="text-sm text-gray-700">관리자</span>
-                            ) : (
-                                <>
-                                    <span className="text-sm text-gray-700">멤버</span>
-                                    {!member.isNew && (
-                                        <button
-                                            onClick={() => handleRemoveMember(member.userId)}
-                                            className="bg-red-400 text-white px-2 py-1 text-sm rounded"
-                                        >
-                                            추방
-                                        </button>
-                                    )}
-                                </>
-                            )}
+                        <div className="flex flex-col">
+                            <span className="font-semibold">
+                                {member.nickname}
+                                {member.isNew && (
+                                    <span className="ml-2 text-xs bg-yellow-300 text-black px-2 py-1 rounded">
+                                        NEW
+                                    </span>
+                                )}
+                            </span>
+                            <span className="text-sm text-gray-700">
+                    {member.role === "ADMIN" ? "관리자" : "멤버"}
+                </span>
                         </div>
+
+                        {isAdmin && member.role !== "ADMIN" && !member.isNew && (
+                            <button
+                                onClick={() => handleRemoveMember(member.userId)}
+                                className="bg-red-400 text-white px-3 py-1 text-sm rounded"
+                            >
+                                추방
+                            </button>
+                        )}
                     </div>
                 ))}
             </div>
 
             <div className="flex flex-col space-y-3">
-                <button
-                    onClick={() => setShowInviteModal(true)}
-                    className="bg-green-400 text-white font-bold px-6 py-3 rounded"
-                >
-                    그룹 멤버 초대
-                </button>
+                {isAdmin && (
+                    <button
+                        onClick={() => setShowInviteModal(true)}
+                        className="bg-green-400 text-white font-bold px-6 py-3 rounded"
+                    >
+                        그룹 멤버 초대
+                    </button>
+                )}
                 <button
                     onClick={() => navigate(-1)}
                     className="bg-red-300 text-white font-bold px-6 py-3 rounded"

@@ -8,6 +8,7 @@ import lombok.Data;
 public class GroupMemberDto {
     private Long userId;
     private String nickname;
+    private String loginId;
     private GroupRole role;
     private boolean isNew = false;
 
@@ -15,6 +16,7 @@ public class GroupMemberDto {
         GroupMemberDto dto = new GroupMemberDto();
         dto.setUserId(groupMember.getMember().getId());
         dto.setNickname(groupMember.getMember().getNickname());
+        dto.setLoginId(groupMember.getMember().getLoginId());
         dto.setRole(groupMember.getRole());
 
         return dto;

@@ -26,6 +26,7 @@ public interface ChatRoomRepository extends JpaRepository<ChatRoom, Long> {
     Integer isUserInChatRoom(@Param("chatRoomId") Long chatRoomId, @Param("userId") Long userId);
 
     Optional<ChatRoom> findByGroupId(Long groupId);
+    boolean existsByGroupId(Long groupId);
 }
 
 

@@ -19,6 +19,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -156,6 +157,17 @@ public class ChatServiceImpl implements ChatService {
         log.info("채팅방 {}번에 대한 사용자 {}번의 참여 여부 : {}", chatRoomId, userId, result);
 
         return result != null && result == 1;
+    }
+
+    @Override
+    public boolean chatRoomExist(Long groupId) {
+        return chatRoomRepository.existsByGroupId(groupId);
+    }
+
+    @Override
+    public Long chatRoomIdByGroupId(Long groupId) {
+        return chatRoomRepository.findByGroupId(groupId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 그룹이 존재하지 않습니다.")).getId();
     }
 
     @Override

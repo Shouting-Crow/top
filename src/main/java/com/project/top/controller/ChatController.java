@@ -4,6 +4,7 @@ import com.project.top.dto.chatMessage.ChatMessageCreateDto;
 import com.project.top.dto.chatMessage.ChatMessageDto;
 import com.project.top.dto.chatRoom.ChatRoomCreateDto;
 import com.project.top.dto.chatRoom.ChatRoomDto;
+import com.project.top.dto.chatRoom.ChatRoomExistDto;
 import com.project.top.dto.chatRoom.ChatRoomListDto;
 import com.project.top.service.chat.ChatService;
 import com.project.top.service.group.GroupService;
@@ -20,6 +21,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/chat")
@@ -98,6 +100,25 @@ public class ChatController {
         List<ChatMessageDto> recentChatMessages = chatService.getRecentChatMessages(roomId, limit);
 
         return ResponseEntity.ok(recentChatMessages);
+    }
+
+    @GetMapping("/rooms/exist/{groupId}")
+    public ResponseEntity<?> checkChatRoomExists(@PathVariable(name = "groupId") Long groupId,
+                                                 @AuthenticationPrincipal UserDetails userDetails) {
+        try {
+            userService.getUserIdFromLoginId(userDetails.getUsername());
+
+            boolean exists = chatService.chatRoomExist(groupId);
+            Long chatRoomId = exists ? chatService.chatRoomIdByGroupId(groupId) : null;
+
+            ChatRoomExistDto chatRoomExistDto = new ChatRoomExistDto(exists, chatRoomId);
+
+            return ResponseEntity.ok(chatRoomExistDto);
+        } catch (SecurityException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
     }
 
     @GetMapping("/messages/unread")
