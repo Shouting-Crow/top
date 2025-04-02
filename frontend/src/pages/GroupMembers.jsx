@@ -8,6 +8,7 @@ const GroupMembers = () => {
     const [showInviteModal, setShowInviteModal] = useState(false);
     const [inviteNickname, setInviteNickname ] = useState("");
     const [isAdmin, setIsAdmin ] = useState(false);
+    const [myLoginId, setMyLoginId ] = useState("");
 
     useEffect(() => {
         const token = localStorage.getItem("jwtToken");
@@ -31,6 +32,8 @@ const GroupMembers = () => {
                     const loginIdFromToken = parseJwt(token).sub;
                     const adminCheck = data.some(member => member.loginId === loginIdFromToken && member.role === "ADMIN");
                     setIsAdmin(adminCheck);
+                    setMyLoginId(loginIdFromToken);
+
                 } else {
                     throw new Error("멤버 목록을 불러올 수 없습니다.");
                 }
@@ -113,6 +116,30 @@ const GroupMembers = () => {
         }
     };
 
+    const handleLeaveGroup = async (userId) => {
+        if (!window.confirm("정말로 그룹을 탈퇴하시겠습니까?")) return;
+
+        const token = localStorage.getItem("jwtToken");
+
+        try {
+            const response = await fetch(`/api/groups/${groupId}/leave`, {
+                method: "DELETE",
+                headers: { Authorization: `Bearer ${token}` },
+            });
+
+            if (response.ok) {
+                alert("그룹에서 탈퇴하였습니다.");
+                navigate("/my-groups");
+            } else {
+                const text = await response.text();
+                alert(text || "탈퇴 실패");
+            }
+        } catch (error) {
+            console.error("그룹 탈퇴 요청 오류 : ", error);
+            alert("서버 오류 발생");
+        }
+    };
+
     function parseJwt(token) {
         try {
             return JSON.parse(atob(token.split('.')[1]));
@@ -141,8 +168,8 @@ const GroupMembers = () => {
                                 )}
                             </span>
                             <span className="text-sm text-gray-700">
-                    {member.role === "ADMIN" ? "관리자" : "멤버"}
-                </span>
+                                {member.role === "ADMIN" ? "관리자" : "멤버"}
+                            </span>
                         </div>
 
                         {isAdmin && member.role !== "ADMIN" && !member.isNew && (
@@ -151,6 +178,15 @@ const GroupMembers = () => {
                                 className="bg-red-400 text-white px-3 py-1 text-sm rounded"
                             >
                                 추방
+                            </button>
+                        )}
+
+                        {member.loginId === myLoginId && member.role !== "ADMIN" && (
+                            <button
+                                onClick={() => handleLeaveGroup(member.userId)}
+                                className="bg-red-400 text-white px-3 py-1 text-sm rounded"
+                            >
+                                탈퇴
                             </button>
                         )}
                     </div>

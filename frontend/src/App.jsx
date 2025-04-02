@@ -23,6 +23,7 @@ import MyBasePostList from "./pages/MyBasePostList.jsx";
 import ApplicantList from "./pages/ApplicantList.jsx";
 import Group from "./pages/Group.jsx";
 import GroupMembers from "./pages/GroupMembers.jsx";
+import MyGroups from "./pages/MyGroups.jsx";
 
 const Layout = ({ children }) => {
     const location = useLocation();
@@ -44,7 +45,9 @@ const Layout = ({ children }) => {
 
         "/my-applications",
 
-        "/my-posts"
+        "/my-posts",
+
+        "/my-groups"
     ];
 
     const shouldShowHeader = showHeaderPages.includes(location.pathname) ||
@@ -96,6 +99,8 @@ function App() {
 
                     <Route path="/groups/:groupId" element={<Group />}/>
                     <Route path="/groups/:groupId/members" element={<GroupMembers />}/>
+
+                    <Route path="/my-groups" element={<MyGroups />}/>
                 </Routes>
             </Layout>
         </Router>

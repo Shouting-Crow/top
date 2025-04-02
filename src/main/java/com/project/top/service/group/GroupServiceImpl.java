@@ -137,7 +137,7 @@ public class GroupServiceImpl implements GroupService{
         List<GroupMember> groups = groupMemberRepository.findByMember(user);
 
         return groups.stream()
-                .map(member -> GroupListDto.groupListDtoFromEntity(member.getGroup()))
+                .map(member -> GroupListDto.groupListDtoFromEntity(member.getGroup(), userId))
                 .toList();
     }
 
@@ -160,7 +160,10 @@ public class GroupServiceImpl implements GroupService{
 
         basePostRepository.save(basePost);
 
-        chatService.sendSystemMessageToChatRoom(groupId, memberNickname + "님이 그룹을 탈퇴했습니다.");
+        boolean chatRoomExist = chatService.chatRoomExist(groupId);
+        if (chatRoomExist) {
+            chatService.sendSystemMessageToChatRoom(groupId, memberNickname + "님이 그룹을 탈퇴했습니다.");
+        }
 
         //빈 그룹을 자동 삭제
         if (groupMemberRepository.countByGroupId(groupId) == 0) {
@@ -197,7 +200,11 @@ public class GroupServiceImpl implements GroupService{
         basePost.incrementCurrentMembers();
         basePostRepository.save(basePost);
 
-//        chatService.sendSystemMessageToChatRoom(groupId, user.getNickname() + "님이 그룹에 초대되었습니다.");
+        boolean chatRoomExist = chatService.chatRoomExist(groupId);
+        if (chatRoomExist) {
+            chatService.sendSystemMessageToChatRoom(groupId, user.getNickname() + "님이 그룹에 초대되었습니다.");
+        }
+
         messageService.sendSystemMessage(user.getId(), "'" + group.getName() + "' 그룹에 초대되었습니다.");
 
         return member.getId();
@@ -219,8 +226,12 @@ public class GroupServiceImpl implements GroupService{
         basePost.decrementCurrentMembers();
         basePostRepository.save(basePost);
 
+        boolean chatRoomExist = chatService.chatRoomExist(groupId);
+        if (chatRoomExist) {
+            chatService.sendSystemMessageToChatRoom(groupId, member.getMember().getNickname() + "님이 그룹에서 추방되었습니다.");
+        }
+
         messageService.sendSystemMessage(member.getMember().getId(), "'" + group.getName() + "' 그룹에서 추방되었습니다.");
-//        chatService.sendSystemMessageToChatRoom(groupId, member.getMember().getNickname() + "님이 그룹에서 추방되었습니다.");
 
     }
 }
