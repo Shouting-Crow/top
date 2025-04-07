@@ -1,5 +1,5 @@
 import {Link, useLocation, useNavigate} from "react-router-dom";
-import { useState, useEffect } from "react";
+import {useState, useEffect, useRef} from "react";
 import { AiOutlineMenu, AiOutlineClose } from "react-icons/ai";
 import { IoMailOutline, IoChatbubbleEllipsesOutline} from "react-icons/io5";
 import axios from "axios";
@@ -7,18 +7,27 @@ import logoImage from "../assets/top_logo_ex.jpg";
 import MessageModal from "../components/MessageModal";
 import ReplyModal from "../components/ReplyModal";
 import "../index.css";
+import ChatRoom from "../pages/ChatRoom.jsx";
 
 const Header = () => {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [user, setUser] = useState(null);
     const [unreadMessages, setUnreadMessages] = useState(0);
+
     const [menuOpen, setMenuOpen] = useState(false);
+    const menuDropdownRef = useRef(null);
 
     const [messagesCount, setMessagesCount] = useState(0); //쪽지 카운트
     const [chatsCount, setChatsCount] = useState(0); //채팅방 채팅 카운트
 
     const [messages, setMessages] = useState([]); //최근 5개 메시지 저장
     const [showMessagesDropdown, setShowMessagesDropdown] = useState(false); //메시지 드롭다운
+    const messageDropdownRef = useRef(null);
+
+    const [showChatDropdown, setShowChatDropdown] = useState(false);
+    const [chatRooms, setChatRooms] = useState([]);
+    const [selectedChatRoomId, setSelectedChatRoomId] = useState(null);
+    const chatDropdownRef = useRef(null);
 
     const [selectedMessage, setSelectedMessage] = useState(null); //쪽지 상세 조회 정보
     const [isMessageModalOpen, setIsMessageModalOpen] = useState(false); //쪽지 상세 정보 모달 상태
@@ -218,6 +227,81 @@ const Header = () => {
         fetchUnreadMessages();
     }, []);
 
+    //채팅방 리스트 가져오기
+    const fetchChatRooms = async () => {
+        const token = localStorage.getItem("jwtToken");
+        if (!token) return;
+
+        try {
+            const response = await fetch(`/api/chat/rooms`, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+            if (response.ok) {
+                const data = await response.json();
+                setChatRooms(data);
+            } else {
+                console.error("채팅방 리스트 불러오기 실패");
+            }
+        } catch (error) {
+            console.error("서버 오류 발생 : ", error);
+        }
+    };
+
+    const toggleChatDropdown = () => {
+        if (!showChatDropdown) {
+            fetchChatRooms();
+        }
+        setShowChatDropdown(!showChatDropdown);
+    };
+
+    //외부 클릭 감지로 메뉴 닫기
+    useEffect(() => {
+        const handleClickOutside = (e) => {
+            if (
+                messageDropdownRef.current && !messageDropdownRef.current.contains(e.target) &&
+                !e.target.closest(".message-button")
+            ) {
+                setShowMessagesDropdown(false);
+            }
+
+            if (
+                chatDropdownRef.current && !chatDropdownRef.current.contains(e.target) &&
+                !e.target.closest(".chat-button")
+            ) {
+                setShowChatDropdown(false);
+            }
+
+            if (
+                menuDropdownRef.current && !menuDropdownRef.current.contains(e.target) &&
+                !e.target.closest(".menu-button")
+            ) {
+                setMenuOpen(false);
+            }
+        };
+
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, []);
+
+    // 채팅 시간 포멧 함수
+    const formatChatTime = (timeValue) => {
+        const date = new Date(timeValue);
+        const now = new Date();
+        const isToday = now.toDateString() === date.toDateString();
+
+        if (isToday) {
+            return date.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'});
+        }
+
+        return date.toLocaleDateString("ko-KR", {
+            year: "2-digit",
+            month: "2-digit",
+            day: "2-digit",
+        }) + " " + date.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'});
+    };
+
     // 로그아웃 함수
     const handleLogout = () => {
         localStorage.removeItem("jwtToken");
@@ -262,6 +346,11 @@ const Header = () => {
                 />
             )}
 
+            {/*채팅방 모달 열기*/}
+            {selectedChatRoomId && (
+                <ChatRoom chatRoomId={selectedChatRoomId} onClose={() => setSelectedChatRoomId(null)} />
+            )}
+
         <header className="w-full bg-gray-100 shadow-md fixed top-0 left-0 right-0 z-50">
             <div className="flex items-center justify-between px-6 py-3 w-full max-w-screen-xl mx-auto">
                 {/* 로고 */}
@@ -293,7 +382,7 @@ const Header = () => {
                         <>
                             {/* 쪽지 아이콘 */}
                             <div className="relative">
-                                <button className="relative p-2 bg-white rounded-md shadow-md"
+                                <button className="relative p-2 bg-white rounded-md shadow-md message-button"
                                         onClick={toggleMessagesDropdown}>
                                     <IoMailOutline size={24} className="text-gray-700" />
                                     {messages.length > 0 && (
@@ -305,7 +394,7 @@ const Header = () => {
 
                                 {/* 쪽지 드롭다운 메뉴 */}
                                 {showMessagesDropdown && (
-                                    <div className="absolute right-0 mt-2 w-[400px] bg-gray-700 text-white shadow-lg rounded-md p-4">
+                                    <div ref={messageDropdownRef} className="absolute right-0 mt-2 w-[400px] bg-gray-700 text-white shadow-lg rounded-md p-4">
                                         <h3 className="text-lg font-bold text-center mb-3">📩 쪽지함</h3>
                                         {messages.length > 0 ? (
                                             messages.map((msg) => (
@@ -352,21 +441,75 @@ const Header = () => {
                                     </div>
                                 )}
                             </div>
-                            <button className="relative p-2 bg-white rounded-md shadow-md">
-                                <IoChatbubbleEllipsesOutline size={24} className="text-gray-700" />
-                                <span className="absolute -top-1 -right-1 bg-green-500 text-white text-xs rounded-full px-1">3</span>
-                            </button>
+                            <div className="relative" ref={chatDropdownRef}>
+                                <button onClick={toggleChatDropdown} className="relative p-2 bg-white rounded-md shadow-md chat-button">
+                                    <IoChatbubbleEllipsesOutline size={24} className="text-gray-700" />
+                                    {chatRooms.some(r => r.hasUnreadChats) && (
+                                        <span className="absolute -top-1 -right-1 bg-green-500 text-white text-xs rounded-full px-1">
+                                            {chatRooms.reduce((acc, room) => acc + room.unreadChatCount, 0)}
+                                        </span>
+                                    )}
+                                </button>
+
+                                {showChatDropdown && (
+                                    <div ref={chatDropdownRef} className="absolute right-0 mt-2 w-80 bg-white rounded shadow-lg z-50 max-h-96 overflow-y-auto">
+                                        {chatRooms.length === 0 ? (
+                                            <div className="p-4 text-gray-500">채팅방이 없습니다.</div>
+                                        ) : (
+                                            chatRooms.map(room => (
+                                                <div
+                                                    key={room.chatRoomId}
+                                                    className="px-4 py-3 hover:bg-gray-100 cursor-pointer border-b"
+                                                    onDoubleClick={() => {
+                                                        setSelectedChatRoomId(room.chatRoomId);
+                                                        setShowChatDropdown(false);
+                                                    }}
+                                                >
+                                                    <div className="flex justify-between items-center">
+                                                        <div className="font-semibold text-sm">
+                                                            {room.chatRoomName}
+                                                            <span className="ml-2 text-gray-400 text-xs">[{room.groupName}]</span>
+                                                        </div>
+                                                        {room.unreadMessageCount > 0 && (
+                                                            <div className="bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center ml-2">
+                                                                {room.unreadMessageCount}
+                                                            </div>
+                                                        )}
+                                                    </div>
+
+                                                    <div className="flex justify-between items-start gap-2 mt-1">
+                                                        <div className="text-xs text-gray-600 flex-1 line-clamp-2 break-words">
+                                                            {room.lastMessageContent}
+                                                        </div>
+
+                                                        <div className="text-xs text-gray-500 whitespace-nowrap min-w-fit pl-2">
+                                                            {room.lastMessageTime ? formatChatTime(room.lastMessageTime) : ""}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            ))
+                                        )
+
+                                        }
+                                    </div>
+                                )}
+
+                            </div>
+                            {/*<button className="relative p-2 bg-white rounded-md shadow-md">*/}
+                            {/*    <IoChatbubbleEllipsesOutline size={24} className="text-gray-700" />*/}
+                            {/*    <span className="absolute -top-1 -right-1 bg-green-500 text-white text-xs rounded-full px-1">3</span>*/}
+                            {/*</button>*/}
                         </>
                     )}
 
                     {/* 햄버거 메뉴 */}
                     <div className="relative">
-                        <button onClick={toggleMenu} className="p-2 bg-white rounded-md shadow-md">
+                        <button onClick={toggleMenu} className="p-2 bg-white rounded-md shadow-md menu-button">
                             {menuOpen ? <AiOutlineClose size={24} /> : <AiOutlineMenu size={24} />}
                         </button>
 
                         {menuOpen && (
-                            <div className="absolute right-0 mt-2 w-40 !bg-gray-700 text-white shadow-lg rounded-md">
+                            <div ref={menuDropdownRef} className="absolute right-0 mt-2 w-40 !bg-gray-700 text-white shadow-lg rounded-md">
                                 <button onClick={() => handleMenuClick("/myinfo")}
                                         className="block w-full text-left px-4 py-2 bg-gray-700 text-white hover:bg-gray-600">
                                     내 정보

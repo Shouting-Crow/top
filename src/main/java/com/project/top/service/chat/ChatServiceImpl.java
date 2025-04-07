@@ -16,10 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -68,24 +65,38 @@ public class ChatServiceImpl implements ChatService {
         List<ChatRoom> chatRooms = chatRoomRepository.findByGroupMembersMemberId(userId)
                 .orElseThrow(() -> new IllegalArgumentException("채팅방을 찾을 수 없습니다."));
 
+        List<ChatRoomListDto> chatRoomListDtos = new ArrayList<>();
+
         Map<Long, Long> unreadCountMap = chatMessageReadStatusRepository.findUnreadMessageCountsByUserId(userId)
                 .stream()
                 .collect(Collectors.toMap(ChatRoomUnreadCountDto::getChatRoomId, ChatRoomUnreadCountDto::getUnreadCount));
 
-        return chatRooms.stream()
-                .map(chatRoom -> {
-                    Long unreadMessageCount = unreadCountMap.getOrDefault(chatRoom.getId(), 0L);
+        for (ChatRoom chatRoom : chatRooms) {
+            List<ChatMessage> messages = chatRoom.getChatMessages();
+            ChatMessage lastMessage = messages.stream()
+                    .max(Comparator.comparing(ChatMessage::getSentAt))
+                    .orElse(null);
 
-                    return new ChatRoomListDto(
-                            chatRoom.getId(),
-                            chatRoom.getName(),
-                            chatRoom.getGroup().getId(),
-                            chatRoom.getGroup().getName(),
-                            unreadMessageCount > 0,
-                            unreadMessageCount
-                    );
-                })
-                .toList();
+            String lastContent = lastMessage != null ? lastMessage.getMessage() : "메시지가 없습니다.";
+            LocalDateTime lastTime = lastMessage != null ? lastMessage.getSentAt() : null;
+
+            Long unreadMessageCount = unreadCountMap.getOrDefault(chatRoom.getId(), 0L);
+
+            ChatRoomListDto dto = new ChatRoomListDto(
+                    chatRoom.getId(),
+                    chatRoom.getName(),
+                    chatRoom.getGroup().getId(),
+                    chatRoom.getGroup().getName(),
+                    unreadMessageCount > 0,
+                    unreadMessageCount,
+                    lastContent,
+                    lastTime
+            );
+
+            chatRoomListDtos.add(dto);
+        }
+
+        return chatRoomListDtos;
     }
 
     @Override

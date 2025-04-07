@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import {useNavigate, useParams} from "react-router-dom";
 import { IoPersonCircleOutline, IoChatbubbleEllipsesOutline } from "react-icons/io5";
+import ChatRoom from "./ChatRoom.jsx";
 
 const Group = () => {
     const { groupId } = useParams();
@@ -8,6 +9,7 @@ const Group = () => {
     const [unreadCount, setUnreadCount] = useState(0);
     const [showCreateChatRoomModal, setShowCreateChatRoomModal] = useState(false);
     const [chatRoomName, setChatRoomName] = useState("");
+    const [selectedChatRoomId, setSelectedChatRoomId] = useState(null);
     const [creatorId, setCreatorId] = useState(null);
     const [isAdmin, setIsAdmin] = useState(false);
     const navigate = useNavigate();
@@ -60,7 +62,7 @@ const Group = () => {
             if (response.ok) {
                 const data = await response.json();
                 if (data.exists) {
-                    navigate(`/chat/${data.chatRoomId}`);
+                    openChatModal(data.chatRoomId);
                 } else {
                     if (isAdmin) {
                         setShowCreateChatRoomModal(true);
@@ -75,6 +77,14 @@ const Group = () => {
             console.error("채팅방 여부 확인 에러 : ", error);
             alert("서버 오류 발생");
         }
+    };
+
+    const openChatModal = (chatRoomId) => {
+        setSelectedChatRoomId(chatRoomId);
+    };
+
+    const closeChatModal = () => {
+        setSelectedChatRoomId(null);
     };
 
     function parseJwt(token) {
@@ -178,7 +188,7 @@ const Group = () => {
                                     if (response.ok) {
                                         const data = await response.json();
                                         alert("채팅방이 생성되었습니다.");
-                                        navigate(`/chat/${data.chatRoomId}`);
+                                        openChatModal(data.chatRoomId);
                                     } else {
                                         const text = await response.text();
                                         alert(text || "채팅방 생성 실패");
@@ -194,6 +204,11 @@ const Group = () => {
                         </button>
                     </div>
                 </div>
+            )}
+
+            {/*채팅방 모달*/}
+            {selectedChatRoomId && (
+                <ChatRoom chatRoomId={selectedChatRoomId} onClose={closeChatModal} />
             )}
         </div>
     );

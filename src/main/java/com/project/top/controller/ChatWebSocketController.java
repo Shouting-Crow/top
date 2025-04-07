@@ -9,6 +9,7 @@ import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Controller;
 
 import java.util.Map;
@@ -25,6 +26,10 @@ public class ChatWebSocketController {
     public void sendMessage(@Payload ChatMessageCreateDto chatMessageCreateDto,
                             @Header("simpSessionAttributes") Map<String, Object> sessionAttributes) {
         Long userId = (Long) sessionAttributes.get("userId");
+
+        if (!chatService.isUserInChatRoom(chatMessageCreateDto.getChatRoomId(), userId)) {
+            throw new AccessDeniedException("이 채팅방에 접근 권한이 없습니다");
+        }
 
         if (userId == null) {
             throw new IllegalArgumentException("userId가 세션에 존재하지 않습니다.");

@@ -3,6 +3,8 @@ package com.project.top.dto.chatRoom;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
+import java.time.LocalDateTime;
+
 @Data
 @AllArgsConstructor
 public class ChatRoomListDto {
@@ -12,4 +14,6 @@ public class ChatRoomListDto {
     private String groupName;
     private boolean hasUnreadMessages;
     private Long unreadMessageCount;
+    private String lastMessageContent;
+    private LocalDateTime lastMessageTime;
 }

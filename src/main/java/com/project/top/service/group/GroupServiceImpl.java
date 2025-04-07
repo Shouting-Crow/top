@@ -10,6 +10,7 @@ import com.project.top.service.chat.ChatService;
 import com.project.top.service.message.MessageService;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,6 +27,7 @@ public class GroupServiceImpl implements GroupService{
     private final ApplicationRepository applicationRepository;
     private final ChatService chatService;
     private final MessageService messageService;
+    private final SimpMessagingTemplate messagingTemplate;
 
 
     @Override
@@ -225,6 +227,12 @@ public class GroupServiceImpl implements GroupService{
         BasePost basePost = member.getGroup().getBasePost();
         basePost.decrementCurrentMembers();
         basePostRepository.save(basePost);
+
+        messagingTemplate.convertAndSendToUser(
+                member.getMember().getLoginId(),
+                "/queue/kick",
+                "그룹에서 추방된 사용자이므로 채팅방에 참여를 할 수 없습니다."
+        );
 
         boolean chatRoomExist = chatService.chatRoomExist(groupId);
         if (chatRoomExist) {

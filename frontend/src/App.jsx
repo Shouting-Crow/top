@@ -24,6 +24,7 @@ import ApplicantList from "./pages/ApplicantList.jsx";
 import Group from "./pages/Group.jsx";
 import GroupMembers from "./pages/GroupMembers.jsx";
 import MyGroups from "./pages/MyGroups.jsx";
+import ChatRoom from "./pages/ChatRoom.jsx";
 
 const Layout = ({ children }) => {
     const location = useLocation();
@@ -101,6 +102,8 @@ function App() {
                     <Route path="/groups/:groupId/members" element={<GroupMembers />}/>
 
                     <Route path="/my-groups" element={<MyGroups />}/>
+
+                    <Route path="/chat/:chatRoomId" element={<ChatRoom />}/>
                 </Routes>
             </Layout>
         </Router>
