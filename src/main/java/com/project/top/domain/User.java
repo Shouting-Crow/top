@@ -67,7 +67,7 @@ public class User {
     private List<ChatMessage> sentChatMessages = new ArrayList<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true)
-    private List<ChatMessageReadStatus> chatMessageReadStatuses = new ArrayList<>();
+    private List<ChatRoomReadLog> chatRoomReadLogs = new ArrayList<>();
 
     public User(String loginId, String password, String email, String phoneNumber, String nickname) {
         this.loginId = loginId;

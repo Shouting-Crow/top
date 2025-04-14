@@ -13,11 +13,6 @@ import java.util.Optional;
 public interface ChatMessageRepository extends JpaRepository<ChatMessage, Long> {
     List<ChatMessage> findByChatRoomIdOrderBySentAtAsc(Long chatRoomId);
 
-    @Modifying
-    @Query("update ChatMessage m set m.isRead = true " +
-            "where m.chatRoom.id = :chatRoomId and m.isRead = false")
-    void changeMessagesAsRead(@Param("chatRoomId") Long chatRoomId);
-
     @Query("select cm from ChatMessage cm " +
             "join fetch cm.sender " +
             "join fetch cm.chatRoom " +
@@ -30,4 +25,10 @@ public interface ChatMessageRepository extends JpaRepository<ChatMessage, Long> 
     List<ChatMessage> findRecentMessages(@Param("chatRoomId") Long chatRoomId,
                                          @Param("limit") int limit,
                                          @Param("cutoffDate") LocalDateTime cutoffDate);
+
+    @Query("select count(m) from ChatMessage m " +
+            "where m.chatRoom.id = :chatRoomId " +
+            "and m.sentAt > :lastReadTime")
+    Long countUnreadMessages(@Param("chatRoomId") Long chatRoomId,
+                             @Param("lastReadTime") LocalDateTime lastReadTime);
 }

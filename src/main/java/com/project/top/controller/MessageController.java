@@ -103,5 +103,19 @@ public class MessageController {
         }
     }
 
+    @GetMapping("/unread-count")
+    public ResponseEntity<?> getUnreadMessagesCount(@AuthenticationPrincipal UserDetails userDetails) {
+        try {
+            Long userId = userService.getUserIdFromLoginId(userDetails.getUsername());
+            Integer count = messageService.countUnread(userId);
+
+            return ResponseEntity.ok(count);
+        } catch (SecurityException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+
 
 }

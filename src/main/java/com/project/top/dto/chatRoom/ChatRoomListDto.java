@@ -12,7 +12,6 @@ public class ChatRoomListDto {
     private String chatRoomName;
     private Long groupId;
     private String groupName;
-    private boolean hasUnreadMessages;
     private Long unreadMessageCount;
     private String lastMessageContent;
     private LocalDateTime lastMessageTime;

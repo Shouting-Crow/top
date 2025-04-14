@@ -1,7 +1,8 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import {useNavigate, useParams} from "react-router-dom";
 import { IoPersonCircleOutline, IoChatbubbleEllipsesOutline } from "react-icons/io5";
 import ChatRoom from "./ChatRoom.jsx";
+import ChatContext from "../context/ChatContext.js";
 
 const Group = () => {
     const { groupId } = useParams();
@@ -13,6 +14,8 @@ const Group = () => {
     const [creatorId, setCreatorId] = useState(null);
     const [isAdmin, setIsAdmin] = useState(false);
     const navigate = useNavigate();
+
+    const { refreshChatRoomStates } = useContext(ChatContext);
 
     useEffect(() => {
         const fetchGroup = async () => {
@@ -38,6 +41,19 @@ const Group = () => {
                         setCreatorId(myInfo.userId);
                         setIsAdmin(myInfo.role === "ADMIN");
                     }
+
+                    const existResponse = await fetch(`/api/chat/rooms/exist/${groupId}`, {
+                        headers: { Authorization: `Bearer ${token}` }
+                    });
+
+                    if (existResponse.ok) {
+                        const existData = await existResponse.json();
+                        if (existData.exists) {
+                            const chatRoomId = existData.chatRoomId;
+                            fetchUnreadCount(chatRoomId);
+                        }
+                    }
+
                 } else {
                     alert("그룹 정보를 불러오지 못했습니다.");
                 }
@@ -79,12 +95,33 @@ const Group = () => {
         }
     };
 
-    const openChatModal = (chatRoomId) => {
-        setSelectedChatRoomId(chatRoomId);
+    const openChatModal = async (chatRoomId) => {
+        const token = localStorage.getItem("jwtToken");
+        const response = await fetch(`/api/chat/rooms/${chatRoomId}`, {
+            headers: { Authorization: `Bearer ${token}` }
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            setUnreadCount(data.unreadMessageCount || 0);
+            setSelectedChatRoomId(chatRoomId);
+        }
     };
 
     const closeChatModal = () => {
         setSelectedChatRoomId(null);
+    };
+
+    const fetchUnreadCount = async (chatRoomId) => {
+        const token = localStorage.getItem("jwtToken");
+        const response = await fetch(`/api/chat/rooms/${chatRoomId}/unread-count`, {
+            headers: { Authorization: `Bearer ${token}` }
+        });
+
+        if (response.ok) {
+            const count = await response.json();
+            setUnreadCount(count);
+        }
     };
 
     function parseJwt(token) {
@@ -208,7 +245,14 @@ const Group = () => {
 
             {/*채팅방 모달*/}
             {selectedChatRoomId && (
-                <ChatRoom chatRoomId={selectedChatRoomId} onClose={closeChatModal} />
+                <ChatRoom
+                    chatRoomId={selectedChatRoomId}
+                    onClose={closeChatModal}
+                    onOpen={() => {
+                        setUnreadCount(0);
+                        refreshChatRoomStates();
+                    }}
+                />
             )}
         </div>
     );

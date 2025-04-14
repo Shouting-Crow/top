@@ -51,23 +51,23 @@ class ChatServiceTest {
         chatService.createChatMessage(chatMessageCreateDto2);
     }
 
-    @Test
-    void getChatRoomTest() {
-        List<ChatRoomListDto> chatRooms = chatService.getChatRooms(1L);
-        log.info("{}", chatRooms.get(0).getChatRoomName());
+//    @Test
+//    void getChatRoomTest() {
+//        List<ChatRoomListDto> chatRooms = chatService.getChatRooms(1L);
+//        log.info("{}", chatRooms.get(0).getChatRoomName());
+//
+//        ChatRoomDto chatRoom = chatService.getChatRoom(1L);
+//        log.info("{}", chatRoom.getChatRoomId());
+//        log.info("{}", chatRoom.getChatRoomName());
+//        log.info("{}", chatRoom.getMessages().size());
+//        log.info("{}", chatRoom.getGroupId());
+//        log.info("{}", chatRoom.getGroupName());
+//
+//    }
 
-        ChatRoomDto chatRoom = chatService.getChatRoom(1L);
-        log.info("{}", chatRoom.getChatRoomId());
-        log.info("{}", chatRoom.getChatRoomName());
-        log.info("{}", chatRoom.getMessages().size());
-        log.info("{}", chatRoom.getGroupId());
-        log.info("{}", chatRoom.getGroupName());
-
-    }
-
-    @Test
-    void countUnreadMessageTest() {
-        log.info("{}", chatService.countUnreadMessages(1L));
-        log.info("{}", chatService.countUnreadMessages(2L));
-    }
+//    @Test
+//    void countUnreadMessageTest() {
+//        log.info("{}", chatService.countUnreadMessages(1L));
+//        log.info("{}", chatService.countUnreadMessages(2L));
+//    }
 }

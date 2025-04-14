@@ -25,6 +25,9 @@ import Group from "./pages/Group.jsx";
 import GroupMembers from "./pages/GroupMembers.jsx";
 import MyGroups from "./pages/MyGroups.jsx";
 import ChatRoom from "./pages/ChatRoom.jsx";
+import ChatProvider from "./context/ChatProvider.jsx";
+import MyMessages from "./pages/MyMessages.jsx";
+import MessageProvider from "./context/MessageProvider.jsx";
 
 const Layout = ({ children }) => {
     const location = useLocation();
@@ -48,7 +51,9 @@ const Layout = ({ children }) => {
 
         "/my-posts",
 
-        "/my-groups"
+        "/my-groups",
+
+        "/messages"
     ];
 
     const shouldShowHeader = showHeaderPages.includes(location.pathname) ||
@@ -67,46 +72,52 @@ const Layout = ({ children }) => {
 
 function App() {
     return (
-        <Router>
-            <Layout>
-                <Routes>
-                    <Route path="/" element={<Home />}/>
+        <MessageProvider>
+        <ChatProvider>
+            <Router>
+                <Layout>
+                    <Routes>
+                        <Route path="/" element={<Home />}/>
 
-                    <Route path="/login" element={<Login />}/>
-                    <Route path="/register" element={<Register />}/>
+                        <Route path="/login" element={<Login />}/>
+                        <Route path="/register" element={<Register />}/>
 
-                    <Route path="/myinfo" element={<MyInfo />}/>
-                    <Route path="/myinfo/edit" element={<MyInfoEdit />}/>
+                        <Route path="/myinfo" element={<MyInfo />}/>
+                        <Route path="/myinfo/edit" element={<MyInfoEdit />}/>
 
-                    <Route path="/application-info" element={<MyApplicationInfo />}/>
-                    <Route path="/application-info/register" element={<ApplicationInfoRegister />}/>
-                    <Route path="/application-info/edit" element={<ApplicationInfoEdit />}/>
+                        <Route path="/application-info" element={<MyApplicationInfo />}/>
+                        <Route path="/application-info/register" element={<ApplicationInfoRegister />}/>
+                        <Route path="/application-info/edit" element={<ApplicationInfoEdit />}/>
 
-                    <Route path="/recruitments" element={<Recruitments />}/>
-                    <Route path="/recruitment/register" element={<RecruitmentRegister />}/>
-                    <Route path="/recruitment/:recruitmentId" element={<Recruitment />}/>
-                    <Route path="/recruitment/edit/:recruitmentId" element={<RecruitmentEdit />}/>
+                        <Route path="/recruitments" element={<Recruitments />}/>
+                        <Route path="/recruitment/register" element={<RecruitmentRegister />}/>
+                        <Route path="/recruitment/:recruitmentId" element={<Recruitment />}/>
+                        <Route path="/recruitment/edit/:recruitmentId" element={<RecruitmentEdit />}/>
 
-                    <Route path="/study-groups" element={<StudyGroups />}/>
-                    <Route path="/study-group/register" element={<StudyGroupRegister />}/>
-                    <Route path="/study-group/:studyGroupId" element={<StudyGroup />}/>
-                    <Route path="/study-group/edit/:studyGroupId" element={<StudyGroupEdit />}/>
+                        <Route path="/study-groups" element={<StudyGroups />}/>
+                        <Route path="/study-group/register" element={<StudyGroupRegister />}/>
+                        <Route path="/study-group/:studyGroupId" element={<StudyGroup />}/>
+                        <Route path="/study-group/edit/:studyGroupId" element={<StudyGroupEdit />}/>
 
-                    <Route path="/my-applications" element={<MyApplicationList />}/>
+                        <Route path="/my-applications" element={<MyApplicationList />}/>
 
-                    <Route path="/my-posts" element={<MyBasePostList/>}/>
+                        <Route path="/my-posts" element={<MyBasePostList/>}/>
 
-                    <Route path="/applicants/:basePostId" element={<ApplicantList/>}/>
+                        <Route path="/applicants/:basePostId" element={<ApplicantList/>}/>
 
-                    <Route path="/groups/:groupId" element={<Group />}/>
-                    <Route path="/groups/:groupId/members" element={<GroupMembers />}/>
+                        <Route path="/groups/:groupId" element={<Group />}/>
+                        <Route path="/groups/:groupId/members" element={<GroupMembers />}/>
 
-                    <Route path="/my-groups" element={<MyGroups />}/>
+                        <Route path="/my-groups" element={<MyGroups />}/>
 
-                    <Route path="/chat/:chatRoomId" element={<ChatRoom />}/>
-                </Routes>
-            </Layout>
-        </Router>
+                        <Route path="/chat/:chatRoomId" element={<ChatRoom />}/>
+
+                        <Route path="/messages" element={<MyMessages />}/>
+                    </Routes>
+                </Layout>
+            </Router>
+        </ChatProvider>
+        </MessageProvider>
     );
 }
 

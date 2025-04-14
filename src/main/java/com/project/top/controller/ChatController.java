@@ -1,11 +1,14 @@
 package com.project.top.controller;
 
+import com.project.top.domain.ChatRoomReadLog;
 import com.project.top.dto.chatMessage.ChatMessageCreateDto;
 import com.project.top.dto.chatMessage.ChatMessageDto;
 import com.project.top.dto.chatRoom.ChatRoomCreateDto;
 import com.project.top.dto.chatRoom.ChatRoomDto;
 import com.project.top.dto.chatRoom.ChatRoomExistDto;
 import com.project.top.dto.chatRoom.ChatRoomListDto;
+import com.project.top.repository.ChatMessageRepository;
+import com.project.top.repository.ChatRoomReadLogRepository;
 import com.project.top.service.chat.ChatService;
 import com.project.top.service.group.GroupService;
 import com.project.top.service.user.UserService;
@@ -20,6 +23,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -32,6 +36,8 @@ public class ChatController {
     private final ChatService chatService;
     private final UserService userService;
     private final GroupService groupService;
+    private final ChatRoomReadLogRepository chatRoomReadLogRepository;
+    private final ChatMessageRepository chatMessageRepository;
 
     @PostMapping("/room")
     public ResponseEntity<?> createChatRoom(@Valid @RequestBody ChatRoomCreateDto chatRoomCreateDto,
@@ -72,7 +78,7 @@ public class ChatController {
         try {
             Long userId = userService.getUserIdFromLoginId(userDetails.getUsername());
 
-            ChatRoomDto chatRoom = chatService.getChatRoom(chatRoomId);
+            ChatRoomDto chatRoom = chatService.getChatRoom(userId, chatRoomId);
 
             groupService.getGroup(chatRoom.getGroupId(), userId);
             return ResponseEntity.status(HttpStatus.OK).body(chatRoom);
@@ -121,12 +127,23 @@ public class ChatController {
         }
     }
 
-    @GetMapping("/messages/unread")
-    public ResponseEntity<?> getUnreadMessagesCount(@AuthenticationPrincipal UserDetails userDetails) {
-        Long userId = userService.getUserIdFromLoginId(userDetails.getUsername());
-        int unreadMessagesCount = chatService.countUnreadMessages(userId);
+    @GetMapping("/rooms/{chatRoomId}/unread-count")
+    public ResponseEntity<?> getUnreadCount(@PathVariable(name = "chatRoomId") Long chatRoomId,
+                                            @AuthenticationPrincipal UserDetails userDetails) {
+        try {
+            Long userId = userService.getUserIdFromLoginId(userDetails.getUsername());
+            LocalDateTime lastReadTime = chatRoomReadLogRepository.findByUserIdAndChatRoomId(userId, chatRoomId)
+                    .map(ChatRoomReadLog::getLastReadTime)
+                    .orElse(LocalDateTime.of(1970, 1, 1, 0, 0));
 
-        return ResponseEntity.status(HttpStatus.OK).body(unreadMessagesCount);
+            Long unreadCount = chatMessageRepository.countUnreadMessages(chatRoomId, lastReadTime);
+
+            return ResponseEntity.ok(unreadCount);
+        } catch (SecurityException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
     }
 
 }

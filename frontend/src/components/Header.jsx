@@ -1,5 +1,5 @@
 import {Link, useLocation, useNavigate} from "react-router-dom";
-import {useState, useEffect, useRef} from "react";
+import {useState, useEffect, useRef, useCallback, useContext} from "react";
 import { AiOutlineMenu, AiOutlineClose } from "react-icons/ai";
 import { IoMailOutline, IoChatbubbleEllipsesOutline} from "react-icons/io5";
 import axios from "axios";
@@ -8,24 +8,23 @@ import MessageModal from "../components/MessageModal";
 import ReplyModal from "../components/ReplyModal";
 import "../index.css";
 import ChatRoom from "../pages/ChatRoom.jsx";
+import ChatContext from "../context/ChatContext.js";
+import MessageContext from "../context/MessageContext.js";
 
 const Header = () => {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [user, setUser] = useState(null);
-    const [unreadMessages, setUnreadMessages] = useState(0);
+
+    const { unreadMessages, fetchUnreadCount } = useContext(MessageContext);
 
     const [menuOpen, setMenuOpen] = useState(false);
     const menuDropdownRef = useRef(null);
-
-    const [messagesCount, setMessagesCount] = useState(0); //쪽지 카운트
-    const [chatsCount, setChatsCount] = useState(0); //채팅방 채팅 카운트
 
     const [messages, setMessages] = useState([]); //최근 5개 메시지 저장
     const [showMessagesDropdown, setShowMessagesDropdown] = useState(false); //메시지 드롭다운
     const messageDropdownRef = useRef(null);
 
     const [showChatDropdown, setShowChatDropdown] = useState(false);
-    const [chatRooms, setChatRooms] = useState([]);
     const [selectedChatRoomId, setSelectedChatRoomId] = useState(null);
     const chatDropdownRef = useRef(null);
 
@@ -35,11 +34,13 @@ const Header = () => {
     const [isReplyModalOpen, setIsReplyModalOpen] = useState(false); //답장 모달
     const [replyRecipient, setReplyRecipient] = useState(""); //답장 발송자
 
+    const {chatRooms, chatsCount, refreshChatRoomStates} = useContext(ChatContext);
+
     const [loading, setLoading] = useState(false);
 
     const location = useLocation();
     const navigate = useNavigate();
-
+    
     useEffect(() => {
         const fetchUserInfo = async () => {
             const token = localStorage.getItem("jwtToken");
@@ -121,6 +122,9 @@ const Header = () => {
                         msg.messageId === messageId ? {...msg, read: true } : msg
                     )
                 );
+
+                await fetchUnreadCount();
+
             } else {
                 alert("쪽지를 불러오는 도중 문제가 발생했습니다.");
             }
@@ -204,28 +208,13 @@ const Header = () => {
         }
     };
 
-    //안 읽은 메시지 개수 가져오기
+    //읽지 않은 전체 채팅 수 및 쪽지 수 가져오기
     useEffect(() => {
-        const fetchUnreadMessages = async () => {
-            const token = localStorage.getItem("jwtToken");
-            if (!token) return;
-
-            try {
-                const response = await fetch("http://localhost:8080/api/chat/unread", {
-                    headers: { Authorization: `Bearer ${token}` },
-                });
-
-                if (response.ok) {
-                    const count = await response.json();
-                    setUnreadMessages(count);
-                }
-            } catch (error) {
-                console.error("안 읽은 메시지를 불러오지 못했습니다.", error);
-            }
-        };
-
-        fetchUnreadMessages();
-    }, []);
+        if (isLoggedIn) {
+            refreshChatRoomStates();
+            fetchUnreadCount();
+        }
+    }, [isLoggedIn, location.pathname, refreshChatRoomStates, fetchUnreadCount]);
 
     //채팅방 리스트 가져오기
     const fetchChatRooms = async () => {
@@ -348,7 +337,11 @@ const Header = () => {
 
             {/*채팅방 모달 열기*/}
             {selectedChatRoomId && (
-                <ChatRoom chatRoomId={selectedChatRoomId} onClose={() => setSelectedChatRoomId(null)} />
+                <ChatRoom
+                    chatRoomId={selectedChatRoomId}
+                    onClose={() => setSelectedChatRoomId(null)}
+                    onOpen={refreshChatRoomStates}
+                />
             )}
 
         <header className="w-full bg-gray-100 shadow-md fixed top-0 left-0 right-0 z-50">
@@ -385,9 +378,9 @@ const Header = () => {
                                 <button className="relative p-2 bg-white rounded-md shadow-md message-button"
                                         onClick={toggleMessagesDropdown}>
                                     <IoMailOutline size={24} className="text-gray-700" />
-                                    {messages.length > 0 && (
+                                    {unreadMessages > 0 && (
                                         <span className="absolute -top-1 -right-1 bg-green-500 text-white text-xs rounded-full px-1">
-                                            {messages.length}
+                                            {unreadMessages}
                                         </span>
                                     )}
                                 </button>
@@ -444,12 +437,13 @@ const Header = () => {
                             <div className="relative" ref={chatDropdownRef}>
                                 <button onClick={toggleChatDropdown} className="relative p-2 bg-white rounded-md shadow-md chat-button">
                                     <IoChatbubbleEllipsesOutline size={24} className="text-gray-700" />
-                                    {chatRooms.some(r => r.hasUnreadChats) && (
+                                    {chatsCount > 0 && (
                                         <span className="absolute -top-1 -right-1 bg-green-500 text-white text-xs rounded-full px-1">
-                                            {chatRooms.reduce((acc, room) => acc + room.unreadChatCount, 0)}
+                                            {chatsCount}
                                         </span>
                                     )}
                                 </button>
+
 
                                 {showChatDropdown && (
                                     <div ref={chatDropdownRef} className="absolute right-0 mt-2 w-80 bg-white rounded shadow-lg z-50 max-h-96 overflow-y-auto">

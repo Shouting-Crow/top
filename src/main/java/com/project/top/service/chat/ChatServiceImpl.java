@@ -28,9 +28,9 @@ public class ChatServiceImpl implements ChatService {
     private final ChatMessageRepository chatMessageRepository;
     private final UserRepository userRepository;
     private final GroupRepository groupRepository;
-    private final ChatMessageReadStatusRepository chatMessageReadStatusRepository;
     private final SimpMessagingTemplate messagingTemplate;
     private final MessageService messageService;
+    private final ChatRoomReadLogRepository chatRoomReadLogRepository;
 
     @Override
     @Transactional
@@ -67,10 +67,6 @@ public class ChatServiceImpl implements ChatService {
 
         List<ChatRoomListDto> chatRoomListDtos = new ArrayList<>();
 
-        Map<Long, Long> unreadCountMap = chatMessageReadStatusRepository.findUnreadMessageCountsByUserId(userId)
-                .stream()
-                .collect(Collectors.toMap(ChatRoomUnreadCountDto::getChatRoomId, ChatRoomUnreadCountDto::getUnreadCount));
-
         for (ChatRoom chatRoom : chatRooms) {
             List<ChatMessage> messages = chatRoom.getChatMessages();
             ChatMessage lastMessage = messages.stream()
@@ -80,14 +76,17 @@ public class ChatServiceImpl implements ChatService {
             String lastContent = lastMessage != null ? lastMessage.getMessage() : "메시지가 없습니다.";
             LocalDateTime lastTime = lastMessage != null ? lastMessage.getSentAt() : null;
 
-            Long unreadMessageCount = unreadCountMap.getOrDefault(chatRoom.getId(), 0L);
+            LocalDateTime lastReadTime = chatRoomReadLogRepository.findByUserIdAndChatRoomId(userId, chatRoom.getId())
+                    .map(ChatRoomReadLog::getLastReadTime)
+                    .orElse(LocalDateTime.of(1970, 1, 1, 0, 0));
+
+            Long unreadMessageCount = chatMessageRepository.countUnreadMessages(chatRoom.getId(), lastReadTime);
 
             ChatRoomListDto dto = new ChatRoomListDto(
                     chatRoom.getId(),
                     chatRoom.getName(),
                     chatRoom.getGroup().getId(),
                     chatRoom.getGroup().getName(),
-                    unreadMessageCount > 0,
                     unreadMessageCount,
                     lastContent,
                     lastTime
@@ -101,15 +100,22 @@ public class ChatServiceImpl implements ChatService {
 
     @Override
     @Transactional
-    public ChatRoomDto getChatRoom(Long chatRoomId) {
+    public ChatRoomDto getChatRoom(Long userId, Long chatRoomId) {
         ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId)
                 .orElseThrow(() -> new IllegalArgumentException("채팅방을 찾을 수 없습니다."));
 
+        LocalDateTime lastReadTime = chatRoomReadLogRepository.findByUserIdAndChatRoomId(userId, chatRoomId)
+                        .map(ChatRoomReadLog::getLastReadTime)
+                                .orElse(LocalDateTime.of(1970, 1, 1, 0, 0));
+
+        Long unreadMessageCount = chatMessageRepository.countUnreadMessages(chatRoomId, lastReadTime);
+        log.info("getChatRoom 서비스 메서드 에서의 unreadMessageCount : {}", unreadMessageCount);
+
+        updateLastReadTime(userId, chatRoomId);
+
         List<ChatMessage> messages = chatMessageRepository.findByChatRoomIdOrderBySentAtAsc(chatRoomId);
 
-        chatMessageRepository.changeMessagesAsRead(chatRoomId);
-
-        return ChatRoomDto.chatRoomDtoFromEntities(chatRoom, messages);
+        return ChatRoomDto.chatRoomDtoFromEntities(chatRoom, messages, unreadMessageCount);
     }
 
     @Override
@@ -134,14 +140,6 @@ public class ChatServiceImpl implements ChatService {
         ChatMessage savedChatMessage = chatMessageRepository.findChatMessageWithSenderAndChatRoom(chatMessage.getId())
                 .orElseThrow(() -> new IllegalArgumentException("메시지를 찾을 수 없습니다."));
 
-        //읽음 상태 저장을 위해 그룹 멤버 ID 리스트 가져오기
-        List<Long> userIds = chatRoom.getGroup().getMembers().stream()
-                .map(groupMember -> groupMember.getMember().getId())
-                .toList();
-
-        //읽음 상태 한 번의 배치 저장
-        chatMessageReadStatusRepository.saveAllReadStatus(false, savedChatMessage, userIds);
-
         return ChatMessageDto.chatMessageDtoFromEntity(savedChatMessage);
     }
 
@@ -155,11 +153,6 @@ public class ChatServiceImpl implements ChatService {
                 .stream()
                 .map(ChatMessageDto::chatMessageDtoFromEntity)
                 .toList();
-    }
-
-    @Override
-    public int countUnreadMessages(Long userId) {
-        return chatMessageReadStatusRepository.countByUserIdAndIsReadFalse(userId);
     }
 
     @Override
@@ -206,5 +199,15 @@ public class ChatServiceImpl implements ChatService {
 
         chatMessageRepository.save(chatMessage);
         messagingTemplate.convertAndSend("/topic/chat/" + chatRoom.getId(), chatMessageDto);
+    }
+
+    @Override
+    @Transactional
+    public void updateLastReadTime(Long userId, Long chatRoomId) {
+        ChatRoomReadLog chatRoomReadLog = chatRoomReadLogRepository.findByUserIdAndChatRoomId(userId, chatRoomId)
+                .orElse(new ChatRoomReadLog(userRepository.getReferenceById(userId), chatRoomRepository.getReferenceById(chatRoomId)));
+
+        chatRoomReadLog.setLastReadTime(LocalDateTime.now());
+        chatRoomReadLogRepository.save(chatRoomReadLog);
     }
 }

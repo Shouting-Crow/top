@@ -15,6 +15,7 @@ public class ChatRoomDto {
     private Long groupId;
     private String groupName;
     private List<ChatMessageDto> messages;
+    private Long unreadMessageCount;
 
     public static ChatRoomDto chatRoomDtoFromEntity(ChatRoom chatRoom) {
         ChatRoomDto chatRoomDto = new ChatRoomDto();
@@ -26,7 +27,7 @@ public class ChatRoomDto {
         return chatRoomDto;
     }
 
-    public static ChatRoomDto chatRoomDtoFromEntities(ChatRoom chatRoom, List<ChatMessage> messages) {
+    public static ChatRoomDto chatRoomDtoFromEntities(ChatRoom chatRoom, List<ChatMessage> messages, Long unreadMessageCount) {
         List<ChatMessageDto> messageDtos = messages.stream()
                 .map(message -> new ChatMessageDto(
                         message.getId(),
@@ -42,6 +43,7 @@ public class ChatRoomDto {
         chatRoomDto.setGroupId(chatRoom.getGroup().getId());
         chatRoomDto.setGroupName(chatRoom.getGroup().getName());
         chatRoomDto.setMessages(messageDtos);
+        chatRoomDto.setUnreadMessageCount(unreadMessageCount);
 
         return chatRoomDto;
     }

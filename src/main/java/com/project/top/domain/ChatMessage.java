@@ -35,9 +35,6 @@ public class ChatMessage {
     @Column(nullable = false)
     private boolean isRead = false;
 
-    @OneToMany(mappedBy = "message", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<ChatMessageReadStatus> chatMessageReadStatuses = new ArrayList<>();
-
     @PrePersist
     public void prePersist() {
         this.sentAt = LocalDateTime.now();

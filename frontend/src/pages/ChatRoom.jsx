@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import SockJS from "sockjs-client";
 import { Client } from "@stomp/stompjs";
 
-const ChatRoom = ({ chatRoomId, onClose }) => {
+const ChatRoom = ({ chatRoomId, onClose, onOpen }) => {
     const [messages, setMessages] = useState([]);
     const [chatRoom, setChatRoom] = useState(null);
     const [inputMessage, setInputMessage] = useState("");
@@ -72,6 +72,13 @@ const ChatRoom = ({ chatRoomId, onClose }) => {
         };
     }, [chatRoomId]);
 
+    //refreshChatRoomsStates 실행을 위한 열린 시점 제공
+    useEffect(() => {
+        if (onOpen) {
+            onOpen();
+        }
+    }, [onOpen]);
+
     const connectWebSocket = (token) => {
         const socket = new SockJS(`http://localhost:8080/ws/chat?token=${token}`);
         const client = new Client({
@@ -114,6 +121,26 @@ const ChatRoom = ({ chatRoomId, onClose }) => {
         setInputMessage("");
     };
 
+    const handleCloseChatRoom = async () => {
+        const token = localStorage.getItem("jwtToken");
+        if (!token) return;
+
+        try {
+            await fetch("/api/chat/read-log", {
+                method: "POST",
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({chatRoomId})
+            });
+        } catch (error) {
+            console.error("채팅방 닫기 시 마지막 읽은 시점 저장 실패 : ", error);
+        }
+
+        if (onClose) onClose();
+    };
+
     useEffect(() => {
         messageEndRef.current?.scrollIntoView({ behavior: "smooth" });
     }, [messages]);
@@ -126,7 +153,7 @@ const ChatRoom = ({ chatRoomId, onClose }) => {
                         💬 {chatRoom?.chatRoomName || "채팅방"}
                     </div>
                     <button
-                        onClick={onClose}
+                        onClick={handleCloseChatRoom}
                         className="w-8 h-8 flex items-center justify-center text-black text-lg font-bold rounded-full hover:bg-gray-300 transition"
                     >
                         ×
