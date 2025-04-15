@@ -87,7 +87,6 @@ public class RecruitmentController {
         }
     }
 
-    @CrossOrigin
     @GetMapping
     public ResponseEntity<Page<RecruitmentListDto>> getRecruitmentList(
             @PageableDefault(size = 12, page = 0) Pageable pageable) {

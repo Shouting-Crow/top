@@ -4,15 +4,16 @@ import { useNavigate } from "react-router-dom";
 const Recruitments = () => {
     const [recruitments, setRecruitments] = useState([]);
     const [page, setPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
     const navigate = useNavigate();
 
     useEffect(() => {
         fetchRecruitment(page);
     }, [page]);
 
-    const fetchRecruitment = async () => {
+    const fetchRecruitment = async (pageNum) => {
         try {
-            const response = await fetch("/api/recruitments", {
+            const response = await fetch(`/api/recruitments?page=${pageNum - 1}`, {
                 method: "GET",
                 headers: {
                     "Content-Type": "application/json"
@@ -25,6 +26,7 @@ const Recruitments = () => {
 
             const data = await response.json();
             setRecruitments(data.content);
+            setTotalPages(data.totalPages);
         } catch (error) {
             console.error("데이터를 불러오지 못했습니다.", error);
         }
@@ -123,17 +125,31 @@ const Recruitments = () => {
             </div>
 
             {/* 페이지네이션 */}
-            <div className="flex mt-8">
+            <div className="flex mt-8 items-center gap-2">
                 <button
-                    className="px-3 py-1.5 bg-gray-300 rounded-lg font-semibold shadow-sm text-lg mr-3"
+                    className="px-3 py-1.5 bg-gray-300 rounded-lg font-semibold shadow-sm text-lg"
                     onClick={() => setPage((prev) => Math.max(1, prev - 1))}
+                    disabled={page === 1}
                 >
                     이전
                 </button>
-                <span className="px-2 py-1.5 bg-gray-200 rounded-lg font-semibold text-lg">{page}</span>
+
+                {Array.from({ length: totalPages }, (_, i) => (
+                    <button
+                        key={i}
+                        onClick={() => setPage(i + 1)}
+                        className={`px-3 py-1.5 rounded-lg font-semibold text-lg ${
+                            page === i + 1 ? "bg-blue-600 text-white" : "bg-gray-200 text-gray-800"
+                        }`}
+                    >
+                        {i + 1}
+                    </button>
+                ))}
+
                 <button
-                    className="px-3 py-1.5 bg-gray-300 rounded-lg font-semibold shadow-sm text-lg ml-3"
-                    onClick={() => setPage((prev) => prev + 1)}
+                    className="px-3 py-1.5 bg-gray-300 rounded-lg font-semibold shadow-sm text-lg"
+                    onClick={() => setPage((prev) => Math.min(totalPages, prev + 1))}
+                    disabled={page === totalPages}
                 >
                     다음
                 </button>

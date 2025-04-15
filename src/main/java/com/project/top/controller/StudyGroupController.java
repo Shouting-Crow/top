@@ -10,6 +10,8 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -85,7 +87,8 @@ public class StudyGroupController {
     }
 
     @GetMapping
-    public ResponseEntity<Page<StudyGroupListDto>> getStudyGroupList(Pageable pageable) {
+    public ResponseEntity<Page<StudyGroupListDto>> getStudyGroupList(
+            @PageableDefault(size = 12, page = 0, sort = "createdDateTime", direction = Sort.Direction.DESC) Pageable pageable) {
         Page<StudyGroupListDto> studyGroupList = studyGroupService.getStudyGroupList(pageable);
 
         return ResponseEntity.ok(studyGroupList);

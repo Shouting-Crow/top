@@ -10,7 +10,7 @@ import java.util.List;
 
 public interface RecruitmentRepository extends JpaRepository<Recruitment, Long> {
 
-    @Query(value = "select * from base_post where type = 'RECRUITMENT'",
+    @Query(value = "select * from base_post where type = 'RECRUITMENT' order by created_date_time desc",
             countQuery = "select count(*) from base_post where type = 'RECRUITMENT'",
             nativeQuery = true)
     Page<Recruitment> findAllRecruitments(Pageable pageable);

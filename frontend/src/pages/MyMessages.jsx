@@ -11,6 +11,9 @@ const MyMessages = () => {
     const [isMessageModalOpen, setIsMessageModalOpen] = useState(false);
     const [isReplyModalOpen, setIsReplyModalOpen] = useState(false);
     const [replyRecipient, setReplyRecipient] = useState("");
+    const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+    const [receiverName, setReceiverName] = useState("");
+    const [content, setContent] = useState("");
     const [page, setPage] = useState(0);
     const [totalPages, setTotalPages] = useState(0);
 
@@ -84,6 +87,8 @@ const MyMessages = () => {
             if (response.ok) {
                 setMessages((prev) => prev.filter((msg) => msg.messageId !== messageId));
                 setIsMessageModalOpen(false);
+
+                await fetchUnreadCount();
             }
         } catch (e) {
             console.error("삭제 실패", e);
@@ -123,6 +128,36 @@ const MyMessages = () => {
         }
     };
 
+    const sendNewMessage = async () => {
+        const token = localStorage.getItem("jwtToken");
+
+        try {
+            const response = await fetch(`/api/messages`, {
+                method: "POST",
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    receiverName, content
+                })
+            });
+
+            if (response.ok) {
+                alert("쪽지를 성공적으로 보냈습니다.");
+                setIsCreateModalOpen(false);
+                setReceiverName("");
+                setContent("");
+                fetchMessages(page);
+            } else {
+                const text = await response.json();
+                alert("쪽지 전송 실패 : " + text);
+            }
+        } catch (error) {
+            console.error("쪽지 전송 오류 : ", error);
+        }
+    };
+
     // 채팅 시간 포멧 함수
     const formatChatTime = (timeValue) => {
         const date = new Date(timeValue);
@@ -142,8 +177,15 @@ const MyMessages = () => {
 
     return (
         <div className="max-w-4xl mx-auto pt-28 px-6">
-            <h2 className="text-2xl font-bold mb-6">📬 내 쪽지함</h2>
-
+            <div className="flex justify-between items-center mb-6">
+                <h2 className="text-2xl font-bold mb-6">📬 내 쪽지함</h2>
+                <button
+                    className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
+                    onClick={() => setIsCreateModalOpen(true)}
+                >
+                    쪽지 쓰기
+                </button>
+            </div>
             {messages.length === 0 ? (
                 <p className="text-gray-500 text-center">받은 쪽지가 없습니다.</p>
             ) : (
@@ -221,6 +263,42 @@ const MyMessages = () => {
                     onClose={() => setIsReplyModalOpen(false)}
                     onSend={sendReply}
                 />
+            )}
+
+            {isCreateModalOpen && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+                    <div className="bg-white p-6 rounded-lg w-[400px] relative">
+                        <button
+                            className="absolute top-2 right-2 text-xl font-bold"
+                            onClick={() => setIsCreateModalOpen(false)}
+                        >
+                            ×
+                        </button>
+                        <h3 className="text-xl font-bold mb-4 text-center">쪽지 쓰기</h3>
+                        <label className="block mb-2 font-semibold">수신자 닉네임</label>
+                        <input
+                            type="text"
+                            value={receiverName}
+                            onChange={(e) => setReceiverName(e.target.value)}
+                            className="w-full px-3 py-2 border rounded mb-4"
+                            placeholder="닉네임 입력"
+                        />
+                        <label className="block mb-2 font-semibold">내용</label>
+                        <textarea
+                            rows={4}
+                            value={content}
+                            onChange={(e) => setContent(e.target.value)}
+                            className="w-full px-3 py-2 border rounded mb-4"
+                            placeholder="쪽지 내용을 입력하세요"
+                        />
+                        <button
+                            onClick={sendNewMessage}
+                            className="w-full bg-green-500 text-white py-2 rounded hover:bg-green-600 font-semibold"
+                        >
+                            보내기
+                        </button>
+                    </div>
+                </div>
             )}
         </div>
     );
