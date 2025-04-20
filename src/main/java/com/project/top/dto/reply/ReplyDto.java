@@ -12,6 +12,7 @@ public class ReplyDto {
     private Long boardId;
     private Long authorId;
     private String authorNickname;
+    private Long parentReplyId;
 
     public static ReplyDto replyDtoFromEntity(Reply reply) {
         ReplyDto dto = new ReplyDto();
@@ -21,6 +22,9 @@ public class ReplyDto {
         dto.setBoardId(reply.getBoard().getId());
         dto.setAuthorId(reply.getAuthor().getId());
         dto.setAuthorNickname(reply.getAuthor().getNickname());
+        dto.setParentReplyId(
+                reply.getParentReply() != null ? reply.getParentReply().getId() : null
+        );
 
         return dto;
     }

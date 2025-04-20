@@ -109,4 +109,10 @@ public class BoardController {
         return ResponseEntity.ok(boardList);
     }
 
+    @PostMapping("/{boardId}/view")
+    public ResponseEntity<?> increaseView(@PathVariable Long boardId) {
+        boardService.increaseView(boardId);
+        return ResponseEntity.ok().build();
+    }
+
 }

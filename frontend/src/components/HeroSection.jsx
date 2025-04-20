@@ -20,6 +20,17 @@ function HeroSection() {
                 모집 공고 보기
             </button>
 
+            {/* 게시판 이동 버튼 */}
+            <div className="mt-4">
+                <p className="text-gray-700 mb-2">자유롭게 소통하고 싶다면?</p>
+                <button
+                    className="px-6 py-3 bg-indigo-500 text-white rounded-lg hover:bg-indigo-600 transition"
+                    onClick={() => navigate("/boards")}
+                >
+                    게시판 바로가기
+                </button>
+            </div>
+
             {/*모달창*/}
             {isModalOpen && (
                 <div

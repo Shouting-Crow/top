@@ -80,9 +80,6 @@ public class BoardServiceImpl implements BoardService{
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new IllegalArgumentException("게시글이 존재하지 않습니다."));
 
-        board.incrementViews();
-        boardRepository.save(board);
-
         return BoardDto.boardDtoFromEntity(board);
     }
 
@@ -90,5 +87,15 @@ public class BoardServiceImpl implements BoardService{
     public Page<BoardListDto> getBoardList(Pageable pageable) {
         return boardRepository.findAll(pageable)
                 .map(BoardListDto::fromEntity);
+    }
+
+    @Override
+    @Transactional
+    public void increaseView(Long boardId) {
+        Board board = boardRepository.findById(boardId)
+                .orElseThrow(() -> new IllegalArgumentException("게시글이 존재하지 않습니다."));
+
+        board.incrementViews();
+        boardRepository.save(board);
     }
 }

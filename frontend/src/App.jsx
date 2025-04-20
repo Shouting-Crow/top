@@ -28,6 +28,10 @@ import ChatRoom from "./pages/ChatRoom.jsx";
 import ChatProvider from "./context/ChatProvider.jsx";
 import MyMessages from "./pages/MyMessages.jsx";
 import MessageProvider from "./context/MessageProvider.jsx";
+import BoardList from "./pages/BoardList.jsx";
+import BoardRegister from "./pages/BoardRegister.jsx";
+import Board from "./pages/Board.jsx";
+import BoardEdit from "./pages/BoardEdit.jsx";
 
 const Layout = ({ children }) => {
     const location = useLocation();
@@ -53,14 +57,17 @@ const Layout = ({ children }) => {
 
         "/my-groups",
 
-        "/messages"
+        "/messages",
+
+        "/boards"
     ];
 
     const shouldShowHeader = showHeaderPages.includes(location.pathname) ||
         location.pathname.startsWith("/recruitment/") ||
         location.pathname.startsWith("/study-group/") ||
         location.pathname.startsWith("/applicants/") ||
-        location.pathname.startsWith("/groups/");
+        location.pathname.startsWith("/groups/") ||
+        location.pathname.startsWith("/boards/");
 
     return (
         <div>
@@ -113,6 +120,11 @@ function App() {
                         <Route path="/chat/:chatRoomId" element={<ChatRoom />}/>
 
                         <Route path="/messages" element={<MyMessages />}/>
+
+                        <Route path="/boards" element={<BoardList />}/>
+                        <Route path="/boards/register" element={<BoardRegister />}/>
+                        <Route path="/boards/:boardId" element={<Board />}/>
+                        <Route path="/boards/edit/:boardId" element={<BoardEdit />}/>
                     </Routes>
                 </Layout>
             </Router>
