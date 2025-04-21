@@ -45,6 +45,7 @@
 * Gradle
 ### 프론트엔드
 * React
+* Javascript
 * HTML
 * TailwindCSS
 
