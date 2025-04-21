@@ -33,4 +33,82 @@
 * JWT 기능을 이용한 로그인 유지로 안정성을 올림
 
 
+# 🔧 개발 환경
+### 백엔드
+* Java
+* Spring Boot
+* MySQL
+* JPA 
+* QueryDSL
+* WebSocket
+* Spring Security
+* Gradle
+### 프론트엔드
+* React
+* HTML
+* TailwindCSS
+
+# 📝 다이어그램
+![top_diagram drawio](https://github.com/user-attachments/assets/2ffa2c77-7197-44cd-9daf-19efdffbb1ce)
+
+
+# 📁 파일 구조
+```
+├─ backend
+│  ├─ java
+│  │  └─ com
+│  │      └─ project
+│  │          └─ top
+│  │              ├─ batch
+│  │              ├─ config
+│  │              ├─ controller
+│  │              ├─ domain
+│  │              ├─ dto
+│  │              │  ├─ application
+│  │              │  ├─ basePost
+│  │              │  ├─ board
+│  │              │  ├─ category
+│  │              │  ├─ chatMessage
+│  │              │  ├─ chatRoom
+│  │              │  ├─ group
+│  │              │  ├─ groupMember
+│  │              │  ├─ login
+│  │              │  ├─ message
+│  │              │  ├─ recruitment
+│  │              │  ├─ reply
+│  │              │  ├─ studyGroup
+│  │              │  ├─ user
+│  │              │  └─ userInfo
+│  │              ├─ filter
+│  │              ├─ initializer
+│  │              ├─ interceptor
+│  │              ├─ repository
+│  │              ├─ security
+│  │              ├─ service
+│  │              │  ├─ application
+│  │              │  ├─ basePost
+│  │              │  ├─ board
+│  │              │  ├─ chat
+│  │              │  ├─ group
+│  │              │  ├─ groupMember
+│  │              │  ├─ login
+│  │              │  ├─ message
+│  │              │  ├─ recruitment
+│  │              │  ├─ reply
+│  │              │  ├─ studyGroup
+│  │              │  ├─ user
+│  │              │  ├─ userInfo
+│  │              │  └─ util
+│  │              └─ util
+│  └─ resources
+│      └─ static
+│          └─ js
+│
+└─ frontend
+   ├─ assets
+   ├─ components
+   ├─ context
+   └─ pages
+```
+
 
