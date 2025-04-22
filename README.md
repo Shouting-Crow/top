@@ -3,6 +3,7 @@
 📆 1차 제작 기간 : 2025.01 ~ 2024.04  
 😶 제작자 : 윤진욱 (Shouting Crow)
 
+<br></br>
 
 # 🧩 프로젝트 소개  
 
@@ -11,7 +12,10 @@
 또한 스터디 그룹 모집도 제공을 하여 프로젝트를 하기는 부담스러운 사용자들은 다른 사용자들과 함께 학습을 진행할 수 있습니다. </br>
 게시판도 지원을 하여 모집을 하거나 질문 등을 올려서 건전한 커뮤니티를 이뤄나갈 수도 있습니다. </br>
 
+<br></br>
+
 # 🔍 주요 기능
+
 ### 프로젝트 및 스터디그룹 모집 공고
 * 누구나 모집 공고 등록이 가능
 * 누구나 공고를 확인하고 원하는 공고에 지원 가능
@@ -32,28 +36,30 @@
 ### 회원가입 및 로그인
 * JWT 기능을 이용한 로그인 유지로 안정성을 올림
 
+<br></br>
 
 # 🔧 개발 환경
-### 백엔드
-* Java
-* Spring Boot
-* MySQL
-* JPA 
-* QueryDSL
-* WebSocket
-* Spring Security
-* Gradle
-### 프론트엔드
-* React
-* Javascript
-* HTML
-* TailwindCSS
+
+#### 🛠️ 백엔드
+- ⚙️ Java, Spring Boot, Gradle
+- 🗄️ MySQL, JPA, QueryDSL
+- 🔐 Spring Security, JWT
+- 🔌 WebSocket
+
+#### 💻 프론트엔드
+- ⚛️ React, JavaScript
+- 🎨 TailwindCSS, HTML
+
+<br></br>
 
 # 📝 다이어그램
+
 ![top_diagram drawio](https://github.com/user-attachments/assets/2ffa2c77-7197-44cd-9daf-19efdffbb1ce)
 
+<br></br>
 
 # 📁 파일 구조
+
 ```
 ├─ backend
 │  ├─ java
@@ -112,4 +118,4 @@
    └─ pages
 ```
 
-
+<br></br>
