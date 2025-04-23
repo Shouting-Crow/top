@@ -47,6 +47,7 @@ public class SecurityConfig {
                                 .requestMatchers("/api/chat/rooms").authenticated()
                                 .requestMatchers(HttpMethod.GET, "/api/recruitments").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/api/recruitments/*").permitAll()
+                                .requestMatchers(HttpMethod.GET, "/api/recruitments/search").permitAll()
                                 .requestMatchers(HttpMethod.POST, "/api/recruitments").authenticated()
                                 .requestMatchers(HttpMethod.PATCH, "/api/recruitments/**").authenticated()
 

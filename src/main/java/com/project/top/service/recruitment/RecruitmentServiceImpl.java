@@ -3,10 +3,7 @@ package com.project.top.service.recruitment;
 import com.project.top.domain.BasePost;
 import com.project.top.domain.Recruitment;
 import com.project.top.domain.User;
-import com.project.top.dto.recruitment.RecruitmentCreateDto;
-import com.project.top.dto.recruitment.RecruitmentDto;
-import com.project.top.dto.recruitment.RecruitmentListDto;
-import com.project.top.dto.recruitment.RecruitmentUpdateDto;
+import com.project.top.dto.recruitment.*;
 import com.project.top.repository.BasePostRepository;
 import com.project.top.repository.RecruitmentRepository;
 import com.project.top.repository.UserRepository;
@@ -88,6 +85,11 @@ public class RecruitmentServiceImpl implements RecruitmentService {
         Page<Recruitment> recruitments = recruitmentRepository.findAllRecruitments(pageable);
 
         return recruitments.map(RecruitmentListDto::recruitmentsFromEntity);
+    }
+
+    @Override
+    public Page<RecruitmentListDto> searchRecruitmentList(RecruitmentSearchDto recruitmentSearchDto, Pageable pageable) {
+        return recruitmentRepository.searchRecruitments(recruitmentSearchDto, pageable);
     }
 
     @Override

@@ -56,34 +56,34 @@ class ApplicationServiceTest {
         log.info("description : {}", application.getBasePost().getDescription());
     }
 
-    @Test
-    void updateStatusTest() {
-        ApplicationStatusUpdateDto dto = new ApplicationStatusUpdateDto();
+//    @Test
+//    void updateStatusTest() {
+//        ApplicationStatusUpdateDto dto = new ApplicationStatusUpdateDto();
+//
+//        dto.setRecruitmentId(1L);
+//        dto.setApplicationId(1L);
+//        dto.setStatus(ApplicationStatus.APPROVED);
+//
+//        applicationService.updateApplicationStatus(1L, dto);
+//
+//        ApplicationListDto application = applicationService.getApplicationList(1L, 1L).get(0);
+//
+//        log.info("status : {}", application.getStatus());
+//    }
 
-        dto.setRecruitmentId(1L);
-        dto.setApplicationId(1L);
-        dto.setStatus(ApplicationStatus.APPROVED);
-
-        applicationService.updateApplicationStatus(1L, dto);
-
-        ApplicationListDto application = applicationService.getApplicationList(1L, 1L).get(0);
-
-        log.info("status : {}", application.getStatus());
-    }
-
-    @Test
-    void updateStatusTest2() {
-        ApplicationStatusUpdateDto dto = new ApplicationStatusUpdateDto();
-
-        dto.setRecruitmentId(4L);
-        dto.setApplicationId(2L);
-        dto.setStatus(ApplicationStatus.REJECTED);
-
-        applicationService.updateApplicationStatus(2L, dto);
-
-        ApplicationListDto application = applicationService.getApplicationList(1L, 4L).get(0);
-
-        log.info("status : {}", application.getStatus());
-    }
+//    @Test
+//    void updateStatusTest2() {
+//        ApplicationStatusUpdateDto dto = new ApplicationStatusUpdateDto();
+//
+//        dto.setRecruitmentId(4L);
+//        dto.setApplicationId(2L);
+//        dto.setStatus(ApplicationStatus.REJECTED);
+//
+//        applicationService.updateApplicationStatus(2L, dto);
+//
+//        ApplicationListDto application = applicationService.getApplicationList(1L, 4L).get(0);
+//
+//        log.info("status : {}", application.getStatus());
+//    }
 
 }

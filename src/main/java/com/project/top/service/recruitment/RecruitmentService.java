@@ -1,10 +1,7 @@
 package com.project.top.service.recruitment;
 
 import com.project.top.domain.Recruitment;
-import com.project.top.dto.recruitment.RecruitmentCreateDto;
-import com.project.top.dto.recruitment.RecruitmentDto;
-import com.project.top.dto.recruitment.RecruitmentListDto;
-import com.project.top.dto.recruitment.RecruitmentUpdateDto;
+import com.project.top.dto.recruitment.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -15,6 +12,7 @@ public interface RecruitmentService {
     Recruitment updateRecruitment(Long recruitmentId, Long userId, RecruitmentUpdateDto recruitmentUpdateDto);
     void deleteRecruitment(Long userId, Long recruitmentId);
     Page<RecruitmentListDto> getRecruitmentList(Pageable pageable);
+    Page<RecruitmentListDto> searchRecruitmentList(RecruitmentSearchDto recruitmentSearchDto, Pageable pageable);
     RecruitmentDto getRecruitment(Long recruitmentId);
     List<RecruitmentListDto> getRecruitmentMyList(Long creatorId);
     void closeRecruitment(Long recruitmentId, Long creatorId);

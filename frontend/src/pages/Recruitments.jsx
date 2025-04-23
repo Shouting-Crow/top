@@ -6,6 +6,8 @@ const Recruitments = () => {
     const [page, setPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const navigate = useNavigate();
+    const [searchType, setSearchType] = useState("all");
+    const [keyword, setKeyword] = useState("");
 
     useEffect(() => {
         fetchRecruitment(page);
@@ -51,6 +53,24 @@ const Recruitments = () => {
         }
     };
 
+    const handleSearch = async () => {
+        if (keyword.trim().length < 2) {
+            alert("검색어는 최소 두 글자 이상 입력해주세요.");
+            return;
+        }
+
+        try {
+            const response = await fetch(`/api/recruitments/search?searchType=${searchType}&keyword=${keyword}&page=${page - 1}`);
+            const data = await response.json();
+            console.log("검색 페이지 응답 : ", data);
+            setRecruitments(data.content);
+            setTotalPages(data.totalPages);
+            setPage(data.number + 1);
+        } catch (error) {
+            console.error("검색 실패", error);
+        }
+    };
+
     return (
         <div className="relative flex flex-col items-center min-h-screen bg-gray-100 p-6">
             <div className="w-full h-12"></div>
@@ -64,17 +84,38 @@ const Recruitments = () => {
                 </button>
             </div>
 
-            {/* 검색, 필터 */}
-            <div className="flex justify-between items-center w-full max-w-7xl mb-8">
+            {/*검색*/}
+            <div className="flex items-center gap-3 mb-6 w-full max-w-7xl">
+                <select
+                    value={searchType}
+                    onChange={(e) => setSearchType(e.target.value)}
+                    className="border p-2 rounded"
+                >
+                    <option value="all">전체</option>
+                    <option value="title">제목</option>
+                    <option value="creator">작성자</option>
+                    <option value="content">내용</option>
+                </select>
+
                 <input
                     type="text"
-                    placeholder="검색어를 입력하세요"
-                    className="border p-4 rounded-lg w-3/4 shadow-sm text-lg"
+                    placeholder="검색어 입력"
+                    value={keyword}
+                    onChange={(e) => setKeyword(e.target.value)}
+                    onKeyDown={(e) => {
+                        if (e.key === "Enter") handleSearch();
+                    }}
+                    className="flex-1 border p-2 rounded"
                 />
-                <button className="bg-gray-300 px-4 py-3 rounded-lg font-semibold shadow-sm text-lg">
-                    필터
+
+                <button
+                    className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+                    onClick={handleSearch}
+                >
+                    검색
                 </button>
             </div>
+
 
             {/* 모집 공고 리스트 */}
             <div className="grid lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-1 gap-6 max-w-7xl w-full">

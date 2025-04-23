@@ -1,10 +1,7 @@
 package com.project.top.controller;
 
 import com.project.top.domain.Recruitment;
-import com.project.top.dto.recruitment.RecruitmentCreateDto;
-import com.project.top.dto.recruitment.RecruitmentDto;
-import com.project.top.dto.recruitment.RecruitmentListDto;
-import com.project.top.dto.recruitment.RecruitmentUpdateDto;
+import com.project.top.dto.recruitment.*;
 import com.project.top.repository.RecruitmentRepository;
 import com.project.top.service.recruitment.RecruitmentService;
 import com.project.top.service.user.UserService;
@@ -93,6 +90,20 @@ public class RecruitmentController {
         Page<RecruitmentListDto> recruitmentList = recruitmentService.getRecruitmentList(pageable);
 
         return ResponseEntity.ok(recruitmentList);
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<?> searchRecruitmentList(
+            @RequestParam String searchType,
+            @RequestParam String keyword,
+            @PageableDefault(size = 12, page = 0) Pageable pageable) {
+        RecruitmentSearchDto recruitmentSearchDto = new RecruitmentSearchDto();
+        recruitmentSearchDto.setSearchType(searchType);
+        recruitmentSearchDto.setKeyword(keyword);
+
+        Page<RecruitmentListDto> result = recruitmentService.searchRecruitmentList(recruitmentSearchDto, pageable);
+
+        return ResponseEntity.ok(result);
     }
 
     @GetMapping("/my-list")

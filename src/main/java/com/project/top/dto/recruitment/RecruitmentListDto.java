@@ -1,7 +1,9 @@
 package com.project.top.dto.recruitment;
 
 import com.project.top.domain.Recruitment;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
@@ -10,6 +12,8 @@ import java.util.List;
 
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class RecruitmentListDto {
     private Long id;
     private String title;
