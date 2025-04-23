@@ -11,6 +11,7 @@ public interface StudyGroupService {
     StudyGroupDto updateStudyGroup(Long studyGroupId, Long userId, StudyGroupUpdateDto studyGroupUpdateDto);
     void deleteStudyGroup(Long studyGroupId, Long userId);
     Page<StudyGroupListDto> getStudyGroupList(Pageable pageable);
+    Page<StudyGroupListDto> searchStudyGroups(StudyGroupSearchDto dto, Pageable pageable);
     StudyGroupDto getStudyGroup(Long studyGroupId);
     List<StudyGroupMyListDto> getStudyGroupMyList(Long userId);
     void closeStudyGroup(Long studyGroupId, Long creatorId);

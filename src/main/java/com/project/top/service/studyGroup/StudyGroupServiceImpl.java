@@ -85,6 +85,11 @@ public class StudyGroupServiceImpl implements StudyGroupService{
     }
 
     @Override
+    public Page<StudyGroupListDto> searchStudyGroups(StudyGroupSearchDto dto, Pageable pageable) {
+        return studyGroupRepository.searchStudyGroups(dto, pageable);
+    }
+
+    @Override
     public StudyGroupDto getStudyGroup(Long studyGroupId) {
         StudyGroup studyGroup = (StudyGroup) basePostRepository.findById(studyGroupId)
                 .orElseThrow(() -> new IllegalArgumentException("스터디 그룹을 찾을 수 없습니다."));

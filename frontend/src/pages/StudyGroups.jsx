@@ -6,6 +6,7 @@ const StudyGroups = () => {
     const [page, setPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const navigate = useNavigate();
+    const [keyword, setKeyword] = useState("");
 
     useEffect(() => {
         fetchStudyGroup(page);
@@ -51,6 +52,23 @@ const StudyGroups = () => {
         }
     };
 
+    const handleSearch = async () => {
+        if (keyword.trim().length < 2) {
+            alert("검색어는 최소 두 글자 이상 입력해주세요.");
+            return;
+        }
+
+        try {
+            const response = await fetch(`/api/study-groups/search?keyword=${keyword}&page=${page - 1}`);
+            const data = await response.json();
+            setStudyGroups(data.content);
+            setTotalPages(data.totalPages);
+            setPage(data.number + 1);
+        } catch (error) {
+            console.error("검색 실패", error);
+        }
+    };
+
     return (
         <div className="relative flex flex-col items-center min-h-screen bg-gray-100 p-6">
             <div className="w-full h-12"></div>
@@ -64,15 +82,24 @@ const StudyGroups = () => {
                 </button>
             </div>
 
-            {/* 검색, 필터 */}
-            <div className="flex justify-between items-center w-full max-w-7xl mb-8">
+            {/*검색*/}
+            <div className="flex items-center gap-3 mb-6 w-full max-w-7xl">
                 <input
                     type="text"
-                    placeholder="검색어를 입력하세요"
-                    className="border p-4 rounded-lg w-3/4 shadow-sm text-lg"
+                    placeholder="검색어 입력"
+                    value={keyword}
+                    onChange={(e) => setKeyword(e.target.value)}
+                    onKeyDown={(e) => {
+                        if (e.key === "Enter") handleSearch();
+                    }}
+                    className="flex-1 border p-2 rounded"
                 />
-                <button className="bg-gray-300 px-4 py-3 rounded-lg font-semibold shadow-sm text-lg">
-                    필터
+
+                <button
+                    className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+                    onClick={handleSearch}
+                >
+                    검색
                 </button>
             </div>
 

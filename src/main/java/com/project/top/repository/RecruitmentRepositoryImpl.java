@@ -77,10 +77,10 @@ public class RecruitmentRepositoryImpl implements RecruitmentRepositoryCustom {
 
         List<Recruitment> recruitments = query.fetch();
 
-        List<RecruitmentListDto> recruitmentListDtoList = recruitments.stream()
+        List<RecruitmentListDto> results = recruitments.stream()
                 .map(RecruitmentListDto::recruitmentsFromEntity)
                 .toList();
 
-        return new PageImpl<>(recruitmentListDtoList, pageable, totalCount);
+        return new PageImpl<>(results, pageable, totalCount);
     }
 }
