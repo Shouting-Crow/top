@@ -3,10 +3,7 @@ package com.project.top.service.board;
 import com.project.top.domain.Board;
 import com.project.top.domain.Category;
 import com.project.top.domain.User;
-import com.project.top.dto.board.BoardCreateDto;
-import com.project.top.dto.board.BoardDto;
-import com.project.top.dto.board.BoardListDto;
-import com.project.top.dto.board.BoardUpdateDto;
+import com.project.top.dto.board.*;
 import com.project.top.repository.BoardRepository;
 import com.project.top.repository.CategoryRepository;
 import com.project.top.repository.ReplyRepository;
@@ -87,6 +84,11 @@ public class BoardServiceImpl implements BoardService{
     public Page<BoardListDto> getBoardList(Pageable pageable) {
         return boardRepository.findAll(pageable)
                 .map(BoardListDto::fromEntity);
+    }
+
+    @Override
+    public Page<BoardListDto> searchBoards(BoardSearchDto boardSearchDto, Pageable pageable) {
+        return boardRepository.searchBoards(boardSearchDto, pageable);
     }
 
     @Override

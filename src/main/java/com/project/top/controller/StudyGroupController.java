@@ -96,9 +96,11 @@ public class StudyGroupController {
 
     @GetMapping("/search")
     public ResponseEntity<?> searchStudyGroupList(
+            @RequestParam String searchType,
             @RequestParam String keyword,
             @PageableDefault(size = 12, page = 0) Pageable pageable) {
         StudyGroupSearchDto studyGroupSearchDto = new StudyGroupSearchDto();
+        studyGroupSearchDto.setSearchType(searchType);
         studyGroupSearchDto.setKeyword(keyword);
 
         Page<StudyGroupListDto> result = studyGroupService.searchStudyGroups(studyGroupSearchDto, pageable);

@@ -6,6 +6,9 @@ const BoardList = () => {
     const [page, setPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const navigate = useNavigate();
+    const [searchType, setSearchType] = useState("all");
+    const [keyword, setKeyword] = useState("");
+    const [selectedCategory, setSelectedCategory] = useState("all");
 
     useEffect(() => {
         fetchBoards(page);
@@ -22,6 +25,26 @@ const BoardList = () => {
         }
     };
 
+    const handleSearch = async (pageNum) => {
+        const params = new URLSearchParams({
+            searchType,
+            keyword,
+            category: selectedCategory,
+            page: pageNum - 1
+        });
+
+        try {
+            const response = await fetch(`/api/boards/search?${params.toString()}`);
+            const data = await response.json();
+
+            setBoards(data.content);
+            setTotalPages(data.totalPages);
+            setPage(data.number + 1);
+        } catch (error) {
+            console.error("게시글 검색 실패 : ", error);
+        }
+    };
+
     return (
         <div className="max-w-4xl mx-auto pt-28 px-6">
             <h2 className="text-2xl font-bold mb-6">📚 게시판</h2>
@@ -34,7 +57,7 @@ const BoardList = () => {
                         if (!token) {
                             const confirmLogin = window.confirm("로그인이 필요한 서비스입니다. 로그인 하시겠습니까?");
                             if (confirmLogin) {
-                                navigate("/login");
+                                navigate("/login", {state: {from: location.pathname}});
                             }
                         } else {
                             navigate("/boards/register");
@@ -43,6 +66,56 @@ const BoardList = () => {
                 >
                     게시글 작성
                 </button>
+            </div>
+
+            {/* 검색 및 필터 */}
+            <div className="flex flex-col sm:flex-row gap-3 mb-6">
+                <select
+                    value={searchType}
+                    onChange={(e) => setSearchType(e.target.value)}
+                    className="border p-2 rounded"
+                >
+                    <option value="all">전체</option>
+                    <option value="title">제목</option>
+                    <option value="author">작성자</option>
+                    <option value="content">내용</option>
+                </select>
+
+                <input
+                    type="text"
+                    placeholder="검색어 입력"
+                    value={keyword}
+                    onChange={(e) => setKeyword(e.target.value)}
+                    onKeyDown={(e) => e.key === "Enter" && handleSearch(1)}
+                    className="flex-1 border p-2 rounded"
+                />
+
+                <button
+                    className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+                    onClick={() => handleSearch(1)}
+                >
+                    검색
+                </button>
+            </div>
+
+            {/* 카테고리 버튼 */}
+            <div className="flex gap-2 mb-6">
+                {["all", "공지글", "일반글", "상담글", "모집글", "판매글"].map((cat) => (
+                    <button
+                        key={cat}
+                        className={`px-4 py-1.5 rounded-full border text-sm font-semibold ${
+                            selectedCategory === cat
+                                ? "bg-blue-600 text-white"
+                                : "bg-white text-gray-700 border-gray-300"
+                        }`}
+                        onClick={() => {
+                            setSelectedCategory(selectedCategory === cat ? "all" : cat);
+                            setPage(1);
+                        }}
+                    >
+                        {cat}
+                    </button>
+                ))}
             </div>
 
             {boards.length === 0 ? (

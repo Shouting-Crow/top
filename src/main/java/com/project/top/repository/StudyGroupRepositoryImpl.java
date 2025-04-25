@@ -27,10 +27,27 @@ public class StudyGroupRepositoryImpl implements StudyGroupRepositoryCustom {
         QUser user = QUser.user;
 
         BooleanBuilder builder = new BooleanBuilder();
-        String keyword = studyGroupSearchDto.getKeyword();
 
-        if (StringUtils.hasText(keyword)) {
-            builder.and(studyGroup.title.likeIgnoreCase("%" + keyword + "%"));
+        if (StringUtils.hasText(studyGroupSearchDto.getKeyword()) && studyGroupSearchDto.getKeyword().length() >= 2) {
+            String keyword = studyGroupSearchDto.getKeyword();
+
+            switch (studyGroupSearchDto.getSearchType()) {
+                case "title" ->
+                        builder.and(studyGroup.title.like("%" + keyword + "%"));
+
+                case "creator" ->
+                        builder.and(studyGroup.creator.nickname.like("%" + keyword + "%"));
+
+                case "content" ->
+                        builder.and(studyGroup.description.like("%" + keyword + "%"));
+
+                case "all" ->
+                        builder.andAnyOf(
+                                studyGroup.title.like("%" + keyword + "%"),
+                                studyGroup.creator.nickname.like("%" + keyword + "%"),
+                                studyGroup.description.like("%" + keyword + "%")
+                        );
+            }
         }
 
         JPAQuery<StudyGroup> query = queryFactory
@@ -44,6 +61,7 @@ public class StudyGroupRepositoryImpl implements StudyGroupRepositoryCustom {
         long totalCount = queryFactory
                 .select(studyGroup.count())
                 .from(studyGroup)
+                .leftJoin(studyGroup.creator, user)
                 .where(builder)
                 .fetchOne();
 

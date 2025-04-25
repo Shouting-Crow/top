@@ -6,6 +6,7 @@ const StudyGroups = () => {
     const [page, setPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const navigate = useNavigate();
+    const [searchType, setSearchType] = useState("all");
     const [keyword, setKeyword] = useState("");
 
     useEffect(() => {
@@ -39,7 +40,7 @@ const StudyGroups = () => {
         if (!token) {
             const confirmLogin = window.confirm("로그인이 필요한 서비스입니다. 로그인 페이지로 이동하시겠습니까?");
             if (confirmLogin) {
-                navigate("/login");
+                navigate("/login", {state: {from: location.pathname}});
             }
         } else {
             navigate("/study-group/register");
@@ -59,8 +60,9 @@ const StudyGroups = () => {
         }
 
         try {
-            const response = await fetch(`/api/study-groups/search?keyword=${keyword}&page=${page - 1}`);
+            const response = await fetch(`/api/study-groups/search?searchType=${searchType}&keyword=${keyword}&page=${page - 1}`);
             const data = await response.json();
+
             setStudyGroups(data.content);
             setTotalPages(data.totalPages);
             setPage(data.number + 1);
@@ -84,6 +86,17 @@ const StudyGroups = () => {
 
             {/*검색*/}
             <div className="flex items-center gap-3 mb-6 w-full max-w-7xl">
+                <select
+                    value={searchType}
+                    onChange={(e) => setSearchType(e.target.value)}
+                    className="border p-2 rounded"
+                >
+                    <option value="all">전체</option>
+                    <option value="title">제목</option>
+                    <option value="creator">작성자</option>
+                    <option value="content">내용</option>
+                </select>
+
                 <input
                     type="text"
                     placeholder="검색어 입력"

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import {Link, useNavigate} from 'react-router-dom';
+import {Link, useNavigate, useLocation} from 'react-router-dom';
 import logoImage from "../assets/top_logo_ex.jpg";
 
 const Login = () => {
@@ -7,6 +7,8 @@ const Login = () => {
     const [password, setPassword] = useState("");
     const [error, setError] = useState(null);
     const navigate = useNavigate();
+    const location = useLocation();
+    const from = location.state?.from || "/";
 
     const handleLogin = async (e) => {
         e.preventDefault();
@@ -28,7 +30,7 @@ const Login = () => {
             localStorage.setItem("nickname", data.nickname);
 
             alert("로그인 성공!");
-            navigate("/");
+            navigate(from);
         } catch (error) {
             setError(error.message);
         }

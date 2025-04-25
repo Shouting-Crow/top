@@ -31,9 +31,6 @@ public class RecruitmentRepositoryImpl implements RecruitmentRepositoryCustom {
         QRecruitment recruitment = QRecruitment.recruitment;
         QUser user = QUser.user;
 
-        System.out.println("검색 타입 : " + recruitmentSearchDto.getSearchType());
-        System.out.println("검색어 : " + recruitmentSearchDto.getKeyword());
-
         BooleanBuilder builder = new BooleanBuilder();
 
         if (StringUtils.hasText(recruitmentSearchDto.getKeyword()) && recruitmentSearchDto.getKeyword().length() >= 2) {

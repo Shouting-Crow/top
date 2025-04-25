@@ -59,6 +59,7 @@ public class SecurityConfig {
                                 .requestMatchers(HttpMethod.GET, "/api/boards").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/api/boards/*").permitAll()
                                 .requestMatchers(HttpMethod.POST, "/api/boards/*/view").permitAll()
+                                .requestMatchers(HttpMethod.GET, "/api/boards/search").permitAll()
 
                                 .requestMatchers(HttpMethod.GET, "/api/base-posts/my-posts").authenticated()
                                 .anyRequest().authenticated()

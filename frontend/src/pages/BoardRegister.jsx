@@ -30,7 +30,7 @@ const BoardRegister = () => {
                     setAuthorId(data.id);
                 } else {
                     alert("로그인 후 이용가능한 서비스입니다.");
-                    navigate("/login");
+                    navigate("/login", {state: {from: location.pathname}});
                 }
             } catch (error) {
                 console.error("사용자 정보 조회 실패 : ", error);

@@ -17,7 +17,7 @@ const MyInfoEdit = () => {
             const token = localStorage.getItem("jwtToken");
             if (!token) {
                 alert("로그인이 필요합니다.");
-                navigate("/login");
+                navigate("/login", {state: {from: location.pathname}});
                 return;
             }
 

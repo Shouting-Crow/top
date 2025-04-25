@@ -66,9 +66,17 @@ const Board = () => {
     };
 
     const handleReplySubmit = async () => {
-        if (!newReply.trim() || !loginUser) return;
-
         const token = localStorage.getItem("jwtToken");
+
+        if (!token) {
+            const confirmLogin = window.confirm("로그인이 필요한 서비스입니다. 로그인 페이지로 이동하시겠습니까?");
+            if (confirmLogin) {
+                navigate("/login", {state: {from: location.pathname}});
+            }
+            return;
+        }
+
+        if (!newReply.trim() || !loginUser) return;
 
         try {
             const response=  await fetch(`/api/replies`, {

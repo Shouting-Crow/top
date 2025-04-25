@@ -40,7 +40,7 @@ const Recruitments = () => {
         if (!token) {
             const confirmLogin = window.confirm("로그인이 필요한 서비스입니다. 로그인 페이지로 이동하시겠습니까?");
             if (confirmLogin) {
-                navigate("/login");
+                navigate("/login", {state: {from: location.pathname}});
             }
         } else {
             navigate("/recruitment/register");
@@ -62,7 +62,7 @@ const Recruitments = () => {
         try {
             const response = await fetch(`/api/recruitments/search?searchType=${searchType}&keyword=${keyword}&page=${page - 1}`);
             const data = await response.json();
-            console.log("검색 페이지 응답 : ", data);
+
             setRecruitments(data.content);
             setTotalPages(data.totalPages);
             setPage(data.number + 1);

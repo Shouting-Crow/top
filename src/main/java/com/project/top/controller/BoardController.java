@@ -1,10 +1,7 @@
 package com.project.top.controller;
 
 import com.project.top.domain.Board;
-import com.project.top.dto.board.BoardCreateDto;
-import com.project.top.dto.board.BoardDto;
-import com.project.top.dto.board.BoardListDto;
-import com.project.top.dto.board.BoardUpdateDto;
+import com.project.top.dto.board.*;
 import com.project.top.dto.reply.ReplyDto;
 import com.project.top.service.board.BoardService;
 import com.project.top.service.reply.ReplyService;
@@ -107,6 +104,22 @@ public class BoardController {
         Page<BoardListDto> boardList = boardService.getBoardList(pageable);
 
         return ResponseEntity.ok(boardList);
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<?> searchBoards(
+            @RequestParam String searchType,
+            @RequestParam String keyword,
+            @RequestParam String category,
+            @PageableDefault(size = 10, page = 0) Pageable pageable) {
+        BoardSearchDto boardSearchDto = new BoardSearchDto();
+        boardSearchDto.setSearchType(searchType);
+        boardSearchDto.setKeyword(keyword);
+        boardSearchDto.setBoardType(category);
+
+        Page<BoardListDto> result = boardService.searchBoards(boardSearchDto, pageable);
+
+        return ResponseEntity.ok(result);
     }
 
     @PostMapping("/{boardId}/view")
