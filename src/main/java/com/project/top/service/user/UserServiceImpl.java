@@ -81,4 +81,9 @@ public class UserServiceImpl implements UserService {
         return new UserDto(user.getId(), user.getLoginId(),
                 null, user.getEmail(), user.getPhoneNumber(), user.getNickname());
     }
+
+    @Override
+    public boolean existsByEmail(String email) {
+        return userRepository.existsByEmail(email);
+    }
 }

@@ -62,6 +62,9 @@ public class SecurityConfig {
                                 .requestMatchers(HttpMethod.GET, "/api/boards/search").permitAll()
 
                                 .requestMatchers(HttpMethod.GET, "/api/base-posts/my-posts").authenticated()
+
+                                .requestMatchers(HttpMethod.POST, "/api/users/check-email").permitAll()
+                                .requestMatchers(HttpMethod.POST, "/api/find/*").permitAll()
                                 .anyRequest().authenticated()
                         )
                 .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider, customUserDetailsService), UsernamePasswordAuthenticationFilter.class)

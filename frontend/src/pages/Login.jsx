@@ -82,10 +82,21 @@ const Login = () => {
                         로그인
                     </button>
 
+                    {/* 아이디 및 비밀번호 찾기 */}
+                    <div className="flex justify-center mt-3 gap-4">
+                        <Link to="/find/login-ids" className="text-sm text-blue-600 hover:underline">
+                            아이디 찾기
+                        </Link>
+                        <span className="text-gray-400">|</span>
+                        <Link to="/find/password" className="text-sm text-blue-600 hover:underline">
+                            비밀번호 찾기
+                        </Link>
+                    </div>
+
                     {/* 뒤로가기 버튼 */}
                     <button
                         type="button"
-                        onClick={() => navigate(-1)}
+                        onClick={() => navigate("/")}
                         className="w-80 mt-3 bg-gray-300 text-gray-800 py-2 rounded-lg hover:bg-gray-400 transition"
                     >
                         뒤로가기

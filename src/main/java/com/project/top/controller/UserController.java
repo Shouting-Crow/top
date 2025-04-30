@@ -1,5 +1,6 @@
 package com.project.top.controller;
 
+import com.project.top.dto.user.EmailCheckDto;
 import com.project.top.dto.user.UserDto;
 import com.project.top.dto.user.UserRegistrationDto;
 import com.project.top.dto.user.UserUpdateDto;
@@ -9,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.parameters.P;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
@@ -89,6 +91,17 @@ public class UserController {
             return ResponseEntity.ok(userDto);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+
+    @PostMapping("/check-email")
+    public ResponseEntity<?> checkEmailExists(@RequestBody EmailCheckDto emailCheckDto) {
+        boolean exists = userService.existsByEmail(emailCheckDto.getEmail());
+
+        if (exists) {
+            return ResponseEntity.ok().build();
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("해당 이메일로 가입한 이력이 없습니다.");
         }
     }
 
