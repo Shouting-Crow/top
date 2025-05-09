@@ -34,6 +34,8 @@ import Board from "./pages/Board.jsx";
 import BoardEdit from "./pages/BoardEdit.jsx";
 import FoundLoginIds from "./pages/FoundLoginIds.jsx";
 import FindLoginIds from "./pages/FindLoginIds.jsx";
+import FindPassword from "./pages/FindPassword.jsx";
+import ChangePassword from "./pages/ChangePassword.jsx";
 
 const Layout = ({ children }) => {
     const location = useLocation();
@@ -130,6 +132,9 @@ function App() {
 
                         <Route path="/find/login-ids" element={<FindLoginIds />}/>
                         <Route path="/find/login-ids-result" element={<FoundLoginIds />}/>
+
+                        <Route path="/find/password" element={<FindPassword />}/>
+                        <Route path="/change-password" element={<ChangePassword />}/>
                     </Routes>
                 </Layout>
             </Router>

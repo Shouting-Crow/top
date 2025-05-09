@@ -12,5 +12,6 @@ public interface UserService {
     Long getUserIdFromLoginId(String loginId);
     UserDto getUserByLoginId(String loginId);
     boolean existsByEmail(String email);
+    void validateLoginIdAndEmail(String loginId, String email);
 
 }

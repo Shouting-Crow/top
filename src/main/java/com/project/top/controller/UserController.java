@@ -1,9 +1,6 @@
 package com.project.top.controller;
 
-import com.project.top.dto.user.EmailCheckDto;
-import com.project.top.dto.user.UserDto;
-import com.project.top.dto.user.UserRegistrationDto;
-import com.project.top.dto.user.UserUpdateDto;
+import com.project.top.dto.user.*;
 import com.project.top.service.user.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -103,6 +100,13 @@ public class UserController {
         } else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("해당 이메일로 가입한 이력이 없습니다.");
         }
+    }
+
+    @PostMapping("/check-loginid-email")
+    public ResponseEntity<?> checkLoginIdAndEmail(@RequestBody EmailAndLoginIdCheckDto dto) {
+        userService.validateLoginIdAndEmail(dto.getLoginId(), dto.getEmail());
+
+        return ResponseEntity.ok().build();
     }
 
 }

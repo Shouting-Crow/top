@@ -86,4 +86,14 @@ public class UserServiceImpl implements UserService {
     public boolean existsByEmail(String email) {
         return userRepository.existsByEmail(email);
     }
+
+    @Override
+    public void validateLoginIdAndEmail(String loginId, String email) {
+        User user = userRepository.findByLoginId(loginId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 아이디 입니다."));
+
+        if (!user.getEmail().equals(email)) {
+            throw new IllegalArgumentException("입력한 이메일이 등록된 이메일과 다릅니다.");
+        }
+    }
 }
