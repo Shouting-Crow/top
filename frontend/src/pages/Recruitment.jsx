@@ -37,6 +37,13 @@ const Recruitment = () => {
 
     //쪽지 보내기 버튼 클릭 시 실행
     const handleSendMessageClick = (recipient) => {
+        const token = localStorage.getItem("jwtToken");
+        if (!token) {
+            alert("로그인이 필요한 서비스입니다.");
+            navigate("/login", { state: { from: location.pathname } });
+            return;
+        }
+
         setRecipient(recipient);
         setIsReplyModalOpen(true);
     };

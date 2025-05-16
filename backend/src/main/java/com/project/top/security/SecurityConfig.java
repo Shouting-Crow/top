@@ -56,6 +56,7 @@ public class SecurityConfig {
                                 .requestMatchers(HttpMethod.POST, "/api/study-groups").authenticated()
                                 .requestMatchers(HttpMethod.PATCH, "/api/study-groups/**").authenticated()
 
+                                .requestMatchers(HttpMethod.GET, "/api/boards/my").authenticated()
                                 .requestMatchers(HttpMethod.GET, "/api/boards").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/api/boards/*").permitAll()
                                 .requestMatchers(HttpMethod.POST, "/api/boards/*/view").permitAll()
@@ -68,6 +69,7 @@ public class SecurityConfig {
                                 .requestMatchers(HttpMethod.POST, "/api/find/*").permitAll()
                                 .requestMatchers(HttpMethod.POST, "/api/find-password/*").permitAll()
                                 .requestMatchers(HttpMethod.POST, "/api/change-password").permitAll()
+
                                 .anyRequest().authenticated()
                         )
                 .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider, customUserDetailsService), UsernamePasswordAuthenticationFilter.class)

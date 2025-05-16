@@ -1,5 +1,5 @@
 import {useEffect, useRef, useState} from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import {useLocation, useNavigate, useParams} from "react-router-dom";
 
 const Board = () => {
     const { boardId } = useParams();
@@ -16,6 +16,8 @@ const Board = () => {
     const [replyTargetId, setReplyTargetId] = useState(null);
     const [replyTargetNickname, setReplyTargetNickname] = useState("");
     const replyInputRef = useRef(null);
+    const location = useLocation();
+    const [fromMyBoards] = useState(() => location.state?.fromMyBoards === true);
 
     useEffect(() => {
         increaseView();
@@ -229,7 +231,7 @@ const Board = () => {
 
             <button
                 className="mb-8 bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400"
-                onClick={() => navigate("/boards")}
+                onClick={() => navigate(fromMyBoards ? "/my-boards" : "/boards")}
             >
                 돌아가기
             </button>

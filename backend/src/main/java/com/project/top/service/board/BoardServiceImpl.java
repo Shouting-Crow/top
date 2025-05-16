@@ -87,6 +87,12 @@ public class BoardServiceImpl implements BoardService{
     }
 
     @Override
+    public Page<BoardListDto> getMyBoardList(Long userId, Pageable pageable) {
+        return boardRepository.findByAuthorId(userId, pageable)
+                .map(BoardListDto::fromEntity);
+    }
+
+    @Override
     public Page<BoardListDto> searchBoards(BoardSearchDto boardSearchDto, Pageable pageable) {
         return boardRepository.searchBoards(boardSearchDto, pageable);
     }

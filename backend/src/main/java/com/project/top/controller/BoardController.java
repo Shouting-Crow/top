@@ -8,6 +8,7 @@ import com.project.top.service.reply.ReplyService;
 import com.project.top.service.user.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -24,6 +25,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/boards")
 @RequiredArgsConstructor
+@Slf4j
 public class BoardController {
 
     private final BoardService boardService;
@@ -126,6 +128,23 @@ public class BoardController {
     public ResponseEntity<?> increaseView(@PathVariable Long boardId) {
         boardService.increaseView(boardId);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/my")
+    public ResponseEntity<?> getMyBoardList(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC, page = 0) Pageable pageable) {
+        try {
+            Long userId = userService.getUserIdFromLoginId(userDetails.getUsername());
+
+            Page<BoardListDto> myBoardList = boardService.getMyBoardList(userId, pageable);
+            return ResponseEntity.ok(myBoardList);
+        } catch (SecurityException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+
     }
 
 }

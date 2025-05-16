@@ -311,6 +311,9 @@ const Header = () => {
             }
             return;
         }
+
+        setMenuOpen(false);
+
         navigate(path);
     }
 
@@ -489,10 +492,6 @@ const Header = () => {
                                 )}
 
                             </div>
-                            {/*<button className="relative p-2 bg-white rounded-md shadow-md">*/}
-                            {/*    <IoChatbubbleEllipsesOutline size={24} className="text-gray-700" />*/}
-                            {/*    <span className="absolute -top-1 -right-1 bg-green-500 text-white text-xs rounded-full px-1">3</span>*/}
-                            {/*</button>*/}
                         </>
                     )}
 

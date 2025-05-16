@@ -36,6 +36,7 @@ import FoundLoginIds from "./pages/FoundLoginIds.jsx";
 import FindLoginIds from "./pages/FindLoginIds.jsx";
 import FindPassword from "./pages/FindPassword.jsx";
 import ChangePassword from "./pages/ChangePassword.jsx";
+import MyBoardList from "./pages/MyBoardList.jsx";
 
 const Layout = ({ children }) => {
     const location = useLocation();
@@ -63,7 +64,9 @@ const Layout = ({ children }) => {
 
         "/messages",
 
-        "/boards"
+        "/boards",
+
+        "/my-boards"
     ];
 
     const shouldShowHeader = showHeaderPages.includes(location.pathname) ||
@@ -129,6 +132,7 @@ function App() {
                         <Route path="/boards/register" element={<BoardRegister />}/>
                         <Route path="/boards/:boardId" element={<Board />}/>
                         <Route path="/boards/edit/:boardId" element={<BoardEdit />}/>
+                        <Route path="/my-boards" element={<MyBoardList />}/>
 
                         <Route path="/find/login-ids" element={<FindLoginIds />}/>
                         <Route path="/find/login-ids-result" element={<FoundLoginIds />}/>

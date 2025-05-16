@@ -11,6 +11,7 @@ public interface BoardService {
     void deleteBoard(Long boardId, Long userId);
     BoardDto getBoard(Long boardId);
     Page<BoardListDto> getBoardList(Pageable pageable);
+    Page<BoardListDto> getMyBoardList(Long userId, Pageable pageable);
     Page<BoardListDto> searchBoards(BoardSearchDto boardSearchDto, Pageable pageable);
     void increaseView(Long boardId);
 }
