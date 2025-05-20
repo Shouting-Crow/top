@@ -54,7 +54,7 @@ const Recruitment = () => {
         if (!token) return;
 
         try {
-            const response = await fetch(`http://localhost:8080/api/messages`, {
+            const response = await fetch(`/api/messages`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -87,7 +87,7 @@ const Recruitment = () => {
         if (!confirmDelete) return;
 
         try{
-          const response = await fetch(`http://localhost:8080/api/recruitments/${recruitmentId}`, {
+          const response = await fetch(`/api/recruitments/${recruitmentId}`, {
               method: "DELETE",
               headers: {
                   "Authorization": `Bearer ${token}`

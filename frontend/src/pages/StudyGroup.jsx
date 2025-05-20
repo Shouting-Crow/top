@@ -54,7 +54,7 @@ const StudyGroup = () => {
         if (!token) return;
 
         try {
-            const response = await fetch(`http://localhost:8080/api/messages`, {
+            const response = await fetch(`/api/messages`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -87,7 +87,7 @@ const StudyGroup = () => {
         if (!confirmDelete) return;
 
         try{
-            const response = await fetch(`http://localhost:8080/api/study-groups/${studyGroupId}`, {
+            const response = await fetch(`/api/study-groups/${studyGroupId}`, {
                 method: "DELETE",
                 headers: {
                     "Authorization": `Bearer ${token}`

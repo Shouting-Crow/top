@@ -47,7 +47,7 @@ const Header = () => {
             if (!token) return;
 
             try {
-                const response = await fetch("http://localhost:8080/api/users/me", {
+                const response = await fetch("/api/users/me", {
                     headers: { Authorization: `Bearer ${token}` },
                 });
 
@@ -75,7 +75,7 @@ const Header = () => {
             console.log("최근 5개의 쪽지 확인을 위한 요청 보내기....");
 
             try {
-                const response = await fetch("http://localhost:8080/api/messages/recent", {
+                const response = await fetch("/api/messages/recent", {
                     headers: { Authorization: `Bearer ${token}` },
                 });
 
@@ -109,7 +109,7 @@ const Header = () => {
 
         try {
             const token = localStorage.getItem("jwtToken");
-            const response = await fetch(`http://localhost:8080/api/messages/${messageId}`, {
+            const response = await fetch(`/api/messages/${messageId}`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
 
@@ -148,7 +148,7 @@ const Header = () => {
 
         try {
             const token = localStorage.getItem("jwtToken");
-            const response = await fetch(`http://localhost:8080/api/messages/${messageId}`, {
+            const response = await fetch(`/api/messages/${messageId}`, {
                 method: "DELETE",
                 headers: { Authorization: `Bearer ${token}` },
             });
@@ -184,7 +184,7 @@ const Header = () => {
         if (!token) return;
 
         try {
-            const response = await fetch(`http://localhost:8080/api/messages`, {
+            const response = await fetch(`/api/messages`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
