@@ -34,7 +34,7 @@ const Header = () => {
     const [isReplyModalOpen, setIsReplyModalOpen] = useState(false); //답장 모달
     const [replyRecipient, setReplyRecipient] = useState(""); //답장 발송자
 
-    const {chatRooms, chatsCount, refreshChatRoomStates} = useContext(ChatContext);
+    const {chatRooms, setChatRooms, chatsCount, refreshChatRoomStates} = useContext(ChatContext);
 
     const [loading, setLoading] = useState(false);
 

@@ -40,6 +40,7 @@ const ChatProvider = ({ children }) => {
         <ChatContext.Provider
             value={{
                 chatRooms,
+                setChatRooms,
                 chatsCount,
                 refreshChatRoomStates
             }}
