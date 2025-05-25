@@ -1,7 +1,10 @@
 # 🖥️TOP (토이 프로젝트 모집 사이트)
 
-📆 1차 제작 기간 : 2025.01 ~ 2024.04  
-😶 제작자 : 윤진욱 (Shouting Crow)
+📆 1차 제작 기간 : 2025.01 ~ 2024.04
+
+😶 제작자 : 윤진욱 (Shouting Crow) </br>
+
+🕸️ 웹 페이지 : http://top-project.site/
 
 <br></br>
 
@@ -49,6 +52,10 @@
 #### 💻 프론트엔드
 - ⚛️ React, JavaScript
 - 🎨 TailwindCSS, HTML
+
+#### ⚙️ 배포
+- 🐋 Docker
+- ☁ AWS
 
 <br></br>
 
