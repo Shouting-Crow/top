@@ -72,8 +72,6 @@ const Header = () => {
             const token = localStorage.getItem("jwtToken");
             if (!token) return;
 
-            console.log("최근 5개의 쪽지 확인을 위한 요청 보내기....");
-
             try {
                 const response = await fetch("/api/messages/recent", {
                     headers: { Authorization: `Bearer ${token}` },
@@ -81,7 +79,6 @@ const Header = () => {
 
                 if (response.ok) {
                     const data = await response.json();
-                    console.log("최근 쪽지 데이터 : ", data);
                     setMessages(data);
                 } else {
                     console.error("최근 쪽지 요청이 실패했습니다. ", response.status);
@@ -390,8 +387,8 @@ const Header = () => {
 
                                 {/* 쪽지 드롭다운 메뉴 */}
                                 {showMessagesDropdown && (
-                                    <div ref={messageDropdownRef} className="absolute right-0 mt-2 w-[400px] bg-gray-700 text-white shadow-lg rounded-md p-4">
-                                        <h3 className="text-lg font-bold text-center mb-3">📩 쪽지함</h3>
+                                    <div ref={messageDropdownRef} className="absolute right-0 mt-2 w-[460px] bg-gray-700 text-white shadow-lg rounded-md p-4 z-50">
+                                    <h3 className="text-lg font-bold text-center mb-3">📩 쪽지함</h3>
                                         {messages.length > 0 ? (
                                             messages.map((msg) => (
                                                 <div key={msg.messageId} className="flex items-center justify-between p-4 border-b border-gray-600 mb-2">
@@ -412,7 +409,9 @@ const Header = () => {
                                                     </button>
 
                                                     {/* 보낸 사람 닉네임 */}
-                                                    <span className="text-gray-300 text-sm text-center w-1/4">{msg.senderName}</span>
+                                                    <span className="w-24 truncate text-sm text-center text-gray-300">
+                                                        {msg.senderName.length > 6 ? `${msg.senderName.slice(0, 6)}...` : msg.senderName}
+                                                    </span>
 
                                                     {/* 답장 버튼 */}
                                                     <button

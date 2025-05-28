@@ -150,8 +150,13 @@ const MyMessages = () => {
                 setContent("");
                 fetchMessages(page);
             } else {
-                const text = await response.json();
-                alert("쪽지 전송 실패 : " + text);
+                const errorText = await response.text();
+
+                if (errorText.includes("수신자")) {
+                    alert("쪽지 수신자를 찾을 수 없습니다.");
+                } else {
+                    alert("쪽지 전송에 실패했습니다.");
+                }
             }
         } catch (error) {
             console.error("쪽지 전송 오류 : ", error);

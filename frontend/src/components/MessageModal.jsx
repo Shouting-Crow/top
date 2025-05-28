@@ -8,8 +8,10 @@ const MessageModal = ({ message, onClose, onDelete, onReply }) => {
             <div className="bg-white p-6 rounded-lg shadow-lg w-96 relative z-50">
 
                 {/* 닫기 버튼 */}
-                <button className="absolute top-3 right-3 text-gray-600 hover:text-black text-xl"
-                        onClick={onClose}>
+                <button
+                    className="absolute top-1.5 right-2.5 text-gray-600 hover:text-black text-lg"
+                    onClick={onClose}
+                >
                     ✖
                 </button>
 
