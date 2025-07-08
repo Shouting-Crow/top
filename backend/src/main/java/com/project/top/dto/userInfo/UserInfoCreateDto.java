@@ -14,7 +14,6 @@ import java.util.List;
 @NoArgsConstructor
 public class UserInfoCreateDto {
     @NotBlank(message = "연락처를 입력해주세요.")
-    @Pattern(regexp = "^(\\+\\d{1,3})?\\d{10,11}$", message = "유효한 전화번호 형식이어야 합니다.")
     private String contact;
 
     @NotEmpty(message = "최소 하나 이상의 기술 스택을 입력해야 합니다.")

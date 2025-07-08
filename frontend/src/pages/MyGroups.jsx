@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { FaArrowLeft, FaUsers } from "react-icons/fa";
 
 const MyGroups = () => {
     const [groups, setGroups] = useState([]);
@@ -125,7 +126,7 @@ const MyGroups = () => {
 
     return (
         <>
-            {/*수정 모달*/}
+            {/* 수정 모달 */}
             {showEditModal && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
                     <div className="bg-white p-6 rounded-lg shadow-md w-[400px] relative">
@@ -160,74 +161,79 @@ const MyGroups = () => {
                 </div>
             )}
 
-        <div className="min-h-screen bg-gray-100 flex flex-col items-center pt-20 px-6">
-            <h2 className="text-3xl font-bold mb-10">내 그룹</h2>
+            <div className="min-h-screen bg-gray-100 px-6 pt-20">
+                {/* 타이틀 */}
+                <div className="flex items-center gap-2 mb-8 max-w-5xl mx-auto">
+                    <button onClick={() => navigate("/")} className="text-gray-700 hover:text-gray-900">
+                        <FaArrowLeft size={20} />
+                    </button>
+                    <FaUsers className="text-green-600" size={20} />
+                    <h2 className="text-2xl font-bold">내 그룹</h2>
+                </div>
 
-            <div className="w-full max-w-5xl space-y-4">
-                {groups.map((group) => (
-                    <div
-                        key={group.id}
-                        onClick={() => navigate(`/groups/${group.id}`)}
-                        className="cursor-pointer hover:shadow-lg hover:ring-2 hover:ring-green-300 transition-all
-                                    flex justify-between items-center bg-green-100 p-4 rounded shadow"
-                    >
-                        <div className="flex items-center space-x-4">
-                            <div>
-                                <div className="font-bold text-lg">{group.name}</div>
-                                <div className="text-gray-700">{group.description}</div>
+                <div className="w-full max-w-5xl space-y-4 mx-auto">
+                    {groups.map((group) => (
+                        <div
+                            key={group.id}
+                            onClick={() => navigate(`/groups/${group.id}`)}
+                            className="cursor-pointer hover:shadow-lg hover:ring-2 hover:ring-green-300 transition-all
+                            flex justify-between items-center bg-green-100 p-4 rounded shadow"
+                        >
+                            <div className="flex items-center gap-4">
+                                {/* 타입 */}
+                                <div className="w-[100px] flex-shrink-0 text-center text-sm px-2 py-1 rounded
+                                    bg-blue-200 text-blue-800 font-semibold whitespace-nowrap"
+                                >
+                                    {group.type === "PROJECT" ? "프로젝트" : "스터디그룹"}
+                                </div>
+
+                                {/* 그룹 정보 */}
+                                <div>
+                                    <div className="font-bold text-lg">{group.name}</div>
+                                    <div className="text-gray-700">{group.description}</div>
+                                </div>
                             </div>
-                            <span className="ml-4 bg-blue-200 text-blue-800 px-2 py-1 text-sm rounded">
-                                {group.type === "PROJECT" ? "프로젝트" : "스터디그룹"}
-                            </span>
-                        </div>
 
-                        <div className="flex space-x-2">
-                            {group.admin ? (
-                                <>
+                            {/* 버튼 */}
+                            <div className="flex space-x-2">
+                                {group.admin ? (
+                                    <>
+                                        <button
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                openEditModal(group);
+                                            }}
+                                            className="bg-gray-400 px-3 py-1 rounded text-white font-bold"
+                                        >
+                                            수정
+                                        </button>
+                                        <button
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                handleDelete(group.id);
+                                            }}
+                                            className="bg-red-400 px-3 py-1 rounded text-white font-bold"
+                                        >
+                                            삭제
+                                        </button>
+                                    </>
+                                ) : (
                                     <button
                                         onClick={(e) => {
                                             e.stopPropagation();
-                                            openEditModal(group);
-                                        }}
-                                        className="bg-blue-300 px-3 py-1 rounded text-white font-bold"
-                                    >
-                                        수정
-                                    </button>
-                                    <button
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                            handleDelete(group.id);
+                                            handleLeave(group.id);
                                         }}
                                         className="bg-red-400 px-3 py-1 rounded text-white font-bold"
                                     >
-                                        삭제
+                                        탈퇴
                                     </button>
-                                </>
-                            ) : (
-                                <button
-                                    onClick={(e) => {
-                                        e.stopPropagation();
-                                        handleLeave(group.id);
-                                    }}
-                                    className="bg-yellow-400 px-3 py-1 rounded text-white font-bold"
-                                >
-                                    탈퇴
-                                </button>
-                            )}
+                                )}
+                            </div>
                         </div>
-                    </div>
-                ))}
+                    ))}
+                </div>
             </div>
-
-            <button
-                className="mt-12 bg-green-300 text-black px-8 py-3 rounded font-bold hover:scale-105"
-                onClick={() => navigate("/")}
-            >
-                홈으로 돌아가기
-            </button>
-        </div>
         </>
-
     );
 };
 

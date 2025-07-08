@@ -1,6 +1,10 @@
-import { useEffect, useState } from "react";
+import {useEffect, useRef, useState} from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import ReplyModal from "../components/ReplyModal";
+import { FiSettings } from "react-icons/fi";
+import { IoIosCall } from "react-icons/io";
+import { IoMdEye } from "react-icons/io";
+import {FaArrowLeft} from "react-icons/fa";
 
 const Recruitment = () => {
     const { recruitmentId } = useParams();
@@ -8,13 +12,46 @@ const Recruitment = () => {
     const [isCreator, setIsCreator] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const navigate = useNavigate();
-
-    const [isReplyModalOpen, setIsReplyModalOpen] = useState(false); //모달 상태
-    const [recipient, setRecipient] = useState(""); //쪽지 수신자 설정
+    const [isReplyModalOpen, setIsReplyModalOpen] = useState(false);
+    const [recipient, setRecipient] = useState("");
+    const [dropdownOpen, setDropdownOpen] = useState(false);
+    const dropdownRef = useRef(null);
 
     useEffect(() => {
         fetchRecruitment();
     }, []);
+
+    useEffect(() => {
+        increaseView();
+    }, []);
+
+    useEffect(() => {
+        const handleClickOutside = (e) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+                setDropdownOpen(false);
+            }
+        };
+
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, []);
+
+    const increaseView = async () => {
+        const viewedKey = `viewed-recruitment-${recruitmentId}`;
+
+        if (localStorage.getItem(viewedKey)) return;
+
+        try {
+            await fetch(`/api/base-posts/${recruitmentId}/view`, {
+                method: "POST"
+            });
+            localStorage.setItem(viewedKey, "true");
+        } catch (error) {
+            console.error("조회수 증가 실패", error);
+        }
+    };
 
     const fetchRecruitment = async () => {
         try {
@@ -191,6 +228,17 @@ const Recruitment = () => {
         }
     };
 
+    const getDDayColor = (dueDate) => {
+        const daysLeft = Math.ceil((new Date(dueDate) - new Date()) / (1000 * 60 * 60 * 24));
+        if (daysLeft <= 7) return "bg-red-500";
+        if (daysLeft <= 30) return "bg-yellow-400";
+        return "bg-gray-500";
+    };
+
+    const formatPhoneNumber = (number) => {
+        if (!number || number.length !== 11) return number;
+        return number.replace(/(\d{3})(\d{4})(\d{4})/, '$1-$2-$3');
+    };
 
     if (isLoading) {
         return (
@@ -206,7 +254,6 @@ const Recruitment = () => {
 
     return (
         <>
-            {/*쪽지 쓰기 모달*/}
             {isReplyModalOpen && (
                 <ReplyModal
                     recipient={recipient}
@@ -214,95 +261,136 @@ const Recruitment = () => {
                     onSend={sendReplyMessage}
                 />
             )}
-        <div className="flex justify-center items-center min-h-screen bg-gray-100 p-14">
-            <div className="w-full max-w-4xl bg-white p-8 rounded-lg shadow-lg">
-                {/* 공고 제목 */}
-                <div className="bg-green-300 text-center text-xl font-bold p-4 rounded-md mb-6">
-                    {recruitment.title}
-                </div>
+            <div className="flex justify-center px-4 py-20 bg-gray-50 min-h-screen">
+                <div className="w-full max-w-4xl space-y-10">
+                    {/* 제목 및 버튼 */}
+                    <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-3">
+                            <button onClick={() => navigate(-1)}>
+                                <FaArrowLeft className="text-2xl text-gray-600 hover:text-black" />
+                            </button>
+                            <h1 className="text-3xl font-bold text-gray-900">{recruitment.title}</h1>
+                            <span className={`text-sm font-semibold text-white px-2 py-1 rounded ${getDDayColor(recruitment.dueDate)}`}>
+                                D-{Math.max(0, Math.ceil((new Date(recruitment.dueDate) - new Date()) / (1000 * 60 * 60 * 24)))}
+                            </span>
+                        </div>
 
-                {/* 등록일 & 작성자 */}
-                <div className="flex justify-between text-gray-700 text-md mb-4">
-                    <span>📅 등록일: {new Date(recruitment.createdDateTime).toLocaleString()}</span>
-                    <span>
-                        ✍ 작성자: {recruitment.creatorNickname}
-                        <button
-                            className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600"
-                            onClick={() => handleSendMessageClick(recruitment.creatorNickname)}
-                        >
-                            쪽지 보내기
-                        </button>
-                    </span>
-                </div>
-
-                {/* 공고 설명 */}
-                <div className="bg-gray-100 p-4 rounded-md mb-6 text-lg text-gray-800 min-h-[200px]">
-                    {recruitment.description}
-                </div>
-
-                {/* 모집 현황 & 마감일 */}
-                <div className="flex justify-between items-center mb-6">
-                    <div className="flex items-center space-x-2">
-                        <span className="bg-green-500 text-white px-3 py-1 rounded-md text-lg font-semibold">
-                            D-{Math.max(0, Math.ceil((new Date(recruitment.dueDate) - new Date()) / (1000 * 60 * 60 * 24)))}
-                        </span>
-                        <span className="text-lg font-semibold text-gray-900">
-                            {recruitment.currentMembers} / {recruitment.totalMembers}
-                        </span>
+                        {/* 작성자 전용 메뉴 */}
+                        {isCreator && (
+                            <div className="relative" ref={dropdownRef}>
+                                <button onClick={() => setDropdownOpen(!dropdownOpen)} className="text-gray-600 hover:text-black">
+                                    <FiSettings className="h-6 w-6 text-gray-600 hover:text-gray-800" />
+                                </button>
+                                {dropdownOpen && (
+                                    <div className="absolute right-0 mt-2 w-32 bg-white border rounded-md shadow-lg z-10">
+                                        <button
+                                            onClick={() => navigate(`/recruitment/edit/${recruitmentId}`)}
+                                            className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100"
+                                        >
+                                            수정하기
+                                        </button>
+                                        <button
+                                            onClick={handleCloseRecruitment}
+                                            className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100"
+                                        >
+                                            마감하기
+                                        </button>
+                                        <button
+                                            onClick={handleDeleteRecruitment}
+                                            className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
+                                        >
+                                            삭제하기
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
+                        )}
                     </div>
 
-                    {isCreator && (
-                        <button
-                            className="bg-yellow-400 text-gray-900 px-4 py-2 rounded-md shadow-md hover:bg-yellow-500"
-                            onClick={handleCloseRecruitment}
-                        >
-                            마감하기
-                        </button>
-                    )}
-                </div>
+                    <hr className="border-t border-gray-300 mb-6" />
 
-                {/* 작성자 연락처 */}
-                <div className="bg-gray-200 p-3 rounded-md text-gray-800 text-center mb-6">
-                    {recruitment.creatorContact}
-                </div>
-
-                {/* 버튼 그룹 */}
-                <div className="flex justify-between">
-                    <button
-                        className="bg-blue-500 text-white px-5 py-2 rounded-md shadow-md hover:bg-blue-600"
-                        onClick={() => navigate("/recruitments")}
-                    >
-                        돌아가기
-                    </button>
-                    {!isCreator && (
-                        <button
-                            className="bg-green-400 text-white px-5 py-2 rounded-md shadow-md hover:bg-green-500"
-                            onClick={handleApplyRecruitment}
-                        >
-                            지원하기
-                        </button>
-                    )}
-                </div>
-
-                {/* 수정 & 삭제 버튼 (작성자만 보이도록 설정) */}
-                {isCreator && (
-                    <div className="flex justify-end space-x-2 mt-4">
-                        <button
-                            className="bg-yellow-500 text-white px-5 py-2 rounded-md shadow-md hover:bg-yellow-600"
-                            onClick={() => navigate(`/recruitment/edit/${recruitmentId}`)}
-                        >
-                            수정하기
-                        </button>
-                        <button
-                            className="bg-red-500 text-white px-5 py-2 rounded-md shadow-md hover:bg-red-600"
-                            onClick={() => handleDeleteRecruitment()}
-                        >
-                            삭제하기
-                        </button>
+                    {/* 핵심 정보 */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-lg text-gray-700 mb-8">
+                        <div className="flex space-x-2">
+                            <span className="text-gray-400">모집 인원</span>
+                            <span className="font-semibold">{recruitment.currentMembers} / {recruitment.totalMembers}</span>
+                        </div>
+                        <div className="flex space-x-2">
+                            <span className="text-gray-400">마감일</span>
+                            <span className="font-semibold">{recruitment.dueDate}</span>
+                        </div>
+                        <div className="flex space-x-2">
+                            <span className="text-gray-400">주제</span>
+                            <span className="font-semibold">{recruitment.topic}</span>
+                        </div>
                     </div>
-                )}
+
+                    {/* 기술 태그 */}
+                    <div className="mb-6">
+                        <div className="text-gray-400 mb-2">기술 태그</div>
+                        <div className="flex flex-wrap gap-2">
+                            {recruitment.tags.map((tag, idx) => (
+                                <span key={idx} className="bg-gray-200 text-sm text-gray-800 px-3 py-1 rounded-full">
+                                    #{tag}
+                                </span>
+                            ))}
+                        </div>
+                    </div>
+
+                    <hr className="border-t border-gray-200 mb-8" />
+
+                    {/* 설명 */}
+                    <div className="text-gray-800 leading-relaxed whitespace-pre-line min-h-[200px]">
+                        {recruitment.description}
+                    </div>
+
+                    {/* 하단 */}
+                    <div className="flex flex-col md:flex-row justify-between items-start md:items-center text-[15px] text-gray-700 border-t pt-6">
+                        {/* 작성자 + 날짜 + 쪽지 */}
+                        <div className="space-y-2">
+                            <div className="flex items-center gap-2">
+                                <span className="flex items-center font-medium">
+                                    ✍ <span className="ml-1">{recruitment.creatorNickname}</span>
+                                </span>
+                                <span className="text-gray-500">|</span>
+                                <span className="text-gray-500">{new Date(recruitment.createdDateTime).toISOString().split("T")[0]}</span>
+                                {!isCreator && (
+                                    <button
+                                        onClick={() => handleSendMessageClick(recruitment.creatorNickname)}
+                                        className="text-blue-600 hover:underline ml-2"
+                                    >
+                                        쪽지 보내기
+                                    </button>
+                                )}
+                            </div>
+
+                            {/* 연락처 */}
+                            {recruitment.creatorContact && (
+                                <div className="flex items-center text-[15px] mt-1">
+                                    <IoIosCall className="h-5 w-5 mr-1 text-green-600" />
+                                    {formatPhoneNumber(recruitment.creatorContact)}
+                                </div>
+                            )}
+                        </div>
+
+                        {/* 조회수 + 지원 */}
+                        <div className="flex items-center gap-4 mt-4 md:mt-0">
+                            <span className="flex items-center text-[15px] text-gray-500">
+                                <IoMdEye className="h-5 w-5 mr-1" />
+                                {recruitment.views}
+                            </span>
+                            {!isCreator && (
+                                <button
+                                    className="bg-blue-600 text-white px-4 py-1 rounded hover:bg-blue-700"
+                                    onClick={handleApplyRecruitment}
+                                >
+                                    지원하기
+                                </button>
+                            )}
+                        </div>
+                    </div>
+                </div>
             </div>
-        </div>
         </>
     );
 };

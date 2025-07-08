@@ -20,6 +20,7 @@ public class StudyGroupDto {
     private LocalDate dueDate;
     private LocalDateTime createdDateTime;
     private String creatorContact;
+    private int views;
 
     public static StudyGroupDto studyGroupDtoFromEntity(StudyGroup studyGroup) {
         StudyGroupDto studyGroupDto = new StudyGroupDto();
@@ -35,6 +36,7 @@ public class StudyGroupDto {
         studyGroupDto.setCreatorNickname(studyGroup.getCreator().getNickname());
         studyGroupDto.setCreatedDateTime(studyGroup.getCreatedDateTime());
         studyGroupDto.setCreatorContact(studyGroup.getCreator().getPhoneNumber());
+        studyGroupDto.setViews(studyGroup.getViews());
 
         return studyGroupDto;
     }

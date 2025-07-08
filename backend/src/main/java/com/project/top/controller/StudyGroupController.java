@@ -151,4 +151,15 @@ public class StudyGroupController {
         }
     }
 
+    @GetMapping("/popular")
+    public ResponseEntity<?> popularStudyGroups() {
+        try {
+            List<StudyGroupListDto> results = studyGroupService.getPopularStudyGroupList();
+
+            return ResponseEntity.ok(results);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+
 }

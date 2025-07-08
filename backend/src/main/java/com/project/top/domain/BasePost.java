@@ -34,6 +34,8 @@ public abstract class BasePost {
     @OneToMany(mappedBy = "basePost", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Application> applications = new ArrayList<>();
 
+    @Column(nullable = false)
+    private int views = 0;
 
     @Column(nullable = false)
     private int currentMembers = 1;
@@ -52,6 +54,16 @@ public abstract class BasePost {
 
     @Column(nullable = false)
     private LocalDate dueDate;
+
+    @Column(nullable = false)
+    private String topic;
+
+    @Column(nullable = false)
+    private boolean hasGroup = false;
+
+    public void incrementViews() {
+        this.views++;
+    }
 
     public void setDueDate(LocalDate dueDate) {
         if (dueDate.isBefore(createdDateTime.toLocalDate())){

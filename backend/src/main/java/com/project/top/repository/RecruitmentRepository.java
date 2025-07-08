@@ -19,4 +19,5 @@ public interface RecruitmentRepository extends JpaRepository<Recruitment, Long>,
 
     List<Recruitment> findByCreatorId(Long creatorId);
 
+    List<Recruitment> findTop4ByIsInactiveFalseAndViewsGreaterThanOrderByViewsDescCreatedDateTimeDesc(int minViews);
 }

@@ -5,17 +5,19 @@ import com.project.top.dto.application.ApplicationCreateDto;
 import com.project.top.dto.application.ApplicationListDto;
 import com.project.top.dto.application.ApplicationMyListDto;
 import com.project.top.dto.application.ApplicationStatusUpdateDto;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
 public interface ApplicationService {
-    public Application createApplication(Long userId, ApplicationCreateDto applicationCreateDto);
-    public void updateApplicationStatus(Long creatorId, ApplicationStatusUpdateDto applicationStatusUpdateDto);
-    public List<ApplicationListDto> getApplicationList(Long userId, Long basePostId);
-    public List<ApplicationMyListDto> getApplicationMyList(Long userId);
-    public String getBasePostTitle(Long basePostId);
+    Application createApplication(Long userId, ApplicationCreateDto applicationCreateDto);
+    void updateApplicationStatus(Long creatorId, ApplicationStatusUpdateDto applicationStatusUpdateDto);
+    Page<ApplicationListDto> getApplicationList(Long userId, Long basePostId, Pageable pageable);
+    List<ApplicationMyListDto> getApplicationMyList(Long userId);
+    String getBasePostTitle(Long basePostId);
 
     //테스트를 위한 삭제 메서드(추후 삭제)
-    public void deleteApplication(Long applicationId);
+    void deleteApplication(Long applicationId);
 
 }

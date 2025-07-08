@@ -42,6 +42,10 @@ public class Group extends BaseEntity {
     @OneToOne(mappedBy = "group", cascade = CascadeType.ALL, orphanRemoval = true)
     private ChatRoom chatRoom;
 
+    @OneToMany(mappedBy = "group", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Column(nullable = false)
+    private List<Schedule> schedules = new ArrayList<>();
+
     public void addMember(GroupMember member) {
         members.add(member);
         member.setGroup(this);

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { FiX } from "react-icons/fi";
 
 const GroupMembers = () => {
     const { groupId } = useParams();
@@ -211,31 +212,40 @@ const GroupMembers = () => {
             </div>
 
             {showInviteModal && (
-                <div className="fixed inset-0 bg-black bg-opacity-40 flex justify-center items-center">
-                    <div className="bg-blue-200 p-6 rounded-lg shadow-lg w-[350px] relative">
+                <div className="fixed inset-0 bg-black bg-opacity-40 flex justify-center items-center z-50">
+                    <div className="bg-white p-6 rounded-lg shadow-lg w-[350px] relative">
+                        {/* 닫기 버튼 */}
                         <button
-                            className="absolute top-2 right-2 text-xl font-bold"
+                            className="absolute top-3 right-3 text-gray-500 hover:text-gray-700"
                             onClick={() => {
                                 setShowInviteModal(false);
                                 setInviteNickname("");
                             }}
                         >
-                            ×
+                            <FiX size={20} />
                         </button>
-                        <h3 className="text-xl font-bold mb-4 text-center">멤버 초대</h3>
+
+                        {/* 타이틀 */}
+                        <h3 className="text-lg font-bold mb-4 text-center text-gray-800">멤버 초대</h3>
+
+                        {/* 입력 부분 */}
                         <input
                             type="text"
                             placeholder="닉네임을 입력하세요"
                             value={inviteNickname}
                             onChange={(e) => setInviteNickname(e.target.value)}
-                            className="w-full px-3 py-2 rounded mb-4"
+                            className="w-full px-3 py-2 border border-gray-300 rounded mb-4 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
                         />
-                        <button
-                            onClick={handleInviteMember}
-                            className="w-full bg-green-400 text-white py-2 rounded font-semibold"
-                        >
-                            초대하기
-                        </button>
+
+                        {/* 초대 버튼 */}
+                        <div className="flex justify-center">
+                            <button
+                                onClick={handleInviteMember}
+                                className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 text-sm font-medium"
+                            >
+                                초대하기
+                            </button>
+                        </div>
                     </div>
                 </div>
             )}

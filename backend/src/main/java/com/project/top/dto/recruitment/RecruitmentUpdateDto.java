@@ -27,4 +27,6 @@ public class RecruitmentUpdateDto {
     private LocalDate dueDate;
 
     private List<String> tags;
+
+    private String topic;
 }

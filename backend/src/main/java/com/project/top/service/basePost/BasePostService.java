@@ -9,4 +9,6 @@ public interface BasePostService {
     void updateExpired();
     BasePost getBasePostById(Long basePostId);
     List<BasePostMyListDto> getMyBasePosts(Long userId);
+    void increaseView(Long basePostId);
+    void deleteBasePost(Long basePostId, Long userId);
 }

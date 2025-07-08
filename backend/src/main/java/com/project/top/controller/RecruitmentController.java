@@ -86,7 +86,7 @@ public class RecruitmentController {
 
     @GetMapping
     public ResponseEntity<Page<RecruitmentListDto>> getRecruitmentList(
-            @PageableDefault(size = 12, page = 0) Pageable pageable) {
+            @PageableDefault(size = 16, page = 0) Pageable pageable) {
         Page<RecruitmentListDto> recruitmentList = recruitmentService.getRecruitmentList(pageable);
 
         return ResponseEntity.ok(recruitmentList);
@@ -96,7 +96,7 @@ public class RecruitmentController {
     public ResponseEntity<?> searchRecruitmentList(
             @RequestParam String searchType,
             @RequestParam String keyword,
-            @PageableDefault(size = 12, page = 0) Pageable pageable) {
+            @PageableDefault(size = 16, page = 0) Pageable pageable) {
         RecruitmentSearchDto recruitmentSearchDto = new RecruitmentSearchDto();
         recruitmentSearchDto.setSearchType(searchType);
         recruitmentSearchDto.setKeyword(keyword);
@@ -144,6 +144,17 @@ public class RecruitmentController {
             return ResponseEntity.ok("프로젝트 모집 공고가 마감되었습니다.");
         } catch (SecurityException e) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/popular")
+    public ResponseEntity<?> getPopularRecruitments() {
+        try {
+            List<RecruitmentListDto> results = recruitmentService.getPopularRecruitmentList();
+
+            return ResponseEntity.ok(results);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }

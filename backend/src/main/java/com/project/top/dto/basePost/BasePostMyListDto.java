@@ -23,6 +23,7 @@ public class BasePostMyListDto {
     private int totalMembers;
     private String topic;
     private int applicantCount;
+    private boolean hasGroup;
 
     public static BasePostMyListDto basePostMyListFromEntity(BasePost basePost) {
         BasePostMyListDto dto = new BasePostMyListDto();
@@ -35,13 +36,14 @@ public class BasePostMyListDto {
         dto.setCurrentMembers(basePost.getCurrentMembers());
         dto.setTotalMembers(basePost.getTotalMembers());
         dto.setApplicantCount(basePost.getApplications().size());
+        dto.setHasGroup(basePost.isHasGroup());
 
         if (basePost instanceof Recruitment) {
             dto.setPostType("RECRUITMENT");
-            dto.setTopic(null);
+            dto.setTopic(basePost.getTopic());
         } else if (basePost instanceof StudyGroup) {
             dto.setPostType("STUDY_GROUP");
-            dto.setTopic(((StudyGroup) basePost).getTopic());
+            dto.setTopic(basePost.getTopic());
         } else {
             dto.setPostType("UNKNOWN");
             dto.setTopic(null);

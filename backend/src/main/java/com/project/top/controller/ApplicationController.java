@@ -8,6 +8,10 @@ import com.project.top.service.basePost.BasePostService;
 import com.project.top.service.message.MessageService;
 import com.project.top.service.user.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -67,10 +71,11 @@ public class ApplicationController {
     @GetMapping("/{basePostId}/list")
     public ResponseEntity<?> getApplicationList(
             @PathVariable(name = "basePostId") Long basePostId,
-            @AuthenticationPrincipal UserDetails userDetails) {
+            @AuthenticationPrincipal UserDetails userDetails,
+            @PageableDefault(size = 16, page = 0, sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
         try {
             Long userId = userService.getUserIdFromLoginId(userDetails.getUsername());
-            List<ApplicationListDto> applicationList = applicationService.getApplicationList(userId, basePostId);
+            Page<ApplicationListDto> applicationList = applicationService.getApplicationList(userId, basePostId, pageable);
 
             String title = applicationService.getBasePostTitle(basePostId);
             ApplicationListResponseDto response = new ApplicationListResponseDto(title, applicationList);

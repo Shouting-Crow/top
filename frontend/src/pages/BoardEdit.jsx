@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { ClipboardDocumentListIcon } from "@heroicons/react/24/solid";
 
 const BoardEdit = () => {
     const { boardId } = useParams();
@@ -53,52 +54,63 @@ const BoardEdit = () => {
     };
 
     return (
-        <div className="max-w-4xl mx-auto pt-28 px-6">
-            <h2 className="text-2xl font-bold mb-6">게시글 수정</h2>
+        <div className="flex flex-col items-center min-h-screen bg-gray-100 px-6 pt-24 pb-10">
+            <div className="w-full max-w-5xl bg-white p-10 rounded-2xl shadow-lg">
+                {/* 타이틀 */}
+                <div className="flex items-center mb-10 gap-2">
+                    <ClipboardDocumentListIcon className="w-8 h-8 text-blue-500" />
+                    <h2 className="text-2xl font-bold text-gray-800">게시글 수정</h2>
+                </div>
 
-            <div className="mb-4">
-                <label className="block text-sm font-medium mb-1">카테고리</label>
-                <input
-                    type="text"
-                    value={categoryName}
-                    disabled
-                    className="w-full p-2 border rounded bg-gray-100"
-                />
-            </div>
+                {/* 제목 카테고리 라인 */}
+                <div className="grid grid-cols-10 gap-6 mb-6">
+                    <div className="col-span-7">
+                        <label className="block text-gray-900 font-semibold mb-2">제목</label>
+                        <input
+                            type="text"
+                            className="w-full p-3 border rounded-xl"
+                            placeholder="제목을 입력하세요"
+                            value={title}
+                            onChange={(e) => setTitle(e.target.value)}
+                        />
+                    </div>
+                    <div className="col-span-3">
+                        <label className="block text-gray-900 font-semibold mb-2">카테고리</label>
+                        <input
+                            type="text"
+                            className="w-full p-3 border rounded-xl bg-gray-100"
+                            value={categoryName}
+                            disabled
+                        />
+                    </div>
+                </div>
 
-            <div className="mb-4">
-                <label className="block text-sm font-medium mb-1">제목</label>
-                <input
-                    type="text"
-                    value={title}
-                    onChange={(e) => setTitle(e.target.value)}
-                    className="w-full p-2 border rounded"
-                />
-            </div>
+                {/* 내용 */}
+                <div className="mb-8">
+                    <label className="block text-gray-900 font-semibold mb-2">내용</label>
+                    <textarea
+                        className="w-full p-4 border rounded-xl h-64 resize-none"
+                        placeholder="게시글 내용을 입력하세요"
+                        value={content}
+                        onChange={(e) => setContent(e.target.value)}
+                    />
+                </div>
 
-            <div className="mb-6">
-                <label className="block text-sm font-medium mb-1">내용</label>
-                <textarea
-                    rows={10}
-                    value={content}
-                    onChange={(e) => setContent(e.target.value)}
-                    className="w-full p-3 border rounded resize-none"
-                />
-            </div>
-
-            <div className="flex justify-between">
-                <button
-                    onClick={() => navigate(-1)}
-                    className="bg-gray-400 text-white px-4 py-2 rounded hover:bg-gray-500"
-                >
-                    돌아가기
-                </button>
-                <button
-                    onClick={handleUpdate}
-                    className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-                >
-                    수정 완료
-                </button>
+                {/* 버튼 */}
+                <div className="flex justify-end gap-3">
+                    <button
+                        className="bg-gray-300 text-gray-800 px-5 py-2 rounded-md hover:bg-gray-400 transition"
+                        onClick={() => navigate(-1)}
+                    >
+                        돌아가기
+                    </button>
+                    <button
+                        className="bg-blue-600 text-white px-5 py-2 rounded-md hover:bg-blue-700 transition"
+                        onClick={handleUpdate}
+                    >
+                        수정하기
+                    </button>
+                </div>
             </div>
         </div>
     );

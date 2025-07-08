@@ -4,6 +4,8 @@ import com.project.top.domain.Reply;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
+
 @Getter @Setter
 public class ReplyDto {
     private Long id;
@@ -13,6 +15,7 @@ public class ReplyDto {
     private Long authorId;
     private String authorNickname;
     private Long parentReplyId;
+    private LocalDateTime createdAt;
 
     public static ReplyDto replyDtoFromEntity(Reply reply) {
         ReplyDto dto = new ReplyDto();
@@ -25,6 +28,7 @@ public class ReplyDto {
         dto.setParentReplyId(
                 reply.getParentReply() != null ? reply.getParentReply().getId() : null
         );
+        dto.setCreatedAt(reply.getCreatedAt());
 
         return dto;
     }

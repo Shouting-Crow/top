@@ -17,6 +17,9 @@ public class StudyGroupListDto {
     private boolean isInactive;
     private LocalDate dueDate;
     private LocalDateTime createdAt;
+    private int views;
+    private LocalDate startDate;
+    private LocalDate endDate;
 
     public static StudyGroupListDto studyGroupListDtoFromEntity(StudyGroup studyGroup) {
         StudyGroupListDto studyGroupListDto = new StudyGroupListDto();
@@ -29,6 +32,9 @@ public class StudyGroupListDto {
         studyGroupListDto.setDueDate(studyGroup.getDueDate());
         studyGroupListDto.setInactive(studyGroup.isInactive());
         studyGroupListDto.setCreatedAt(studyGroup.getCreatedDateTime());
+        studyGroupListDto.setViews(studyGroup.getViews());
+        studyGroupListDto.setStartDate(studyGroup.getStartDate());
+        studyGroupListDto.setEndDate(studyGroup.getEndDate());
 
         return studyGroupListDto;
     }

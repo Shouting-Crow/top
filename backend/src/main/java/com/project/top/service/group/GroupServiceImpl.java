@@ -39,6 +39,9 @@ public class GroupServiceImpl implements GroupService{
         BasePost basePost = basePostRepository.findById(groupCreateDto.getBasePostId())
                 .orElseThrow(() -> new IllegalArgumentException("모집 공고를 찾을 수 없습니다."));
 
+        basePost.setHasGroup(true);
+        basePostRepository.save(basePost);
+
         if (!basePost.getCreator().getId().equals(creatorId)) {
             throw new SecurityException("그룹을 생성할 권한이 없습니다.");
         }

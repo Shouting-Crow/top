@@ -10,6 +10,8 @@ import com.project.top.repository.BasePostRepository;
 import com.project.top.repository.UserRepository;
 import com.project.top.service.message.MessageService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -96,7 +98,7 @@ public class ApplicationServiceImpl implements ApplicationService {
     }
 
     @Override
-    public List<ApplicationListDto> getApplicationList(Long userId, Long basePostId) {
+    public Page<ApplicationListDto> getApplicationList(Long userId, Long basePostId, Pageable pageable) {
         BasePost basePost = basePostRepository.findById(basePostId)
                 .orElseThrow(() -> new IllegalArgumentException("모집 공고를 찾을 수 없습니다."));
 
@@ -104,11 +106,10 @@ public class ApplicationServiceImpl implements ApplicationService {
             throw new SecurityException("지원 리스트를 볼 권한이 없습니다.");
         }
 
-        List<Application> applications = applicationRepository.findByBasePost(basePost);
+        Page<Application> applications = applicationRepository.findByBasePost(basePost, pageable);
 
-        return applications.stream()
-                .map(ApplicationListDto::applicationListFromEntity)
-                .toList();
+        return applications
+                .map(ApplicationListDto::applicationListFromEntity);
     }
 
     @Override

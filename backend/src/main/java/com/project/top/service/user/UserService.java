@@ -13,5 +13,7 @@ public interface UserService {
     UserDto getUserByLoginId(String loginId);
     boolean existsByEmail(String email);
     void validateLoginIdAndEmail(String loginId, String email);
+    boolean isNicknameDuplicate(String nickname);
+    boolean isLoginIdDuplicate(String loginId);
 
 }

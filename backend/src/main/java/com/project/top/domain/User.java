@@ -69,6 +69,9 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<ChatRoomReadLog> chatRoomReadLogs = new ArrayList<>();
 
+    @OneToMany(mappedBy = "writer", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Schedule> schedules = new ArrayList<>();
+
     public User(String loginId, String password, String email, String phoneNumber, String nickname) {
         this.loginId = loginId;
         this.password = password;

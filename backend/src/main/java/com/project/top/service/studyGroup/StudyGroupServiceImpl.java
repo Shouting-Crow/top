@@ -7,6 +7,7 @@ import com.project.top.dto.studyGroup.*;
 import com.project.top.repository.BasePostRepository;
 import com.project.top.repository.StudyGroupRepository;
 import com.project.top.repository.UserRepository;
+import com.project.top.service.basePost.BasePostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -23,6 +24,7 @@ public class StudyGroupServiceImpl implements StudyGroupService{
     private final StudyGroupRepository studyGroupRepository;
     private final UserRepository userRepository;
     private final BasePostRepository basePostRepository;
+    private final BasePostService basePostService;
 
 
     @Override
@@ -120,5 +122,15 @@ public class StudyGroupServiceImpl implements StudyGroupService{
         }
 
         studyGroup.setInactive(true);
+    }
+
+    @Override
+    public List<StudyGroupListDto> getPopularStudyGroupList() {
+        List<StudyGroup> popularStudyGroups = studyGroupRepository.
+                findTop4ByIsInactiveFalseAndViewsGreaterThanOrderByViewsDescCreatedDateTimeDesc(0);
+
+        return popularStudyGroups.stream()
+                .map(StudyGroupListDto::studyGroupListDtoFromEntity)
+                .toList();
     }
 }

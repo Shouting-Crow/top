@@ -14,9 +14,6 @@ import java.time.LocalDateTime;
 public class StudyGroup extends BasePost{
 
     @Column(nullable = false)
-    private String topic;
-
-    @Column(nullable = false)
     private LocalDate startDate;
 
     @Column(nullable = false)

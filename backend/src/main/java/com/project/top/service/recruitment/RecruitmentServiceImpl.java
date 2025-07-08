@@ -7,6 +7,7 @@ import com.project.top.dto.recruitment.*;
 import com.project.top.repository.BasePostRepository;
 import com.project.top.repository.RecruitmentRepository;
 import com.project.top.repository.UserRepository;
+import com.project.top.service.basePost.BasePostService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -26,6 +27,7 @@ public class RecruitmentServiceImpl implements RecruitmentService {
     private final BasePostRepository basePostRepository;
     private final UserRepository userRepository;
     private final RecruitmentRepository recruitmentRepository;
+    private final BasePostService basePostService;
 
     @Override
     @Transactional
@@ -42,6 +44,8 @@ public class RecruitmentServiceImpl implements RecruitmentService {
         recruitment.setDueDate(recruitmentCreateDto.getDueDate());
         recruitment.setTags(recruitmentCreateDto.getTags());
         recruitment.setCreator(creator);
+        recruitment.setTags(recruitmentCreateDto.getTags());
+        recruitment.setTopic(recruitmentCreateDto.getTopic());
 
         return (Recruitment) basePostRepository.save(recruitment);
     }
@@ -63,6 +67,7 @@ public class RecruitmentServiceImpl implements RecruitmentService {
         recruitment.setTotalMembers(recruitmentUpdateDto.getTotalMembers());
         recruitment.setDueDate(recruitmentUpdateDto.getDueDate());
         recruitment.setTags(recruitmentUpdateDto.getTags());
+        recruitment.setTopic(recruitmentUpdateDto.getTopic());
 
         return recruitment;
     }
@@ -124,5 +129,15 @@ public class RecruitmentServiceImpl implements RecruitmentService {
         }
 
         recruitment.setInactive(true);
+    }
+
+    @Override
+    public List<RecruitmentListDto> getPopularRecruitmentList() {
+        List<Recruitment> popularRecruitments = recruitmentRepository
+                .findTop4ByIsInactiveFalseAndViewsGreaterThanOrderByViewsDescCreatedDateTimeDesc(0);
+
+        return popularRecruitments.stream()
+                .map(RecruitmentListDto::recruitmentsFromEntity)
+                .toList();
     }
 }

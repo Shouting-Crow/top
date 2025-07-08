@@ -3,6 +3,9 @@ import {useNavigate, useParams} from "react-router-dom";
 import { IoPersonCircleOutline, IoChatbubbleEllipsesOutline } from "react-icons/io5";
 import ChatRoom from "./ChatRoom.jsx";
 import ChatContext from "../context/ChatContext.js";
+import {FaArrowLeft} from "react-icons/fa";
+import CalendarPlaceholder from "../components/CalendarPlaceHolder.jsx";
+import { FiX } from "react-icons/fi";
 
 const Group = () => {
     const { groupId } = useParams();
@@ -138,11 +141,18 @@ const Group = () => {
         <div className="min-h-screen bg-gray-100 flex flex-col items-center pt-20 px-6">
 
             <div className="w-full max-w-4xl bg-white shadow-md rounded-lg p-6 mb-6 relative">
-                <div className="flex justify-center items-center mb-4 relative">
-                    <h2 className="text-2xl font-bold text-center w-full">{group.name}</h2>
+                <div className="flex justify-between items-center mb-4 relative">
+                    {/* 뒤로 가기 버튼 */}
+                    <button
+                        onClick={() => navigate("/my-groups")}
+                    >
+                        <FaArrowLeft className="text-2xl text-gray-800 hover:text-black" />
+                    </button>
 
-                    <div className="absolute top-0 right-0 flex space-x-4">
-                        {/* 그룹원 보기 버튼 */}
+                    <h2 className="text-2xl font-bold text-center flex-1">{group.name}</h2>
+
+                    {/* 맴버, 채팅방 버튼 */}
+                    <div className="flex space-x-4">
                         <button
                             className="relative p-2 bg-white rounded-full shadow-md hover:scale-110 transition-transform"
                             onClick={() => navigate(`/groups/${groupId}/members`)}
@@ -150,7 +160,6 @@ const Group = () => {
                             <IoPersonCircleOutline size={28} className="text-gray-700" />
                         </button>
 
-                        {/* 채팅방 열기 버튼 */}
                         <button
                             className="relative p-2 bg-white rounded-full shadow-md hover:scale-110 transition-transform"
                             onClick={handleChatClick}
@@ -166,79 +175,94 @@ const Group = () => {
                 </div>
 
                 {/* 공지 (추후 도메인에 추가해 어드민이 추가 및 변경 가능)*/}
-                <div className="bg-gray-100 p-3 mt-10 rounded mb-3 shadow-sm">
-                    📢 새로운 공유 공간이 추가되었습니다. 많이 이용해주세요~
+                <div className="overflow-hidden relative bg-black border border-gray-400 p-3 mt-10 rounded mb-3 shadow-md h-12">
+                    <div className="absolute flex whitespace-nowrap animate-marquee-right gap-[350px]">
+                        <span className="font-bold font-mono text-white">
+                            새로운 공유 공간이 추가되었습니다. 많이 이용해주세요~
+                        </span>
+                        <span className="font-bold font-mono text-white">
+                            새로운 공유 공간이 추가되었습니다. 많이 이용해주세요~
+                        </span>
+                    </div>
                 </div>
 
                 {/* 그룹 설명 */}
-                <p className="text-gray-700 mt-10 whitespace-pre-wrap">
-                    {group.description}
-                </p>
+                <div className="mt-8 px-6 py-4 rounded-lg border-2 border-blue-300 bg-blue-50 text-blue-900 text-center font-semibold text-base tracking-wide shadow-sm">
+                    💡 {group.description}
+                </div>
             </div>
 
-            {/* 추가 활용 영역 */}
-            <div className="w-full max-w-4xl h-96 bg-white shadow-inner rounded-lg flex items-center justify-center text-gray-400 text-lg">
-                추가 활용 칸
-            </div>
+            {/* 달력 및 기록 기능 */}
+            <CalendarPlaceholder groupId={group.id} />
 
             {/*채팅방 생성 모달*/}
             {showCreateChatRoomModal && (
                 <div className="fixed inset-0 bg-black bg-opacity-40 flex justify-center items-center z-50">
-                    <div className="bg-cyan-300 p-6 rounded-lg shadow-lg w-[400px] relative">
+                    <div className="bg-white p-6 rounded-lg shadow-lg w-[400px] relative">
+                        {/* 닫기 */}
                         <button
-                            className="absolute top-2 right-2 text-xl font-bold"
+                            className="absolute top-3 right-3 text-gray-500 hover:text-gray-700"
                             onClick={() => {
                                 setShowCreateChatRoomModal(false);
                                 setChatRoomName("");
                             }}
                         >
-                            ×
+                            <FiX size={20} />
                         </button>
-                        <h3 className="text-xl font-bold mb-4 text-center">채팅방 생성</h3>
-                        <label className="block mb-2 font-semibold">채팅방 이름</label>
+
+                        {/* 타이틀 */}
+                        <h3 className="text-lg font-bold mb-4 text-center text-gray-800">
+                            채팅방 생성
+                        </h3>
+
+                        {/* 입력창 */}
                         <input
                             type="text"
                             value={chatRoomName}
                             onChange={(e) => setChatRoomName(e.target.value)}
                             placeholder="채팅방 이름을 입력하세요"
-                            className="w-full px-3 py-2 rounded mb-4"
+                            className="w-full px-3 py-2 border border-gray-300 rounded text-sm mb-6 focus:outline-none focus:ring-2 focus:ring-blue-400"
                         />
-                        <button
-                            onClick={async () => {
-                                const token = localStorage.getItem("jwtToken");
-                                const body = {
-                                    groupId: Number(groupId),
-                                    creatorId: creatorId,
-                                    chatRoomName: chatRoomName.trim()
-                                };
 
-                                try {
-                                    const response = await fetch("/api/chat/room", {
-                                        method: "POST",
-                                        headers: {
-                                            Authorization: `Bearer ${token}`,
-                                            "Content-Type": "application/json"
-                                        },
-                                        body: JSON.stringify(body)
-                                    });
+                        {/* 생성 버튼 */}
+                        <div className="flex justify-center">
+                            <button
+                                onClick={async () => {
+                                    const token = localStorage.getItem("jwtToken");
+                                    const body = {
+                                        groupId: Number(groupId),
+                                        creatorId: creatorId,
+                                        chatRoomName: chatRoomName.trim()
+                                    };
 
-                                    if (response.ok) {
-                                        const data = await response.json();
-                                        alert("채팅방이 생성되었습니다.");
-                                        openChatModal(data.chatRoomId);
-                                    } else {
-                                        const text = await response.text();
-                                        alert(text || "채팅방 생성 실패");
+                                    try {
+                                        const response = await fetch("/api/chat/room", {
+                                            method: "POST",
+                                            headers: {
+                                                Authorization: `Bearer ${token}`,
+                                                "Content-Type": "application/json"
+                                            },
+                                            body: JSON.stringify(body)
+                                        });
+
+                                        if (response.ok) {
+                                            const data = await response.json();
+                                            alert("채팅방이 생성되었습니다.");
+                                            openChatModal(data.chatRoomId);
+                                        } else {
+                                            const text = await response.text();
+                                            alert(text || "채팅방 생성 실패");
+                                        }
+                                    } catch (err) {
+                                        console.error("채팅방 생성 에러:", err);
+                                        alert("서버 오류 발생");
                                     }
-                                } catch (err) {
-                                    console.error("채팅방 생성 에러:", err);
-                                    alert("서버 오류 발생");
-                                }
-                            }}
-                            className="w-full bg-green-400 text-white py-2 rounded font-semibold"
-                        >
-                            생성하기
-                        </button>
+                                }}
+                                className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 text-sm font-medium"
+                            >
+                                생성하기
+                            </button>
+                        </div>
                     </div>
                 </div>
             )}

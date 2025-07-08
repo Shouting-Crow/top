@@ -66,7 +66,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 requestURI.startsWith("/favicon.ico") ||
                 requestURI.startsWith("/group-members.html") ||
                 (requestURI.startsWith("/api/recruitments") && request.getMethod().equals("GET")) ||
-                (requestURI.startsWith("/api/study-groups") && request.getMethod().equals("GET"));
+                (requestURI.startsWith("/api/study-groups") && request.getMethod().equals("GET")) ||
+                (requestURI.equals("/api/boards/popular") && request.getMethod().equals("GET"));
     }
 
     private String getJwtFromRequest(HttpServletRequest request) {

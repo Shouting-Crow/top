@@ -47,12 +47,14 @@ public class SecurityConfig {
                                 .requestMatchers("/api/chat/rooms").authenticated()
                                 .requestMatchers(HttpMethod.GET, "/api/recruitments").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/api/recruitments/*").permitAll()
+                                .requestMatchers(HttpMethod.GET, "/api/recruitments/popular").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/api/recruitments/search").permitAll()
                                 .requestMatchers(HttpMethod.POST, "/api/recruitments").authenticated()
                                 .requestMatchers(HttpMethod.PATCH, "/api/recruitments/**").authenticated()
 
                                 .requestMatchers(HttpMethod.GET, "/api/study-groups").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/api/study-groups/*").permitAll()
+                                .requestMatchers(HttpMethod.GET, "/api/study-groups/popular").permitAll()
                                 .requestMatchers(HttpMethod.POST, "/api/study-groups").authenticated()
                                 .requestMatchers(HttpMethod.PATCH, "/api/study-groups/**").authenticated()
 
@@ -61,14 +63,23 @@ public class SecurityConfig {
                                 .requestMatchers(HttpMethod.GET, "/api/boards/*").permitAll()
                                 .requestMatchers(HttpMethod.POST, "/api/boards/*/view").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/api/boards/search").permitAll()
+                                .requestMatchers(HttpMethod.GET, "/api/boards/popular").permitAll()
 
                                 .requestMatchers(HttpMethod.GET, "/api/base-posts/my-posts").authenticated()
+                                .requestMatchers(HttpMethod.POST, "/api/base-posts/*/view").permitAll()
 
                                 .requestMatchers(HttpMethod.POST, "/api/users/check-email").permitAll()
                                 .requestMatchers(HttpMethod.POST, "/api/users/check-loginid-email").permitAll()
+                                .requestMatchers(HttpMethod.POST, "/api/users/check-nickname").permitAll()
+                                .requestMatchers(HttpMethod.POST, "/api/users/check-loginid").permitAll()
                                 .requestMatchers(HttpMethod.POST, "/api/find/*").permitAll()
                                 .requestMatchers(HttpMethod.POST, "/api/find-password/*").permitAll()
                                 .requestMatchers(HttpMethod.POST, "/api/change-password").permitAll()
+
+                                .requestMatchers(HttpMethod.GET, "/api/schedules/**").authenticated()
+                                .requestMatchers(HttpMethod.POST, "/api/schedules").authenticated()
+                                .requestMatchers(HttpMethod.PUT, "/api/schedules").authenticated()
+                                .requestMatchers(HttpMethod.DELETE, "/api/schedules").authenticated()
 
                                 .anyRequest().authenticated()
                         )

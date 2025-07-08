@@ -9,6 +9,6 @@ import java.util.Optional;
 
 public interface BasePostRepository extends JpaRepository<BasePost, Long> {
     List<BasePost> findByDueDateBeforeAndIsInactiveFalse(LocalDate now);
-    Optional<List<BasePost>> findByCreatorId(Long creatorId);
+    Optional<List<BasePost>> findByCreatorIdAndHasGroupIsFalseOrderByCreatedDateTimeDesc(Long creatorId);
 
 }

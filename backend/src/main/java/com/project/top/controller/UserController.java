@@ -109,4 +109,26 @@ public class UserController {
         return ResponseEntity.ok().build();
     }
 
+    @PostMapping("/check-nickname")
+    public ResponseEntity<?> checkNickname(@RequestBody NicknameDuplicateCheckDto nicknameDuplicateCheckDto) {
+        try {
+            boolean isDuplicated = userService.isNicknameDuplicate(nicknameDuplicateCheckDto.getNickname());
+
+            return ResponseEntity.ok(isDuplicated);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+
+    @PostMapping("/check-loginid")
+    public ResponseEntity<?> checkLoginId(@RequestBody LoginIdDuplicateCheckDto loginIdDuplicateCheckDto) {
+        try {
+            boolean isDuplicated = userService.isLoginIdDuplicate(loginIdDuplicateCheckDto.getLoginId());
+
+            return ResponseEntity.ok(isDuplicated);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+
 }

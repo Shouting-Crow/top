@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { ClipboardDocumentListIcon } from "@heroicons/react/24/solid";
 
 const BoardRegister = () => {
     const [title, setTitle] = useState("");
@@ -77,60 +78,73 @@ const BoardRegister = () => {
     };
 
     return (
-        <div className="max-w-3xl mx-auto mt-28 p-6 bg-white shadow-md rounded-md">
-            <h2 className="text-2xl font-bold mb-6">📌 게시글 작성</h2>
-            <form onSubmit={handleSubmit} className="space-y-4">
-                <div>
-                    <label className="block text-sm font-semibold mb-1">제목</label>
-                    <input
-                        type="text"
-                        value={title}
-                        onChange={(e) => setTitle(e.target.value)}
-                        className="w-full border border-gray-300 rounded-md px-4 py-2"
-                        maxLength={100}
-                    />
+        <div className="flex flex-col items-center min-h-screen bg-gray-100 px-6 pt-24 pb-10">
+            <div className="w-full max-w-5xl bg-white p-10 rounded-2xl shadow-lg">
+                {/* 타이틀 */}
+                <div className="flex items-center mb-10 gap-2">
+                    <ClipboardDocumentListIcon className="w-8 h-8 text-blue-500" />
+                    <h2 className="text-2xl font-bold text-gray-800">게시글 작성</h2>
                 </div>
 
-                <div>
-                    <label className="block text-sm font-semibold mb-1">내용</label>
+                <div className="flex items-start gap-10 mb-6">
+                    {/* 제목 */}
+                    <div className="w-[70%]">
+                        <label className="block text-gray-900 font-semibold mb-2">제목</label>
+                        <input
+                            type="text"
+                            className="w-full p-3 border rounded-xl"
+                            placeholder="제목을 입력하세요"
+                            value={title}
+                            onChange={(e) => setTitle(e.target.value)}
+                        />
+                    </div>
+
+                    {/* 카테고리 */}
+                    <div className="w-[130px]">
+                        <label className="block text-gray-900 font-semibold mb-2">카테고리</label>
+                        <select
+                            value={categoryId}
+                            onChange={(e) => setCategoryId(parseInt(e.target.value))}
+                            className="w-full p-3 border rounded-xl"
+                        >
+                            {categories.map((cat) => (
+                                <option key={cat.id} value={cat.id}>
+                                    {cat.name}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+                </div>
+
+                {/* 내용 */}
+                <div className="mb-8">
+                    <label className="block text-gray-900 font-semibold mb-2">내용</label>
                     <textarea
+                        className="w-full p-4 border rounded-xl h-64 resize-none"
+                        placeholder="내용을 입력하세요"
                         value={content}
                         onChange={(e) => setContent(e.target.value)}
-                        className="w-full border border-gray-300 rounded-md px-4 py-2 h-40 resize-none"
                     />
                 </div>
 
-                <div>
-                    <label className="block text-sm font-semibold mb-1">카테고리</label>
-                    <select
-                        value={categoryId}
-                        onChange={(e) => setCategoryId(parseInt(e.target.value))}
-                        className="w-full border border-gray-300 rounded-md px-4 py-2"
-                    >
-                        {categories.map((cat) => (
-                            <option key={cat.id} value={cat.id}>
-                                {cat.name}
-                            </option>
-                        ))}
-                    </select>
-                </div>
-
-                <div className="flex justify-end gap-3 pt-4">
+                {/* 버튼 */}
+                <div className="flex justify-end gap-3">
                     <button
                         type="button"
+                        className="bg-gray-300 text-gray-800 px-5 py-2 rounded-md hover:bg-gray-400 transition"
                         onClick={() => navigate("/boards")}
-                        className="px-4 py-2 bg-gray-400 text-white rounded-md hover:bg-gray-500"
                     >
                         돌아가기
                     </button>
                     <button
                         type="submit"
-                        className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                        className="bg-blue-600 text-white px-5 py-2 rounded-md hover:bg-blue-700 transition"
+                        onClick={handleSubmit}
                     >
                         등록하기
                     </button>
                 </div>
-            </form>
+            </div>
         </div>
     );
 };

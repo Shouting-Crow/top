@@ -96,4 +96,14 @@ public class UserServiceImpl implements UserService {
             throw new IllegalArgumentException("입력한 이메일이 등록된 이메일과 다릅니다.");
         }
     }
+
+    @Override
+    public boolean isNicknameDuplicate(String nickname) {
+        return userRepository.existsByNickname(nickname);
+    }
+
+    @Override
+    public boolean isLoginIdDuplicate(String loginId) {
+        return userRepository.existsByLoginId(loginId);
+    }
 }

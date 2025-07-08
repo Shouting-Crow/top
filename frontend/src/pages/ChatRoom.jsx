@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import SockJS from "sockjs-client";
 import { Client } from "@stomp/stompjs";
+import { IoClose, IoSend, IoChatbubbleEllipses } from "react-icons/io5";
 
 const ChatRoom = ({ chatRoomId, onClose, onOpen }) => {
     const [messages, setMessages] = useState([]);
@@ -9,6 +10,27 @@ const ChatRoom = ({ chatRoomId, onClose, onOpen }) => {
     const [senderId, setSenderId] = useState(null);
     const messageEndRef = useRef(null);
     const stompClientRef = useRef(null);
+    const hasOpenedRef = useRef(false);
+
+    const formatChatTime = (timestampStr) => {
+        const date = new Date(timestampStr);
+        const now = new Date();
+
+        const isSameDay =
+            date.getFullYear() === now.getFullYear() &&
+            date.getMonth() === now.getMonth() &&
+            date.getDate() === now.getDate();
+
+        const twoDigit = (n) => n.toString().padStart(2, '0');
+        const hours = twoDigit(date.getHours());
+        const minutes = twoDigit(date.getMinutes());
+
+        if (isSameDay) {
+            return `${hours}:${minutes}`;
+        } else {
+            return `${twoDigit(date.getMonth() + 1)}.${twoDigit(date.getDate())} ${hours}:${minutes}`;
+        }
+    };
 
     useEffect(() => {
         const token = localStorage.getItem("jwtToken");
@@ -18,72 +40,75 @@ const ChatRoom = ({ chatRoomId, onClose, onOpen }) => {
             return;
         }
 
-        // 채팅방 불러오기
-        const fetchChatRoom = async () => {
-            const res = await fetch(`/api/chat/rooms/${chatRoomId}`, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
-            if (res.ok) {
-                const data = await res.json();
-                setChatRoom(data);
-            } else {
-                alert("채팅방 정보를 불러올 수 없습니다.");
+        let isMounted = true;
+
+        const fetchDataAndConnect = async () => {
+            try {
+                const [roomRes, msgRes, userRes] = await Promise.all([
+                    fetch(`/api/chat/rooms/${chatRoomId}`, {
+                        headers: { Authorization: `Bearer ${token}` }
+                    }),
+                    fetch(`/api/chat/rooms/${chatRoomId}/messages?limit=300`, {
+                        headers: { Authorization: `Bearer ${token}` }
+                    }),
+                    fetch(`/api/users/me`, {
+                        headers: { Authorization: `Bearer ${token}` }
+                    })
+                ]);
+
+                if (!roomRes.ok || !msgRes.ok || !userRes.ok) {
+                    alert("채팅방 데이터를 불러오는 데 실패했습니다.");
+                    onClose();
+                    return;
+                }
+
+                const [roomData, msgData, userData] = await Promise.all([
+                    roomRes.json(),
+                    msgRes.json(),
+                    userRes.json()
+                ]);
+
+                if (!isMounted) return;
+
+                setChatRoom(roomData);
+                setMessages(msgData.reverse());
+                setSenderId(userData.id);
+
+                //중복 연결 방지 코드
+                if (!stompClientRef.current?.connected) {
+                    connectWebSocket(token);
+                }
+            } catch (error) {
+                console.error("채팅방 로딩 오류:", error);
                 onClose();
             }
         };
 
-        // 기존 메시지 불러오기
-        const fetchMessages = async () => {
-            const res = await fetch(`/api/chat/rooms/${chatRoomId}/messages?limit=300`, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
-            if (res.ok) {
-                const data = await res.json();
-                setMessages(data.reverse());
-            }
-        };
-
-        // 내 ID 불러오기
-        const fetchUserId = async () => {
-            const res = await fetch(`/api/users/me`, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
-            if (res.ok) {
-                const data = await res.json();
-                setSenderId(data.id);
-            }
-        };
-
-        fetchChatRoom();
-        fetchMessages();
-        fetchUserId();
-        connectWebSocket(token);
-
-        const escHandler = (e) => {
-            if (e.key === "Escape") onClose();
-        };
-        window.addEventListener("keydown", escHandler);
+        fetchDataAndConnect();
 
         return () => {
+            isMounted = false;
             if (stompClientRef.current?.deactivate) {
                 stompClientRef.current.deactivate();
+                stompClientRef.current = null;
             }
-            window.removeEventListener("keydown", escHandler);
+            hasOpenedRef.current = false;
         };
     }, [chatRoomId]);
 
-    //refreshChatRoomsStates 실행을 위한 열린 시점 제공
     useEffect(() => {
-        if (onOpen) {
+        if (onOpen && !hasOpenedRef.current) {
+            hasOpenedRef.current = true;
             onOpen();
         }
     }, [onOpen]);
 
     const connectWebSocket = (token) => {
-        const socket = new SockJS(`/ws/chat?token=${token}`);
+        const socket = new SockJS(`http://localhost:8080/ws/chat?token=${token}`);
         const client = new Client({
             webSocketFactory: () => socket,
             debug: (str) => console.log(str),
+            reconnectDelay: 0, //자동 재연결 방지
             onConnect: () => {
                 client.subscribe(`/topic/chat/${chatRoomId}`, (msg) => {
                     const newMsg = JSON.parse(msg.body);
@@ -97,10 +122,14 @@ const ChatRoom = ({ chatRoomId, onClose, onOpen }) => {
             },
             onStompError: (err) => {
                 console.error("웹 소켓 연결 에러:", err);
+            },
+            onWebSocketClose: () => {
+                console.warn("웹소켓 닫힘 감지");
             }
         });
-        client.activate();
+
         stompClientRef.current = client;
+        client.activate();
     };
 
     const handleSend = () => {
@@ -132,10 +161,10 @@ const ChatRoom = ({ chatRoomId, onClose, onOpen }) => {
                     Authorization: `Bearer ${token}`,
                     "Content-Type": "application/json"
                 },
-                body: JSON.stringify({chatRoomId})
+                body: JSON.stringify({ chatRoomId })
             });
         } catch (error) {
-            console.error("채팅방 닫기 시 마지막 읽은 시점 저장 실패 : ", error);
+            console.error("채팅방 닫기 시 마지막 읽은 시점 저장 실패:", error);
         }
 
         if (onClose) onClose();
@@ -146,30 +175,46 @@ const ChatRoom = ({ chatRoomId, onClose, onOpen }) => {
     }, [messages]);
 
     return (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-            <div className="w-[400px] h-[600px] bg-black text-white rounded-2xl shadow-lg flex flex-col p-4 relative">
-                <div className="flex justify-between items-center mb-2">
-                    <div className="bg-blue-500 px-3 py-2 font-bold rounded-md">
-                        💬 {chatRoom?.chatRoomName || "채팅방"}
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-start pt-20 z-50">
+            <div className="w-[400px] h-[600px] bg-black text-white rounded-2xl shadow-lg flex flex-col border-2 border-gray-700 overflow-hidden relative">
+                {/* 상단 바 */}
+                <div className="flex justify-between items-center bg-gray-900 px-4 py-2">
+                    <div className="flex items-center gap-2 text-base font-bold text-white">
+                        <IoChatbubbleEllipses size={18} />
+                        {chatRoom?.chatRoomName || "채팅방"}
                     </div>
+
                     <button
                         onClick={handleCloseChatRoom}
-                        className="w-8 h-8 flex items-center justify-center text-black text-lg font-bold rounded-full hover:bg-gray-300 transition"
+                        className="text-black transition p-1"
+                        aria-label="닫기"
                     >
-                        ×
+                        <IoClose size={18} />
                     </button>
                 </div>
 
-                <div className="flex-1 overflow-y-auto p-2">
+                {/* 메시지 영역 */}
+                <div className="flex-1 overflow-y-auto p-2 chat-scrollbar">
                     {messages.map((msg, i) => {
                         const isMine = msg.senderId === senderId;
+                        const timeText = formatChatTime(msg.sendAt);
+
                         return (
-                            <div key={i} className={`mb-2 flex ${isMine ? "justify-end" : "justify-start"}`}>
-                                <div className={`px-3 py-2 rounded-lg max-w-[70%] break-words text-sm ${isMine ? "bg-green-400 text-black" : "bg-gray-300 text-black"}`}>
-                                    {!isMine && (
-                                        <div className="font-bold text-xs mb-1">{msg.senderName}</div>
-                                    )}
-                                    {msg.message}
+                            <div key={i} className={`mb-1 flex ${isMine ? "justify-end" : "justify-start"}`}>
+                                <div className={`flex ${isMine ? "flex-row-reverse" : "flex-row"} items-end max-w-[75%]`}>
+                                    {/* 메시지 */}
+                                    <div
+                                        className={`px-3 py-2 rounded-lg break-words text-sm max-w-full 
+                                        ${isMine ? "bg-green-400 text-black ml-1" : "bg-gray-300 text-black mr-1"}`}
+                                    >
+                                        {!isMine && (
+                                            <div className="font-bold text-xs mb-1">{msg.senderName}</div>
+                                        )}
+                                        <div>{msg.message}</div>
+                                    </div>
+
+                                    {/* 시간 */}
+                                    <div className="text-[10px] text-white mb-0.5">{timeText}</div>
                                 </div>
                             </div>
                         );
@@ -177,7 +222,8 @@ const ChatRoom = ({ chatRoomId, onClose, onOpen }) => {
                     <div ref={messageEndRef} />
                 </div>
 
-                <div className="flex p-2 border-t border-gray-700">
+                {/* 입력창 */}
+                <div className="flex items-center bg-gray-800 px-3 py-2 border-t border-gray-700">
                     <input
                         type="text"
                         value={inputMessage}
@@ -188,9 +234,10 @@ const ChatRoom = ({ chatRoomId, onClose, onOpen }) => {
                     />
                     <button
                         onClick={handleSend}
-                        className="ml-2 px-4 py-2 bg-blue-500 text-white rounded"
+                        className="ml-2 p-2 rounded-full bg-blue-500 hover:bg-blue-600 transition"
+                        aria-label="전송"
                     >
-                        전송
+                        <IoSend size={20} className="text-white" />
                     </button>
                 </div>
             </div>

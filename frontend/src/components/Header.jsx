@@ -2,7 +2,6 @@ import {Link, useLocation, useNavigate} from "react-router-dom";
 import {useState, useEffect, useRef, useCallback, useContext} from "react";
 import { AiOutlineMenu, AiOutlineClose } from "react-icons/ai";
 import { IoMailOutline, IoChatbubbleEllipsesOutline} from "react-icons/io5";
-import axios from "axios";
 import logoImage from "../assets/top_logo_ex.jpg";
 import MessageModal from "../components/MessageModal";
 import ReplyModal from "../components/ReplyModal";
@@ -10,6 +9,9 @@ import "../index.css";
 import ChatRoom from "../pages/ChatRoom.jsx";
 import ChatContext from "../context/ChatContext.js";
 import MessageContext from "../context/MessageContext.js";
+import { FiMail } from "react-icons/fi";
+import { IoIosMail } from "react-icons/io";
+import { IoClose, IoChatbubbleEllipses } from "react-icons/io5";
 
 const Header = () => {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -24,9 +26,8 @@ const Header = () => {
     const [showMessagesDropdown, setShowMessagesDropdown] = useState(false); //메시지 드롭다운
     const messageDropdownRef = useRef(null);
 
-    const [showChatDropdown, setShowChatDropdown] = useState(false);
+    const [showChatListModal, setShowChatListModal] = useState(false);
     const [selectedChatRoomId, setSelectedChatRoomId] = useState(null);
-    const chatDropdownRef = useRef(null);
 
     const [selectedMessage, setSelectedMessage] = useState(null); //쪽지 상세 조회 정보
     const [isMessageModalOpen, setIsMessageModalOpen] = useState(false); //쪽지 상세 정보 모달 상태
@@ -233,11 +234,10 @@ const Header = () => {
         }
     };
 
-    const toggleChatDropdown = () => {
-        if (!showChatDropdown) {
-            fetchChatRooms();
-        }
-        setShowChatDropdown(!showChatDropdown);
+    //채팅 아이콘 클릭 (채팅방 리스트)
+    const handleChatButtonClick = () => {
+        fetchChatRooms();
+        setShowChatListModal(true);
     };
 
     //외부 클릭 감지로 메뉴 닫기
@@ -248,13 +248,6 @@ const Header = () => {
                 !e.target.closest(".message-button")
             ) {
                 setShowMessagesDropdown(false);
-            }
-
-            if (
-                chatDropdownRef.current && !chatDropdownRef.current.contains(e.target) &&
-                !e.target.closest(".chat-button")
-            ) {
-                setShowChatDropdown(false);
             }
 
             if (
@@ -295,6 +288,10 @@ const Header = () => {
         setUser(null);
         setIsLoggedIn(false);
         closeModal();
+
+        alert("로그아웃 되었습니다.");
+
+        navigate("/", { replace: true });
     };
 
     const toggleMenu = () => {
@@ -344,27 +341,44 @@ const Header = () => {
                 />
             )}
 
-        <header className="w-full bg-gray-100 shadow-md fixed top-0 left-0 right-0 z-50">
-            <div className="flex items-center justify-between px-6 py-3 w-full max-w-screen-xl mx-auto">
+        <header className="w-full bg-gray-100 fixed top-0 left-0 right-0 z-50 border-b border-gray-200">
+            <div className="flex items-center justify-between px-4 py-2 h-14 w-full max-w-screen-xl mx-auto">
                 {/* 로고 */}
                 <Link to="/" className="flex items-center">
-                    <img src={logoImage} alt="Logo" className="h-12 w-auto" />
+                    <img src={logoImage} alt="Logo" className="h-8 w-auto" />
                 </Link>
 
-                {/* 로그인/회원가입 or 유저 정보 */}
-                <div className="flex items-center gap-6">
+                {/* 헤더 정보 */}
+                <div className="flex items-center gap-4">
                     {!isLoggedIn ? (
                         <>
-                            <Link to="/login" className="text-blue-600 hover:underline">로그인</Link>
-                            <Link to="/register" className="text-blue-600 hover:underline">회원가입</Link>
+                            <Link
+                                to="/login"
+                                className="px-4 py-1.5 text-sm font-semibold text-white bg-green-500 rounded-full border-2 border-transparent hover:border-green-600 transition"
+                            >
+                                로그인
+                            </Link>
+                            <Link
+                                to="/register"
+                                className="px-4 py-1.5 text-sm font-semibold text-white bg-green-500 rounded-full border-2 border-transparent hover:border-green-600 transition"
+                            >
+                                회원가입
+                            </Link>
                         </>
                     ) : (
-                        <>
-                            <span className="text-gray-700">안녕하세요, {user?.nickname}님</span>
-                            <button onClick={handleLogout} className="px-4 py-2 bg-red-500 text-white rounded-lg">
-                                로그아웃
-                            </button>
-                        </>
+                        <div className="flex-1 flex justify-center items-center">
+                            <div className="flex items-center gap-2">
+                                <span className="text-sm sm:text-base text-gray-800">
+                                    안녕하세요, <span className="font-bold">{user?.nickname}</span>님
+                                </span>
+                                <button
+                                    onClick={handleLogout}
+                                    className="ml-2 px-3 py-1 text-xs bg-gray-300 text-gray-800 rounded hover:bg-gray-400 transition"
+                                >
+                                    로그아웃
+                                </button>
+                            </div>
+                        </div>
                     )}
                 </div>
 
@@ -387,57 +401,76 @@ const Header = () => {
 
                                 {/* 쪽지 드롭다운 메뉴 */}
                                 {showMessagesDropdown && (
-                                    <div ref={messageDropdownRef} className="absolute right-0 mt-2 w-[460px] bg-gray-700 text-white shadow-lg rounded-md p-4 z-50">
-                                    <h3 className="text-lg font-bold text-center mb-3">📩 쪽지함</h3>
+                                    <div
+                                        ref={messageDropdownRef}
+                                        className="absolute right-0 mt-2 w-[460px] bg-white text-gray-800 shadow-lg rounded-md p-4 z-50 border border-gray-300"
+                                    >
+                                        {/* 타이틀 */}
+                                        <div className="flex justify-between items-center mb-3 px-1">
+                                            <div className="flex items-center space-x-2 text-lg font-bold">
+                                                <FiMail className="text-black" />
+                                                <span>최근 쪽지함</span>
+                                            </div>
+                                            <button
+                                                className="text-sm text-black hover:underline"
+                                                onClick={() => navigate("/messages")}
+                                            >
+                                                전체 보기 &gt;
+                                            </button>
+                                        </div>
+
                                         {messages.length > 0 ? (
-                                            messages.map((msg) => (
-                                                <div key={msg.messageId} className="flex items-center justify-between p-4 border-b border-gray-600 mb-2">
-
-                                                    {/* 읽음 상태에 따른 아이콘 변경 */}
-                                                    <span className="text-lg mr-3">
-                                                        {msg.read ? "📨" : "✉️"}
-                                                    </span>
-
-                                                    {/* 쪽지 내용 버튼 */}
-                                                    <button
-                                                        className={`hover:underline w-3/5 text-left px-3 py-2 rounded-md text-sm whitespace-normal ${
-                                                            msg.read ? "bg-gray-500 text-white" : "bg-gray-200 text-black"
+                                            <div className="space-y-2">
+                                                {messages.map((msg) => (
+                                                    <div
+                                                        key={msg.messageId}
+                                                        className={`flex items-center justify-between px-3 py-2 rounded-md border ${
+                                                            msg.read
+                                                                ? "bg-gray-200 border-gray-300"
+                                                                : "bg-white border-gray-200"
                                                         }`}
-                                                        onClick={() => handleMessageClick(msg.messageId)}
                                                     >
-                                                        {msg.content ? msg.content : "내용 없음"}
-                                                    </button>
+                                                        {/* 보낸 사람 닉네임 */}
+                                                        <span className="w-24 text-sm text-gray-600 truncate">
+                                                            {msg.senderName.length > 6
+                                                                ? `${msg.senderName.slice(0, 6)}...`
+                                                                : msg.senderName}
+                                                        </span>
 
-                                                    {/* 보낸 사람 닉네임 */}
-                                                    <span className="w-24 truncate text-sm text-center text-gray-300">
-                                                        {msg.senderName.length > 6 ? `${msg.senderName.slice(0, 6)}...` : msg.senderName}
-                                                    </span>
+                                                        {/* 쪽지 내용 */}
+                                                        <button
+                                                            className="flex-1 mx-2 text-left text-sm text-black truncate hover:underline"
+                                                            onClick={() => handleMessageClick(msg.messageId)}
+                                                        >
+                                                            {msg.content || "내용 없음"}
+                                                        </button>
 
-                                                    {/* 답장 버튼 */}
-                                                    <button
-                                                        className="text-sm bg-blue-500 px-4 py-2 rounded-md hover:bg-blue-600 whitespace-nowrap"
-                                                        onClick={() => handleReplyClick(msg.senderName)}
-                                                    >
-                                                        답장
-                                                    </button>
-                                                </div>
-                                            ))
+                                                        {/* 답장 */}
+                                                        {msg.senderName !== "[시스템]" && (
+                                                            <button
+                                                                className="text-blue-500 p-1 hover:text-blue-600"
+                                                                onClick={() => handleReplyClick(msg.senderName)}
+                                                                title="답장"
+                                                            >
+                                                                <IoIosMail className="text-[14px]" />
+                                                            </button>
+                                                        )}
+                                                    </div>
+                                                ))}
+                                            </div>
                                         ) : (
-                                            <p className="text-center text-gray-300">📭 받은 쪽지가 없습니다.</p>
+                                            <p className="text-center text-gray-400 py-6">받은 쪽지가 없습니다.</p>
                                         )}
-
-                                        {/* 쪽지함 바로가기 */}
-                                        <button
-                                            className="block w-full text-center bg-gray-600 hover:bg-gray-500 text-white py-3 mt-4 rounded-md"
-                                            onClick={() => navigate("/messages")}
-                                        >
-                                            쪽지함 바로가기 →
-                                        </button>
                                     </div>
                                 )}
                             </div>
-                            <div className="relative" ref={chatDropdownRef}>
-                                <button onClick={toggleChatDropdown} className="relative p-2 bg-white rounded-md shadow-md chat-button">
+
+                            {/* 채팅방 */}
+                            <div className="relative">
+                                <button
+                                    onClick={handleChatButtonClick}
+                                    className="relative p-2 bg-white rounded-md shadow-md chat-button"
+                                >
                                     <IoChatbubbleEllipsesOutline size={24} className="text-gray-700" />
                                     {chatsCount > 0 && (
                                         <span className="absolute -top-1 -right-1 bg-green-500 text-white text-xs rounded-full px-1">
@@ -446,50 +479,69 @@ const Header = () => {
                                     )}
                                 </button>
 
-
-                                {showChatDropdown && (
-                                    <div ref={chatDropdownRef} className="absolute right-0 mt-2 w-80 bg-white rounded shadow-lg z-50 max-h-96 overflow-y-auto">
-                                        {chatRooms.length === 0 ? (
-                                            <div className="p-4 text-gray-500">채팅방이 없습니다.</div>
-                                        ) : (
-                                            chatRooms.map(room => (
-                                                <div
-                                                    key={room.chatRoomId}
-                                                    className="px-4 py-3 hover:bg-gray-100 cursor-pointer border-b"
-                                                    onDoubleClick={() => {
-                                                        setSelectedChatRoomId(room.chatRoomId);
-                                                        setShowChatDropdown(false);
-                                                    }}
-                                                >
-                                                    <div className="flex justify-between items-center">
-                                                        <div className="font-semibold text-sm">
-                                                            {room.chatRoomName}
-                                                            <span className="ml-2 text-gray-400 text-xs">[{room.groupName}]</span>
-                                                        </div>
-                                                        {room.unreadMessageCount > 0 && (
-                                                            <div className="bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center ml-2">
-                                                                {room.unreadMessageCount}
-                                                            </div>
-                                                        )}
-                                                    </div>
-
-                                                    <div className="flex justify-between items-start gap-2 mt-1">
-                                                        <div className="text-xs text-gray-600 flex-1 line-clamp-2 break-words">
-                                                            {room.lastMessageContent}
-                                                        </div>
-
-                                                        <div className="text-xs text-gray-500 whitespace-nowrap min-w-fit pl-2">
-                                                            {room.lastMessageTime ? formatChatTime(room.lastMessageTime) : ""}
-                                                        </div>
-                                                    </div>
+                                {showChatListModal && (
+                                    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-start pt-20 z-50">
+                                        <div
+                                            className="w-[400px] h-[600px] bg-[#0e1420] rounded-2xl shadow-lg flex flex-col border-2 border-gray-700 overflow-hidden relative"
+                                        >
+                                            {/* 모달 상단 바 */}
+                                            <div className="flex justify-between items-center bg-[#0e1420] text-white px-4 py-2 border-b border-gray-700">
+                                                <div className="flex items-center gap-2 font-semibold text-sm">
+                                                    <IoChatbubbleEllipses size={18} />
+                                                    채팅방 목록
                                                 </div>
-                                            ))
-                                        )
+                                                <button
+                                                    onClick={() => setShowChatListModal(false)}
+                                                    className="p-1 text-black hover:text-gray-700 transition"
+                                                    aria-label="닫기"
+                                                >
+                                                    <IoClose size={18} />
+                                                </button>
+                                            </div>
 
-                                        }
+                                            {/* 채팅방 리스트 */}
+                                            <div className="flex-1 overflow-y-auto px-3 py-2 chat-scrollbar">
+                                                {chatRooms.length === 0 ? (
+                                                    <div className="text-center text-gray-400 mt-20">채팅방이 없습니다.</div>
+                                                ) : (
+                                                    chatRooms.map(room => (
+                                                        <div
+                                                            key={room.chatRoomId}
+                                                            className="bg-[#1e2a3a] text-white px-4 py-3 rounded-lg mb-2 cursor-pointer hover:bg-[#2e3a4a]"
+                                                            onDoubleClick={() => {
+                                                                setSelectedChatRoomId(room.chatRoomId);
+                                                                setShowChatListModal(false);
+                                                            }}
+                                                        >
+                                                            <div className="flex justify-between items-center">
+                                                                <div className="font-semibold text-sm">
+                                                                    {room.chatRoomName}
+                                                                    <span className="ml-2 text-gray-400 text-xs">
+                                                                        [{room.groupName}]
+                                                                    </span>
+                                                                </div>
+                                                                {room.unreadMessageCount > 0 && (
+                                                                    <div className="bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center ml-2">
+                                                                        {room.unreadMessageCount}
+                                                                    </div>
+                                                                )}
+                                                            </div>
+
+                                                            <div className="flex justify-between items-start gap-2 mt-1">
+                                                                <div className="text-xs text-gray-300 flex-1 line-clamp-2 break-words">
+                                                                    {room.lastMessageContent}
+                                                                </div>
+                                                                <div className="text-xs text-gray-400 whitespace-nowrap min-w-fit pl-2">
+                                                                    {room.lastMessageTime ? formatChatTime(room.lastMessageTime) : ""}
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    ))
+                                                )}
+                                            </div>
+                                        </div>
                                     </div>
                                 )}
-
                             </div>
                         </>
                     )}
@@ -506,17 +558,9 @@ const Header = () => {
                                         className="block w-full text-left px-4 py-2 bg-gray-700 text-white hover:bg-gray-600">
                                     내 정보
                                 </button>
-                                <button onClick={() => handleMenuClick("/application-info")}
-                                        className="block w-full text-left px-4 py-2 bg-gray-700 text-white hover:bg-gray-600">
-                                    내 지원 정보
-                                </button>
                                 <button onClick={() => handleMenuClick("/my-posts")}
                                         className="block w-full text-left px-4 py-2 bg-gray-700 text-white hover:bg-gray-600">
                                     내 공고
-                                </button>
-                                <button onClick={() => handleMenuClick("/my-applications")}
-                                        className="block w-full text-left px-4 py-2 bg-gray-700 text-white hover:bg-gray-600">
-                                    내 지원 현황
                                 </button>
                                 <button onClick={() => handleMenuClick("/my-groups")}
                                         className="block w-full text-left px-4 py-2 bg-gray-700 text-white hover:bg-gray-600">

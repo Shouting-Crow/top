@@ -16,6 +16,7 @@ public class BoardListDto {
     private String authorNickname;
     private LocalDateTime createdAt;
     private int views;
+    private int replyCount;
 
     public static BoardListDto fromEntity(Board board) {
         return new BoardListDto(
@@ -23,7 +24,8 @@ public class BoardListDto {
                 board.getTitle(),
                 board.getAuthor().getNickname(),
                 board.getCreatedAt(),
-                board.getViews()
+                board.getViews(),
+                board.getReplyCount()
         );
     }
 }

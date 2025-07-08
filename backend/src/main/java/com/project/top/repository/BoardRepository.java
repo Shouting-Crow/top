@@ -9,4 +9,5 @@ import java.util.List;
 
 public interface BoardRepository extends JpaRepository<Board, Long>, BoardRepositoryCustom {
     Page<Board> findByAuthorId(Long id, Pageable pageable);
+    List<Board> findTop5ByOrderByViewsDescCreatedAtDesc();
 }

@@ -1,5 +1,6 @@
 package com.project.top.service.studyGroup;
 
+import com.project.top.dto.recruitment.RecruitmentListDto;
 import com.project.top.dto.studyGroup.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -15,4 +16,5 @@ public interface StudyGroupService {
     StudyGroupDto getStudyGroup(Long studyGroupId);
     List<StudyGroupMyListDto> getStudyGroupMyList(Long userId);
     void closeStudyGroup(Long studyGroupId, Long creatorId);
+    List<StudyGroupListDto> getPopularStudyGroupList();
 }

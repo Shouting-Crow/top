@@ -14,6 +14,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class BoardServiceImpl implements BoardService{
@@ -105,5 +107,14 @@ public class BoardServiceImpl implements BoardService{
 
         board.incrementViews();
         boardRepository.save(board);
+    }
+
+    @Override
+    public List<BoardListDto> getPopularBoardList() {
+        List<Board> popularBoards = boardRepository.findTop5ByOrderByViewsDescCreatedAtDesc();
+
+        return popularBoards.stream()
+                .map(BoardListDto::fromEntity)
+                .toList();
     }
 }

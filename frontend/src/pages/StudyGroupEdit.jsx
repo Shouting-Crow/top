@@ -1,23 +1,36 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import { ClipboardDocumentListIcon, CalendarIcon } from "@heroicons/react/24/outline";
+
+const CustomDateInput = React.forwardRef(({ value, onClick, placeholder }, ref) => (
+    <div className="relative w-full">
+        <button
+            type="button"
+            onClick={onClick}
+            ref={ref}
+            className="w-full h-[48px] text-left px-4 pr-10 border border-gray-300 rounded-xl flex items-center text-gray-700 bg-white hover:border-gray-400 transition"
+        >
+            <span className={`block w-full truncate ${value ? "" : "text-gray-400"}`}>
+                {value || placeholder}
+            </span>
+        </button>
+        <CalendarIcon className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-500 pointer-events-none" />
+    </div>
+));
 
 const StudyGroupEdit = () => {
     const { studyGroupId } = useParams();
     const navigate = useNavigate();
 
     const [title, setTitle] = useState("");
-    const [year, setYear] = useState("2025");
-    const [month, setMonth] = useState("01");
-    const [day, setDay] = useState("01");
-    const [startYear, setStartYear] = useState("2025");
-    const [startMonth, setStartMonth] = useState("01");
-    const [startDay, setStartDay] = useState("01");
-    const [endYear, setEndYear] = useState("2025");
-    const [endMonth, setEndMonth] = useState("01");
-    const [endDay, setEndDay] = useState("02");
+    const [topic, setTopic] = useState("");
     const [totalMembers, setTotalMembers] = useState(2);
     const [description, setDescription] = useState("");
-    const [topic, setTopic] = useState("");
+    const [dueDate, setDueDate] = useState(null);
+    const [startDate, setStartDate] = useState(null);
+    const [endDate, setEndDate] = useState(null);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -27,74 +40,54 @@ const StudyGroupEdit = () => {
     const fetchStudyGroupData = async () => {
         try {
             const response = await fetch(`/api/study-groups/${studyGroupId}`);
-            if (!response.ok) {
-                throw new Error("공고 데이터를 불러오는 데 실패했습니다.");
-            }
+            if (!response.ok) throw new Error("공고 데이터를 불러오는 데 실패했습니다.");
 
             const data = await response.json();
             setTitle(data.title);
-            setDescription(data.description);
-            setTotalMembers(data.totalMembers);
             setTopic(data.topic);
-
-            const [y, m, d] = data.dueDate.split("-");
-            setYear(y);
-            setMonth(m);
-            setDay(d);
-
-            const [sy, sm, sd] = data.startDate.split("-");
-            setStartYear(sy);
-            setStartMonth(sm);
-            setStartDay(sd);
-
-            const [ey, em, ed] = data.endDate.split("-");
-            setEndYear(ey);
-            setEndMonth(em);
-            setEndDay(ed);
-
+            setTotalMembers(data.totalMembers);
+            setDescription(data.description);
+            setDueDate(new Date(data.dueDate));
+            setStartDate(new Date(data.startDate));
+            setEndDate(new Date(data.endDate));
             setLoading(false);
         } catch (error) {
-            console.error("데이터를 불러오지 못했습니다.", error);
+            console.error("데이터 로딩 실패:", error);
             alert("공고 정보를 불러오는 데 실패했습니다.");
             navigate(`/study-group/${studyGroupId}`);
         }
     };
 
     const handleEdit = async () => {
-        const dueDate = `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
-        const startDate = `${startYear}-${startMonth.padStart(2, "0")}-${startDay.padStart(2, "0")}`;
-        const endDate = `${endYear}-${endMonth.padStart(2, "0")}-${endDay.padStart(2, "0")}`;
-
-        if (new Date(startDate) >= new Date(endDate)) {
-            alert("스터디 종료일은 시작일보다 이후여야 합니다.");
+        if (!title || !topic || !description || totalMembers < 2 || !startDate || !endDate || !dueDate) {
+            alert("모든 필드를 정확히 입력해주세요.");
             return;
         }
 
-        if (!title || !description || !topic || totalMembers < 2) {
-            alert("제목, 설명, 주제를 입력하고 모집 인원을 2명 이상 설정하세요.");
+        if (startDate >= endDate) {
+            alert("스터디 종료일은 시작일보다 이후여야 합니다.");
             return;
         }
 
         const requestData = {
             title,
-            description,
             topic,
             totalMembers,
-            startDate,
-            endDate,
-            dueDate
+            description,
+            startDate: startDate.toISOString().split("T")[0],
+            endDate: endDate.toISOString().split("T")[0],
+            dueDate: dueDate.toISOString().split("T")[0],
         };
 
         try {
             const token = localStorage.getItem("jwtToken");
-
             const response = await fetch(`/api/study-groups/${studyGroupId}`, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
-                    "Authorization": `Bearer ${token}`
+                    Authorization: `Bearer ${token}`,
                 },
-                body: JSON.stringify(requestData)
+                body: JSON.stringify(requestData),
             });
 
             if (response.ok) {
@@ -110,132 +103,115 @@ const StudyGroupEdit = () => {
     };
 
     if (loading) {
-        return <div className="text-center text-gray-600">로딩 중...</div>;
+        return <div className="text-center text-gray-600 mt-20">로딩 중...</div>;
     }
 
     return (
-        <div className="flex flex-col items-center justify-center min-h-screen bg-gray-200 p-6 mt-20">
-            <div className="w-full max-w-3xl bg-gray-100 p-8 rounded-lg shadow-md">
-                <h2 className="text-2xl font-bold text-center mb-6">스터디그룹 모집 공고 수정</h2>
-
-                {/* 제목 입력 */}
-                <div className="mb-4">
-                    <label className="block text-lg font-semibold mb-2">제목</label>
-                    <input
-                        type="text"
-                        className="w-full p-3 border rounded-md"
-                        placeholder="제목을 입력하세요"
-                        value={title}
-                        onChange={(e) => setTitle(e.target.value)}
-                    />
+        <div className="flex flex-col items-center min-h-screen bg-gray-100 px-6 pt-24 pb-10">
+            <div className="w-full max-w-5xl bg-white p-10 rounded-2xl shadow-lg">
+                <div className="flex items-center mb-10 gap-2">
+                    <ClipboardDocumentListIcon className="w-8 h-8 text-green-500" />
+                    <h2 className="text-2xl font-bold text-gray-800">스터디그룹 모집 공고 수정</h2>
                 </div>
 
-                {/* 주제 입력 */}
-                <div className="mb-4">
-                    <label className="block text-lg font-semibold mb-2">스터디 주제</label>
-                    <input
-                        type="text"
-                        className="w-full p-3 border rounded-md"
-                        placeholder="예: 알고리즘, 데이터베이스, 리액트"
-                        value={topic}
-                        onChange={(e) => setTopic(e.target.value)}
-                    />
-                </div>
-
-                {/* 마감일 입력 */}
-                <div className="mb-4">
-                    <label className="block text-lg font-semibold mb-2">공고 마감일</label>
-                    <div className="flex gap-2">
-                        <select className="p-2 border rounded-md" value={year} onChange={(e) => setYear(e.target.value)}>
-                            {["2025", "2026", "2027"].map((y) => (
-                                <option key={y} value={y}>{y}</option>
-                            ))}
-                        </select>
-                        <select className="p-2 border rounded-md" value={month} onChange={(e) => setMonth(e.target.value)}>
-                            {Array.from({ length: 12 }, (_, i) => String(i + 1).padStart(2, "0")).map((m) => (
-                                <option key={m} value={m}>{m}</option>
-                            ))}
-                        </select>
-                        <select className="p-2 border rounded-md" value={day} onChange={(e) => setDay(e.target.value)}>
-                            {Array.from({ length: 31 }, (_, i) => String(i + 1).padStart(2, "0")).map((d) => (
-                                <option key={d} value={d}>{d}</option>
-                            ))}
-                        </select>
+                {/* 제목 및 마감일 */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                    <div className="md:col-span-2">
+                        <label className="block text-gray-900 font-semibold mb-2">제목</label>
+                        <input
+                            type="text"
+                            className="w-full p-3 border rounded-xl"
+                            placeholder="제목을 입력하세요"
+                            value={title}
+                            onChange={(e) => setTitle(e.target.value)}
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-gray-900 font-semibold mb-2">마감일</label>
+                        <DatePicker
+                            selected={dueDate}
+                            onChange={(date) => setDueDate(date)}
+                            dateFormat="yyyy-MM-dd"
+                            placeholderText="날짜를 선택하세요"
+                            customInput={<CustomDateInput />}
+                        />
                     </div>
                 </div>
 
-                {/* 스터디 기간 (시작일 ~ 종료일) */}
-                <div className="mb-4">
-                    <label className="block text-lg font-semibold mb-2">스터디 기간</label>
-                    <div className="flex gap-2">
-                        <span className="font-semibold self-center">시작:</span>
-                        <select className="p-2 border rounded-md" value={startYear} onChange={(e) => setStartYear(e.target.value)}>
-                            {["2025", "2026", "2027"].map((y) => (
-                                <option key={y} value={y}>{y}</option>
-                            ))}
-                        </select>
-                        <select className="p-2 border rounded-md" value={startMonth} onChange={(e) => setStartMonth(e.target.value)}>
-                            {Array.from({ length: 12 }, (_, i) => String(i + 1).padStart(2, "0")).map((m) => (
-                                <option key={m} value={m}>{m}</option>
-                            ))}
-                        </select>
-                        <select className="p-2 border rounded-md" value={startDay} onChange={(e) => setStartDay(e.target.value)}>
-                            {Array.from({ length: 31 }, (_, i) => String(i + 1).padStart(2, "0")).map((d) => (
-                                <option key={d} value={d}>{d}</option>
-                            ))}
-                        </select>
+                {/* 주제, 모집 인원 */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                    <div className="md:col-span-2">
+                        <label className="block text-gray-900 font-semibold mb-2">스터디 주제</label>
+                        <input
+                            type="text"
+                            className="w-full p-3 border rounded-xl"
+                            placeholder="예: 알고리즘, 데이터베이스, 리액트"
+                            value={topic}
+                            onChange={(e) => setTopic(e.target.value)}
+                        />
                     </div>
-                    <div className="flex gap-2 mt-2">
-                        <span className="font-semibold self-center">종료:</span>
-                        <select className="p-2 border rounded-md" value={endYear} onChange={(e) => setEndYear(e.target.value)}>
-                            {["2025", "2026", "2027"].map((y) => (
-                                <option key={y} value={y}>{y}</option>
-                            ))}
-                        </select>
-                        <select className="p-2 border rounded-md" value={endMonth} onChange={(e) => setEndMonth(e.target.value)}>
-                            {Array.from({ length: 12 }, (_, i) => String(i + 1).padStart(2, "0")).map((m) => (
-                                <option key={m} value={m}>{m}</option>
-                            ))}
-                        </select>
-                        <select className="p-2 border rounded-md" value={endDay} onChange={(e) => setEndDay(e.target.value)}>
-                            {Array.from({ length: 31 }, (_, i) => String(i + 1).padStart(2, "0")).map((d) => (
-                                <option key={d} value={d}>{d}</option>
-                            ))}
-                        </select>
+                    <div>
+                        <label className="block text-gray-900 font-semibold mb-2">모집 인원</label>
+                        <input
+                            type="number"
+                            className="w-full p-3 border rounded-xl"
+                            value={totalMembers}
+                            onChange={(e) => setTotalMembers(Math.max(2, Number(e.target.value)))}
+                        />
                     </div>
                 </div>
 
-                {/* 모집 인원 입력 */}
-                <div className="mb-4">
-                    <label className="block text-lg font-semibold mb-2">인원</label>
-                    <input
-                        type="number"
-                        className="w-full p-3 border rounded-md"
-                        value={totalMembers}
-                        onChange={(e) => setTotalMembers(Math.max(2, Number(e.target.value)))}
-                        min="2"
-                    />
-                </div>
-
-                {/* 설명 입력 */}
+                {/* 스터디 기간 */}
                 <div className="mb-6">
-                    <label className="block text-lg font-semibold mb-2">설명</label>
+                    <label className="block text-gray-900 font-semibold mb-2">스터디 기간</label>
+                    <div className="flex items-center gap-1">
+                        <div className="w-full max-w-[180px]">
+                            <DatePicker
+                                selected={startDate}
+                                onChange={(date) => setStartDate(date)}
+                                dateFormat="yyyy-MM-dd"
+                                placeholderText="스터디 시작일"
+                                customInput={<CustomDateInput />}
+                            />
+                        </div>
+
+                        <span className="mx-1 text-gray-500 text-lg">~</span>
+
+                        <div className="w-full max-w-[180px]">
+                            <DatePicker
+                                selected={endDate}
+                                onChange={(date) => setEndDate(date)}
+                                dateFormat="yyyy-MM-dd"
+                                placeholderText="스터디 종료일"
+                                customInput={<CustomDateInput />}
+                            />
+                        </div>
+                    </div>
+                </div>
+
+                {/* 설명 */}
+                <div className="mb-8">
+                    <label className="block text-gray-900 font-semibold mb-2">설명</label>
                     <textarea
-                        className="w-full p-3 border rounded-md h-32"
+                        className="w-full p-4 border rounded-xl h-48"
                         placeholder="공고에 대한 설명을 입력하세요"
                         value={description}
                         onChange={(e) => setDescription(e.target.value)}
                     />
                 </div>
 
-                {/* 버튼 그룹 */}
-                <div className="flex justify-between">
-                    <button className="bg-red-500 text-white px-5 py-2 rounded-md shadow-md hover:bg-red-600"
-                            onClick={() => navigate(`/study-group/${studyGroupId}`)}>
+                {/* 버튼 */}
+                <div className="flex justify-end gap-3">
+                    <button
+                        className="bg-gray-300 text-gray-800 px-5 py-2 rounded-md hover:bg-gray-400 transition"
+                        onClick={() => navigate(`/study-group/${studyGroupId}`)}
+                    >
                         취소하기
                     </button>
-                    <button className="bg-green-500 text-white px-5 py-2 rounded-md shadow-md hover:bg-green-600"
-                            onClick={handleEdit}>
+                    <button
+                        className="bg-green-600 text-white px-5 py-2 rounded-md hover:bg-green-700 transition"
+                        onClick={handleEdit}
+                    >
                         수정하기
                     </button>
                 </div>

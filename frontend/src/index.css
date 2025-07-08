@@ -69,3 +69,26 @@ button:focus-visible {
     background-color: #f9f9f9;
   }
 }
+
+@keyframes marquee-right {
+  0%   { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+.animate-marquee-right {
+  animation: marquee-right 25s linear infinite;
+}
+
+.chat-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+.chat-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.chat-scrollbar::-webkit-scrollbar-thumb {
+  background-color: #666;
+  border-radius: 3px;
+}
+.chat-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: #999;
+}

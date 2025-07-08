@@ -1,5 +1,11 @@
 import {useEffect, useRef, useState} from "react";
 import {useLocation, useNavigate, useParams} from "react-router-dom";
+import { FaArrowLeft } from "react-icons/fa";
+import { FiSettings } from "react-icons/fi";
+import { IoMdEye } from "react-icons/io";
+import { FaRegComment, FaReply } from "react-icons/fa";
+import { formatDistanceToNow } from "date-fns";
+import { ko } from "date-fns/locale";
 
 const Board = () => {
     const { boardId } = useParams();
@@ -18,6 +24,8 @@ const Board = () => {
     const replyInputRef = useRef(null);
     const location = useLocation();
     const [fromMyBoards] = useState(() => location.state?.fromMyBoards === true);
+    const [dropdownOpen, setDropdownOpen] = useState(false);
+    const dropdownRef = useRef(null);
 
     useEffect(() => {
         increaseView();
@@ -27,6 +35,19 @@ const Board = () => {
         fetchBoardDetail();
         fetchLoginUser();
     }, [page]);
+
+    useEffect(() => {
+        const handleClickOutside = (e) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+                setDropdownOpen(false);
+            }
+        };
+
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, []);
 
     const increaseView = async () => {
         try {
@@ -206,213 +227,221 @@ const Board = () => {
 
     return (
         <div className="max-w-4xl mx-auto pt-28 px-6">
-            <div className="border rounded-md p-4 bg-white shadow-sm mb-6">
-                <h2 className="text-3xl font-bold mb-3">
-                    [{board.category.name}] {board.title}
-                </h2>
+            {/* 타이틀 및 돌아가기 버튼 */}
+            <div className="flex items-start justify-between mb-4">
+                <div
+                    className="flex items-center gap-2 cursor-pointer text-gray-600 hover:text-gray-800"
+                    onClick={() => navigate(fromMyBoards ? "/my-boards" : "/boards")}
+                >
+                    <FaArrowLeft className="text-xl" />
+                </div>
+
+                {/* 드롭다운 메뉴 */}
+                {loginId === board.author.loginId && (
+                    <div className="relative" ref={dropdownRef}>
+                        <button onClick={() => setDropdownOpen(!dropdownOpen)} className="text-gray-600 hover:text-black">
+                            <FiSettings className="h-6 w-6 text-gray-600 hover:text-gray-800" />
+                        </button>
+                        {dropdownOpen && (
+                            <div className="absolute right-0 mt-2 w-32 bg-white border rounded-md shadow-lg z-10">
+                                <button
+                                    onClick={handleEdit}
+                                    className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100"
+                                >
+                                    수정하기
+                                </button>
+                                <button
+                                    onClick={handleDelete}
+                                    className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
+                                >
+                                    삭제하기
+                                </button>
+                            </div>
+                        )}
+                    </div>
+                )}
             </div>
 
-            <div className="text-sm text-gray-500 mb-1">
-                작성자: {board.author.nickname} | 조회수: {board.views} | 작성일: {new Date(board.createdAt).toLocaleString("ko-KR")}
+            {/* 제목 */}
+            <h2 className="text-3xl font-bold text-gray-900 mb-6">
+                [{board.category.name}] {board.title}
+            </h2>
+
+            {/* 작성 정보 (1/3씩 grid로 배치) */}
+            <div className="grid grid-cols-3 gap-4 text-sm text-gray-600 mb-6">
+                <div className="flex items-center gap-1">
+                    <span className="font-semibold text-gray-700">작성자</span>
+                    <span>{board.author.nickname}</span>
+                </div>
+                <div className="flex items-center gap-1">
+                    <span className="font-semibold text-gray-700">작성일</span>
+                    <span>{new Date(board.createdAt).toLocaleString("ko-KR")}</span>
+                </div>
+                <div className="flex items-center gap-1">
+                    <IoMdEye />
+                    <span>{board.views}</span>
+                </div>
             </div>
-            <div className="border rounded-md p-4 bg-white min-h-[500px] whitespace-pre-wrap">
+
+            {/* 본문 */}
+            <div className="border rounded-md p-6 bg-white min-h-[500px] whitespace-pre-wrap shadow-sm mb-6">
                 {board.content}
             </div>
 
-            <br></br>
-
-            {/* 작성자만 수정/삭제 버튼 노출 */}
-            {loginId === board.author.loginId && (
-                <div className="flex gap-2 mb-6">
-                    <button onClick={handleEdit} className="bg-yellow-500 text-white px-3 py-1 rounded hover:bg-yellow-600">수정하기</button>
-                    <button onClick={handleDelete} className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600">삭제하기</button>
-                </div>
-            )}
-
-            <button
-                className="mb-8 bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400"
-                onClick={() => navigate(fromMyBoards ? "/my-boards" : "/boards")}
-            >
-                돌아가기
-            </button>
-
             {/* 댓글 목록 */}
             <div>
-                <h3 className="text-xl font-semibold mb-4">💬 댓글 {board.replyCount}개</h3>
+                <h3 className="text-xl font-semibold mb-4 flex items-center gap-2">
+                    <FaRegComment className="text-blue-600" />
+                    댓글 {board.replyCount}개
+                </h3>
+
                 {replies.length === 0 ? (
                     <p className="text-gray-500 text-sm text-center mt-4">댓글이 없습니다.</p>
                 ) : (
                     <div className="mt-6 space-y-4">
-                        {replies
-                            .filter((r) => r.parentReplyId === null)
-                            .map((parent) => (
-                                <div
-                                    key={parent.id}
-                                    className="border rounded bg-gray-50 p-4"
-                                    onClick={() => handleReplyBoxClick(parent.id, parent.authorNickname)}
-                                >
-                                    <div className="flex justify-between items-center">
-                                        <span className="font-semibold">{parent.authorNickname}</span>
-                                        {parent.edited && <span className="text-xs text-gray-500">(수정됨)</span>}
+                        {/* 부모 댓글 */}
+                        {replies.filter((r) => r.parentReplyId === null).map((parent) => (
+                            <div key={parent.id} className="border rounded px-4 py-3 flex flex-col hover:bg-gray-50">
+                                {editingReplyId === parent.id ? (
+                                    <>
+                                        <textarea
+                                          className="w-full border rounded p-2 text-sm resize-none"
+                                          value={editedContent}
+                                          onChange={(e) => setEditedContent(e.target.value)}
+                                          rows={3}
+                                        />
+                                        <div className="flex justify-end gap-2 mt-2">
+                                            <button onClick={handleUpdateReply} className="bg-green-500 text-white px-3 py-1 rounded">
+                                                수정 완료
+                                            </button>
+                                            <button onClick={handleCancelEdit} className="bg-gray-300 px-3 py-1 rounded">
+                                                취소
+                                            </button>
+                                        </div>
+                                    </>
+                                ) : (
+                                    <div className="flex flex-wrap items-start justify-between w-full gap-y-1" onClick={() => handleReplyBoxClick(parent.id, parent.authorNickname)}>
+                                        <div className="flex items-start gap-2 flex-1 flex-wrap">
+                                            <span className="min-w-[70px] text-sm text-gray-600 break-keep">{parent.authorNickname}</span>
+                                            <span className="text-sm text-gray-800 break-words">{parent.content}</span>
+                                        </div>
+                                        <div className="flex items-center gap-2 whitespace-nowrap text-xs ml-2">
+                                        <span className="text-gray-500">
+                                            {formatDistanceToNow(new Date(parent.createdAt), { addSuffix: true, locale: ko })}
+                                            {parent.edited && <span className="ml-1">(수정됨)</span>}
+                                        </span>
+                                            {loginUser && (
+                                                <>
+                                                    {loginUser.id === parent.authorId && (
+                                                        <button className="text-blue-600" onClick={(e) => { e.stopPropagation(); handleEditClick(parent); }}>
+                                                            수정
+                                                        </button>
+                                                    )}
+                                                    {(loginUser.id === parent.authorId || loginUser.id === board.author.id) && (
+                                                        <button className="text-red-600" onClick={(e) => { e.stopPropagation(); handleDeleteReply(parent.id); }}>
+                                                            삭제
+                                                        </button>
+                                                    )}
+                                                </>
+                                            )}
+                                        </div>
                                     </div>
+                                )}
 
-                                    {editingReplyId === parent.id ? (
-                                        <>
-                                            <textarea
-                                                className="w-full border rounded p-2 text-sm mt-2"
-                                                value={editedContent}
-                                                onChange={(e) => setEditedContent(e.target.value)}
-                                                rows={3}
-                                            />
-                                            <div className="flex justify-end gap-2 mt-2">
-                                                <button
-                                                    onClick={handleUpdateReply}
-                                                    className="bg-green-500 text-white px-3 py-1 rounded"
-                                                >
-                                                    수정 완료
-                                                </button>
-                                                <button
-                                                    onClick={handleCancelEdit}
-                                                    className="bg-gray-300 px-3 py-1 rounded"
-                                                >
-                                                    취소
-                                                </button>
-                                            </div>
-                                        </>
-                                    ) : (
-                                        <p className="text-sm mt-1">{parent.content}</p>
-                                    )}
-
-                                    <div className="flex justify-end gap-4 text-sm mt-2">
-                                        {editingReplyId !== parent.id && (
+                                {/* 대댓글 */}
+                                {replies.filter((child) => child.parentReplyId === parent.id).map((child) => (
+                                    <div key={child.id} className="bg-gray-100 rounded px-4 py-2 mt-2 ml-6">
+                                        {editingReplyId === child.id ? (
                                             <>
-                                                {loginUser && parent.authorId === loginUser.id && (
-                                                    <button
-                                                        className="text-blue-600"
-                                                        onClick={(e) => {
-                                                            e.stopPropagation();
-                                                            handleEditClick(parent);
-                                                        }}
-                                                    >
-                                                        수정
+                                                <textarea
+                                                  className="w-full border rounded p-2 text-sm resize-none"
+                                                  value={editedContent}
+                                                  onChange={(e) => setEditedContent(e.target.value)}
+                                                  rows={3}
+                                                />
+                                                <div className="flex justify-end gap-2 mt-2">
+                                                    <button onClick={handleUpdateReply} className="bg-green-500 text-white px-3 py-1 rounded">
+                                                        수정 완료
                                                     </button>
-                                                )}
-                                                {loginUser && (parent.authorId === loginUser.id || loginUser.id === board.author.id) && (
-                                                    <button
-                                                        className="text-red-600"
-                                                        onClick={(e) => {
-                                                            e.stopPropagation();
-                                                            handleDeleteReply(parent.id);
-                                                        }}
-                                                    >
-                                                        삭제
+                                                    <button onClick={handleCancelEdit} className="bg-gray-300 px-3 py-1 rounded">
+                                                        취소
                                                     </button>
-                                                )}
+                                                </div>
                                             </>
-                                        )}
-                                    </div>
-
-                                    {/* 대댓글 렌더링 */}
-                                    <div className="mt-3 ml-6 space-y-2">
-                                        {replies
-                                            .filter((child) => child.parentReplyId === parent.id)
-                                            .map((child) => (
-                                                <div
-                                                    key={child.id}
-                                                    className="bg-gray-100 p-3 rounded flex justify-between items-start"
-                                                    onClick={(e) => e.stopPropagation()}
-                                                >
-                                                    {editingReplyId === child.id ? (
-                                                        <div className="w-full">
-                                                            <div className="font-medium text-sm mb-1">{child.authorNickname}</div>
-                                                            <textarea
-                                                                className="w-full border rounded p-2 text-sm resize-none"
-                                                                value={editedContent}
-                                                                rows={3}
-                                                                onChange={(e) => setEditedContent(e.target.value)}
-                                                            />
-                                                            <div className="flex justify-end gap-2 mt-2">
-                                                                <button
-                                                                    onClick={handleUpdateReply}
-                                                                    className="bg-green-500 text-white px-3 py-1 rounded"
-                                                                >
-                                                                    수정 완료
-                                                                </button>
-                                                                <button
-                                                                    onClick={handleCancelEdit}
-                                                                    className="bg-gray-300 px-3 py-1 rounded"
-                                                                >
-                                                                    취소
-                                                                </button>
-                                                            </div>
-                                                        </div>
-                                                    ) : (
+                                        ) : (
+                                            <div className="flex flex-wrap items-start justify-between w-full gap-y-1" onClick={(e) => e.stopPropagation()}>
+                                                <div className="flex items-start gap-2 flex-1 flex-wrap">
+                                                    <FaReply className="text-gray-500 mt-[2px]" />
+                                                    <span className="min-w-[70px] text-sm text-gray-600 break-keep">{child.authorNickname}</span>
+                                                    <span className="text-sm text-gray-800 break-words">{child.content}</span>
+                                                </div>
+                                                <div className="flex items-center gap-2 whitespace-nowrap text-xs ml-2">
+                                                <span className="text-gray-500">
+                                                    {formatDistanceToNow(new Date(child.createdAt), { addSuffix: true, locale: ko })}
+                                                    {child.edited && <span className="ml-1">(수정됨)</span>}
+                                                </span>
+                                                    {loginUser && (
                                                         <>
-                                                            <div className="w-full">
-                                                                <div className="font-medium text-sm">{child.authorNickname}</div>
-                                                                <div className="text-sm mt-1 whitespace-pre-wrap">{child.content}</div>
-                                                                {child.edited && (
-                                                                    <span className="text-xs text-gray-500 inline-block mt-1">(수정됨)</span>
-                                                                )}
-                                                            </div>
-                                                            <div className="flex items-center gap-2 ml-auto whitespace-nowrap">
-                                                                {loginUser && child.authorId === loginUser.id && (
-                                                                    <button
-                                                                        className="text-blue-600 text-sm"
-                                                                        onClick={(e) => {
-                                                                            e.stopPropagation();
-                                                                            handleEditClick(child);
-                                                                        }}
-                                                                    >
-                                                                        수정
-                                                                    </button>
-                                                                )}
-                                                                {loginUser && (child.authorId === loginUser.id || loginUser.id === board.author.id) && (
-                                                                    <button
-                                                                        className="text-red-600 text-sm"
-                                                                        onClick={(e) => {
-                                                                            e.stopPropagation();
-                                                                            handleDeleteReply(child.id);
-                                                                        }}
-                                                                    >
-                                                                        삭제
-                                                                    </button>
-                                                                )}
-                                                            </div>
+                                                            {loginUser.id === child.authorId && (
+                                                                <button className="text-blue-600" onClick={(e) => { e.stopPropagation(); handleEditClick(child); }}>
+                                                                    수정
+                                                                </button>
+                                                            )}
+                                                            {(loginUser.id === child.authorId || loginUser.id === board.author.id) && (
+                                                                <button className="text-red-600" onClick={(e) => { e.stopPropagation(); handleDeleteReply(child.id); }}>
+                                                                    삭제
+                                                                </button>
+                                                            )}
                                                         </>
                                                     )}
                                                 </div>
-                                            ))}
+                                            </div>
+                                        )}
                                     </div>
-                                </div>
-                            ))}
+                                ))}
+                            </div>
+                        ))}
                     </div>
                 )}
 
                 {/* 페이지네이션 */}
-                <div className="flex justify-center mt-6 gap-2">
+                <div className="flex justify-center items-center mt-6 gap-2">
+                    {/* 이전 버튼 */}
                     <button
+                        className="w-8 h-8 flex items-center justify-center bg-gray-200 rounded-full hover:bg-gray-300 disabled:opacity-50"
                         onClick={() => setPage(prev => Math.max(1, prev - 1))}
-                        className="px-3 py-1 rounded bg-gray-200"
                         disabled={page === 1}
                     >
-                        이전
+                        &lt;
                     </button>
-                    {Array.from({ length: totalPages }, (_, i) => (
-                        <button
-                            key={i}
-                            onClick={() => setPage(i + 1)}
-                            className={`px-3 py-1 rounded ${page === i + 1 ? 'bg-blue-600 text-white' : 'bg-gray-200'}`}
-                        >
-                            {i + 1}
-                        </button>
-                    ))}
+
+                    {/* 페이지 번호 (5개씩 표현) */}
+                    {Array.from({ length: totalPages })
+                        .slice(Math.floor((page - 1) / 5) * 5, Math.min(Math.floor((page - 1) / 5) * 5 + 5, totalPages))
+                        .map((_, i) => {
+                            const pageNum = Math.floor((page - 1) / 5) * 5 + i + 1;
+                            return (
+                                <button
+                                    key={pageNum}
+                                    onClick={() => setPage(pageNum)}
+                                    className={`w-8 h-8 text-sm font-medium rounded-full flex items-center justify-center ${
+                                        page === pageNum
+                                            ? "bg-blue-600 text-white"
+                                            : "bg-white text-gray-800 border border-gray-300 hover:bg-gray-100"
+                                    }`}
+                                >
+                                    {pageNum}
+                                </button>
+                            );
+                        })}
+
+                    {/* 다음 버튼 */}
                     <button
+                        className="w-8 h-8 flex items-center justify-center bg-gray-200 rounded-full hover:bg-gray-300 disabled:opacity-50"
                         onClick={() => setPage(prev => Math.min(totalPages, prev + 1))}
-                        className="px-3 py-1 rounded bg-gray-200"
                         disabled={page === totalPages}
                     >
-                        다음
+                        &gt;
                     </button>
                 </div>
             </div>

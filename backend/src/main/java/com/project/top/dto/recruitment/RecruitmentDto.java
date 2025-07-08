@@ -21,6 +21,8 @@ public class RecruitmentDto {
     private List<String> tags;
     private String creatorNickname;
     private String creatorContact;
+    private String topic;
+    private int views;
 
     public static RecruitmentDto recruitmentFromEntity(Recruitment recruitment) {
         RecruitmentDto dto = new RecruitmentDto();
@@ -34,6 +36,8 @@ public class RecruitmentDto {
         dto.setTags(recruitment.getTags());
         dto.setCreatorNickname(recruitment.getCreator().getNickname());
         dto.setCreatorContact(recruitment.getCreator().getPhoneNumber());
+        dto.setTopic(recruitment.getTopic());
+        dto.setViews(recruitment.getViews());
 
         return dto;
     }

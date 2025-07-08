@@ -16,4 +16,5 @@ public interface RecruitmentService {
     RecruitmentDto getRecruitment(Long recruitmentId);
     List<RecruitmentListDto> getRecruitmentMyList(Long creatorId);
     void closeRecruitment(Long recruitmentId, Long creatorId);
+    List<RecruitmentListDto> getPopularRecruitmentList();
 }

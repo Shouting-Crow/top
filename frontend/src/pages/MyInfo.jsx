@@ -1,5 +1,7 @@
-import { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import MyApplicationInfoBox from "../components/MyApplicationInfoCard.jsx";
+import MyApplicationStatusList from "../components/MyApplicationStatusList";
 
 const MyInfo = () => {
     const [userInfo, setUserInfo] = useState(null);
@@ -10,7 +12,7 @@ const MyInfo = () => {
             const token = localStorage.getItem("jwtToken");
             if (!token) {
                 alert("로그인이 필요합니다.");
-                navigate("/login", {state: {from: location.pathname}});
+                navigate("/login", { state: { from: location.pathname } });
                 return;
             }
 
@@ -58,43 +60,54 @@ const MyInfo = () => {
     if (!userInfo) return <div className="text-center mt-10">로딩 중 ...</div>;
 
     return (
-        <div className="flex flex-col items-center justify-center min-h-screen bg-gray-200">
-            <div className="w-full max-w-2xl bg-white p-8 rounded-lg shadow-lg">
-                <h2 className="text-2xl font-semibold text-center mb-6">내 정보</h2>
+        <div className="min-h-screen bg-gray-100 pt-24 px-4">
+            <div className="max-w-6xl mx-auto space-y-10">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="bg-white rounded-2xl shadow-md p-6 text-gray-700">
+                        <div className="flex items-center justify-between mb-6">
+                            <h2 className="text-lg font-bold">내 정보</h2>
+                            <div className="space-x-2">
+                                <button
+                                    onClick={() => navigate("/myinfo/edit")}
+                                    className="bg-gray-200 hover:bg-gray-300 text-sm px-3 py-1 rounded"
+                                >
+                                    수정
+                                </button>
+                                <button
+                                    onClick={handleDeleteUser}
+                                    className="bg-red-100 hover:bg-red-200 text-red-600 text-sm px-3 py-1 rounded"
+                                >
+                                    탈퇴
+                                </button>
+                            </div>
+                        </div>
 
-                <div className="grid grid-cols-3 gap-4 mb-4">
-                    <span className="font-medium">아이디</span>
-                    <span className="col-span-2">{userInfo.loginId}</span>
-                </div>
-                <div className="grid grid-cols-3 gap-4 mb-4">
-                    <span className="font-medium">비밀번호</span>
-                    <span className="col-span-2">********</span>
-                </div>
-                <div className="grid grid-cols-3 gap-4 mb-4">
-                    <span className="font-medium">이메일</span>
-                    <span className="col-span-2">{userInfo.email}</span>
-                </div>
-                <div className="grid grid-cols-3 gap-4 mb-4">
-                    <span className="font-medium">전화번호</span>
-                    <span className="col-span-2">{userInfo.phoneNumber}</span>
-                </div>
-                <div className="grid grid-cols-3 gap-4 mb-4">
-                    <span className="font-medium">닉네임</span>
-                    <span className="col-span-2">{userInfo.nickname}</span>
+                        <div className="space-y-4 text-base">
+                            <div>
+                                <div className="font-semibold text-gray-800">아이디</div>
+                                <div className="text-gray-500">{userInfo.loginId}</div>
+                            </div>
+                            <div>
+                                <div className="font-semibold text-gray-800">이메일</div>
+                                <div className="text-gray-500">{userInfo.email}</div>
+                            </div>
+                            <div>
+                                <div className="font-semibold text-gray-800">전화번호</div>
+                                <div className="text-gray-500">{userInfo.phoneNumber}</div>
+                            </div>
+                            <div>
+                                <div className="font-semibold text-gray-800">닉네임</div>
+                                <div className="text-gray-500">{userInfo.nickname}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* 내 지원 정보 */}
+                    <MyApplicationInfoBox />
                 </div>
 
-                <div className="flex justify-between mt-6">
-                    <button
-                        onClick={() => navigate("/myinfo/edit")}
-                        className="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600 transition">
-                        수정하기
-                    </button>
-                    <button
-                        onClick={handleDeleteUser}
-                        className="bg-red-500 text-white px-6 py-2 rounded-lg hover:bg-red-600 transition">
-                        회원탈퇴
-                    </button>
-                </div>
+                {/* 지원 현황 */}
+                <MyApplicationStatusList />
             </div>
         </div>
     );

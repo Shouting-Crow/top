@@ -28,4 +28,6 @@ public class RecruitmentCreateDto {
 
     private List<String> tags;
 
+    private String topic;
+
 }

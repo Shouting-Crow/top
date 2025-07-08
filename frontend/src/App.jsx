@@ -6,8 +6,6 @@ import Register from "./pages/Register.jsx";
 import MyInfo from "./pages/MyInfo.jsx";
 import MyInfoEdit from "./pages/MyInfoEdit.jsx";
 import Header from "./components/Header.jsx";
-import MyApplicationInfo from "./pages/MyApplicationInfo.jsx";
-import ApplicationRegister from "./pages/ApplicationInfoRegister.jsx";
 import ApplicationInfoRegister from "./pages/ApplicationInfoRegister.jsx";
 import ApplicationInfoEdit from "./pages/ApplicationInfoEdit.jsx";
 import Recruitments from "./pages/Recruitments.jsx";
@@ -18,7 +16,6 @@ import StudyGroups from "./pages/StudyGroups.jsx";
 import StudyGroupRegister from "./pages/StudyGroupRegister.jsx";
 import StudyGroup from "./pages/StudyGroup.jsx";
 import StudyGroupEdit from "./pages/StudyGroupEdit.jsx";
-import MyApplicationList from "./pages/MyApplicationList.jsx";
 import MyBasePostList from "./pages/MyBasePostList.jsx";
 import ApplicantList from "./pages/ApplicantList.jsx";
 import Group from "./pages/Group.jsx";
@@ -99,7 +96,6 @@ function App() {
                         <Route path="/myinfo" element={<MyInfo />}/>
                         <Route path="/myinfo/edit" element={<MyInfoEdit />}/>
 
-                        <Route path="/application-info" element={<MyApplicationInfo />}/>
                         <Route path="/application-info/register" element={<ApplicationInfoRegister />}/>
                         <Route path="/application-info/edit" element={<ApplicationInfoEdit />}/>
 
@@ -112,8 +108,6 @@ function App() {
                         <Route path="/study-group/register" element={<StudyGroupRegister />}/>
                         <Route path="/study-group/:studyGroupId" element={<StudyGroup />}/>
                         <Route path="/study-group/edit/:studyGroupId" element={<StudyGroupEdit />}/>
-
-                        <Route path="/my-applications" element={<MyApplicationList />}/>
 
                         <Route path="/my-posts" element={<MyBasePostList/>}/>
 

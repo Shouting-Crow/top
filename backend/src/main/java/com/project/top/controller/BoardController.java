@@ -20,6 +20,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -145,6 +146,13 @@ public class BoardController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
 
+    }
+
+    @GetMapping("/popular")
+    public ResponseEntity<?> getPopularBoardList() {
+        List<BoardListDto> popularBoards = boardService.getPopularBoardList();
+
+        return ResponseEntity.ok(popularBoards);
     }
 
 }
