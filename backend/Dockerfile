@@ -6,4 +6,4 @@ RUN apk add --no-cache bash netcat-openbsd
 
 COPY build/libs/top-0.0.1-SNAPSHOT.jar top.jar
 
-ENTRYPOINT ["java", "-jar", "/top/top.jar"]
+ENTRYPOINT ["java", "-Duser.timezone=Asia/Seoul", "-jar", "/top/top.jar"]
