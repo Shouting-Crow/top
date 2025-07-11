@@ -104,7 +104,7 @@ const ChatRoom = ({ chatRoomId, onClose, onOpen }) => {
     }, [onOpen]);
 
     const connectWebSocket = (token) => {
-        const socket = new SockJS(`http://localhost:8080/ws/chat?token=${token}`);
+        const socket = new SockJS(`/ws/chat?token=${token}`);
         const client = new Client({
             webSocketFactory: () => socket,
             debug: (str) => console.log(str),

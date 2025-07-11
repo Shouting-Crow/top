@@ -3,9 +3,11 @@ FROM node:20-alpine as build
 WORKDIR /top
 
 COPY package.json ./
-RUN npm install
+
+RUN npm install && npm uninstall esbuild && npm install esbuild
 
 COPY . .
+
 RUN npm run build
 
 FROM nginx:stable-alpine as production

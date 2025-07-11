@@ -248,6 +248,8 @@ const Group = () => {
                                         if (response.ok) {
                                             const data = await response.json();
                                             alert("채팅방이 생성되었습니다.");
+                                            setShowCreateChatRoomModal(false);
+                                            setChatRoomName("");
                                             openChatModal(data.chatRoomId);
                                         } else {
                                             const text = await response.text();
