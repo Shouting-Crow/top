@@ -84,42 +84,14 @@
 │  │              ├─ controller
 │  │              ├─ domain
 │  │              ├─ dto
-│  │              │  ├─ application
-│  │              │  ├─ basePost
-│  │              │  ├─ board
-│  │              │  ├─ category
-│  │              │  ├─ chatMessage
-│  │              │  ├─ chatRoom
-│  │              │  ├─ group
-│  │              │  ├─ groupMember
-│  │              │  ├─ login
-│  │              │  ├─ message
-│  │              │  ├─ recruitment
-│  │              │  ├─ reply
-│  │              │  ├─ studyGroup
-│  │              │  ├─ user
-│  │              │  └─ userInfo
 │  │              ├─ filter
 │  │              ├─ initializer
 │  │              ├─ interceptor
 │  │              ├─ repository
 │  │              ├─ security
 │  │              ├─ service
-│  │              │  ├─ application
-│  │              │  ├─ basePost
-│  │              │  ├─ board
-│  │              │  ├─ chat
-│  │              │  ├─ group
-│  │              │  ├─ groupMember
-│  │              │  ├─ login
-│  │              │  ├─ message
-│  │              │  ├─ recruitment
-│  │              │  ├─ reply
-│  │              │  ├─ studyGroup
-│  │              │  ├─ user
-│  │              │  ├─ userInfo
-│  │              │  └─ util
-│  │              └─ util
+│  │              ├─ util
+│  │              └─ verification
 │  └─ resources
 │      └─ static
 │          └─ js
