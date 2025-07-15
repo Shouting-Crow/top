@@ -14,10 +14,27 @@
 
 # 🧩 프로젝트 소개  
 
-자신만의 프로젝트를 발전시키거나 다른 사람들과 함께 제작하고픈 개발자 지망생을 위한 웹 프로젝트입니다. </br>
-단지 프로젝트 모집을 위한 공고를 제공하는 것이 아니라 공고를 보고 신청한 사용자들과 함께 그룹을 만들고 정보를 공유할 수 있는 그룹 페이지와 채팅 및 쪽지 기능도 제공합니다. </br>
-또한 스터디 그룹 모집도 제공을 하여 프로젝트를 하기는 부담스러운 사용자들은 다른 사용자들과 함께 학습을 진행할 수 있습니다. </br>
-게시판도 지원을 하여 모집을 하거나 질문 등을 올려서 건전한 커뮤니티를 이뤄나갈 수도 있습니다. </br>
+<div align="center"> <img src="https://raw.githubusercontent.com/Shouting-Crow/top/frontend/public/banner/project_banner.png" alt="TOP Project Banner" style="max-width: 100%; height: auto;" /> </div> <br>
+개발자를 위한 협업 플랫폼, TOP
+혼자만의 프로젝트에서 벗어나 다른 사람들과 함께 팀을 이루고
+실제 개발 프로젝트를 함께 완성해 나갈 수 있는 웹 기반 플랫폼입니다.
+
+<br>
+
+🧑‍💻 이런 분들께 추천해요
+
+-혼자 사이드 프로젝트를 하기 막막한 개발자 지망생
+
+-협업 경험을 쌓고 싶은 비전공자
+
+-사이드 프로젝트 멤버를 찾고 싶은 프리랜서 개발자
+
+-프로젝트까지는 부담스럽지만, 스터디 그룹으로 학습하고 싶은 사람
+
+<br>
+
+🌐 지금 바로 여러분의 아이디어와 열정을 펼쳐보세요!
+TOP에서 함께할 팀을 만나고, 여러분만의 프로젝트를 완성해보세요.
 
 <br></br>
 
@@ -84,42 +101,14 @@
 │  │              ├─ controller
 │  │              ├─ domain
 │  │              ├─ dto
-│  │              │  ├─ application
-│  │              │  ├─ basePost
-│  │              │  ├─ board
-│  │              │  ├─ category
-│  │              │  ├─ chatMessage
-│  │              │  ├─ chatRoom
-│  │              │  ├─ group
-│  │              │  ├─ groupMember
-│  │              │  ├─ login
-│  │              │  ├─ message
-│  │              │  ├─ recruitment
-│  │              │  ├─ reply
-│  │              │  ├─ studyGroup
-│  │              │  ├─ user
-│  │              │  └─ userInfo
 │  │              ├─ filter
 │  │              ├─ initializer
 │  │              ├─ interceptor
 │  │              ├─ repository
 │  │              ├─ security
 │  │              ├─ service
-│  │              │  ├─ application
-│  │              │  ├─ basePost
-│  │              │  ├─ board
-│  │              │  ├─ chat
-│  │              │  ├─ group
-│  │              │  ├─ groupMember
-│  │              │  ├─ login
-│  │              │  ├─ message
-│  │              │  ├─ recruitment
-│  │              │  ├─ reply
-│  │              │  ├─ studyGroup
-│  │              │  ├─ user
-│  │              │  ├─ userInfo
-│  │              │  └─ util
-│  │              └─ util
+│  │              ├─ util
+│  │              └─ verification
 │  └─ resources
 │      └─ static
 │          └─ js
