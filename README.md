@@ -14,7 +14,7 @@
 
 # 🧩 프로젝트 소개  
 
-<div align="center"> <img src="https://raw.githubusercontent.com/Shouting-Crow/top/frontend/public/banner/project_banner.png" alt="TOP Project Banner" style="max-width: 100%; height: auto;" /> </div> <br>
+<div align="center"> <img src="./main/assets/project_banner.png" alt="TOP Project Banner" width="100%" /> </div> <br>
 개발자를 위한 협업 플랫폼, TOP
 혼자만의 프로젝트에서 벗어나 다른 사람들과 함께 팀을 이루고
 실제 개발 프로젝트를 함께 완성해 나갈 수 있는 웹 기반 플랫폼입니다.
