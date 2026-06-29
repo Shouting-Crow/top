@@ -8,7 +8,7 @@
 
 😊 디자인 조언 : 배성욱
 
-🕸️ 웹 페이지 : https://top-project.site/ (08:00 ~ 22:00 시간만 오픈)
+🕸️ 웹 페이지 : https://top-project.site/ (도메인 기간 만료로 접근 불가)
 
 <br></br>
 
